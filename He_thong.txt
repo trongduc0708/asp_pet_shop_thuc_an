@@ -1,0 +1,100 @@
+1. Module Quản lý Sản phẩm (Phụ kiện & Thức ăn)
+Thêm / sửa / xóa sản phẩm.
+Thông tin sản phẩm: tên, loại (phụ kiện, thức ăn), thương hiệu, trọng lượng, hạn sử dụng, mô tả, hình ảnh.
+Quản lý tồn kho (số lượng còn lại).
+Phân loại danh mục:
+Thức ăn chó
+Thức ăn mèo
+Phụ kiện chó (dây dắt, chuồng, đồ chơi...)
+Phụ kiện mèo (khay cát, vòng cổ, đồ chơi...)
+Tìm kiếm, lọc sản phẩm theo giá, thương hiệu, loại.
+Đánh dấu “sản phẩm mới” 
+2. Module Quản lý Khách hàng
+Đăng ký / đăng nhập / đăng xuất.
+Hồ sơ khách hàng: tên, địa chỉ, số điện thoại, email.
+Lịch sử mua hàng.
+Nhiều địa chỉ giao hàng.
+Tích điểm / hạng thành viên (nếu có).
+3. Module Giỏ hàng & Thanh toán
+Thêm sản phẩm vào giỏ.
+Cập nhật số lượng, xóa sản phẩm trong giỏ.
+Tính tổng tiền, phí vận chuyển.
+Chọn phương thức thanh toán: COD, ví điện tử VNpay
+Nhập mã giảm giá 
+Xác nhận đơn hàng.
+4. Module Quản lý Đơn hàng
+Danh sách đơn hàng (Mới – Đang xử lý – Đang giao – Hoàn thành – Đã hủy).
+Cập nhật trạng thái đơn hàng.
+Gửi thông báo cho khách hàng qua email
+In / xuất hóa đơn.
+5. Module Quản lý Kho
+Cập nhật tồn kho tự động khi bán.
+Nhập hàng / xuất hàng.
+Cảnh báo hết hàng hoặc sắp hết hàng.
+Báo cáo nhập – xuất – tồn.
+6. Module Khuyến mãi 
+Quản lý mã giảm giá
+Chạy chương trình khuyến mãi theo theo đơn hàng.
+Banner quảng cáo trên website.
+7. Module Báo cáo – Thống kê
+Doanh thu theo ngày / tháng / năm.
+Thống kê sản phẩm bán chạy.
+Báo cáo tồn kho.
+Thống kê đơn hàng theo trạng thái.
+Báo cáo khách hàng thân thiết.
+8. Module Hỗ trợ & Liên hệ
+Form liên hệ / góp ý.
+9.Quản lý tài khoản và phân quyền cho admin / nhân viên
+10. trang quản trị chỉ được phép đăng nhập không đăng ký
+FAQ: Chính sách giao hàng, đổi trả, bảo hành.
+
+=====================================================
+CẤU TRÚC CƠ SỞ DỮ LIỆU
+=====================================================
+
+1. BẢNG QUẢN LÝ NGƯỜI DÙNG
+- UserRoles: Phân quyền (Admin, Employee, Customer)
+- Users: Thông tin tài khoản người dùng
+- CustomerProfiles: Hồ sơ chi tiết khách hàng (điểm tích lũy, hạng thành viên)
+
+2. BẢNG QUẢN LÝ SẢN PHẨM
+- Categories: Danh mục sản phẩm (có thể phân cấp)
+- Brands: Thương hiệu sản phẩm
+- Products: Thông tin sản phẩm chính
+- ProductImages: Hình ảnh sản phẩm
+- Inventory: Quản lý tồn kho
+- InventoryTransactions: Lịch sử nhập/xuất kho
+
+3. BẢNG QUẢN LÝ ĐỊA CHỈ
+- Addresses: Địa chỉ giao hàng của khách hàng
+
+4. BẢNG QUẢN LÝ GIỎ HÀNG
+- Cart: Giỏ hàng tạm thời của khách hàng
+
+5. BẢNG QUẢN LÝ KHUYẾN MÃI
+- Promotions: Mã giảm giá
+- ProductPromotions: Áp dụng khuyến mãi cho sản phẩm
+
+6. BẢNG QUẢN LÝ ĐƠN HÀNG
+- OrderStatuses: Trạng thái đơn hàng
+- PaymentMethods: Phương thức thanh toán
+- Orders: Đơn hàng chính
+- OrderItems: Chi tiết đơn hàng
+- OrderStatusHistory: Lịch sử thay đổi trạng thái
+
+7. BẢNG QUẢN LÝ BANNER
+- Banners: Banner quảng cáo
+
+8. BẢNG HỖ TRỢ & LIÊN HỆ
+- ContactMessages: Tin nhắn liên hệ
+- FAQs: Câu hỏi thường gặp
+
+9. BẢNG BÁO CÁO & THỐNG KÊ
+- RevenueReports: Báo cáo doanh thu
+- ProductSalesStats: Thống kê sản phẩm bán chạy
+
+STORED PROCEDURES:
+- sp_UpdateInventory: Cập nhật tồn kho
+- sp_CreateOrder: Tạo đơn hàng từ giỏ hàng
+
+INDEXES: Được tối ưu cho các truy vấn thường xuyên

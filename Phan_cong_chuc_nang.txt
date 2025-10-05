@@ -1,0 +1,281 @@
+=====================================================
+PHÂN CÔNG CHỨC NĂNG - WEBSITE PET SHOP
+Thời gian: Từ hiện tại đến 20/11/2024
+=====================================================
+
+TỔNG QUAN DỰ ÁN:
+- Website bán phụ kiện và thức ăn cho chó mèo
+- Công nghệ: ASP.NET Core MVC + SQL Server
+- Database: PetShopDB (đã thiết kế)
+- Thời gian hoàn thành: 20/11/2024
+
+=====================================================
+PHẦN 1: THIẾT LẬP DỰ ÁN VÀ DATABASE (2-3 ngày đầu)
+=====================================================
+
+NGÀY 1-2: SETUP DỰ ÁN
+□ Tạo solution ASP.NET Core MVC
+□ Cài đặt các packages cần thiết:
+  - Entity Framework Core
+  - Entity Framework Core SQL Server
+  - Entity Framework Core Tools
+  - AutoMapper
+  - Microsoft.AspNetCore.Identity
+□ Thiết lập cấu trúc thư mục dự án
+□ Cấu hình connection string
+□ Tạo DbContext và Models từ database design
+
+NGÀY 3: DATABASE SETUP
+□ Chạy script database_design.sql
+□ Tạo các Entity Models:
+  - User, UserRole, CustomerProfile
+  - Category, Brand, Product, ProductImage
+  - Inventory, InventoryTransaction
+  - Address, Cart
+  - Promotion, ProductPromotion
+  - OrderStatus, PaymentMethod, Order, OrderItem, OrderStatusHistory
+  - Banner, ContactMessage
+□ Cấu hình DbContext với các DbSet
+□ Test kết nối database
+
+=====================================================
+PHẦN 2: AUTHENTICATION & AUTHORIZATION (2 ngày)
+=====================================================
+
+NGÀY 4: USER MANAGEMENT
+□ Tạo Models cho Authentication
+□ Cài đặt Identity Framework
+□ Tạo Controllers: AccountController
+□ Views: Login, Register, Profile
+□ Phân quyền: Admin, Employee, Customer
+□ Middleware xác thực
+
+NGÀY 5: AUTHORIZATION & SECURITY
+□ Tạo Authorize attributes
+□ Phân quyền truy cập các trang
+□ Admin area riêng biệt
+□ Hash password
+□ Session management
+□ Logout functionality
+
+=====================================================
+PHẦN 3: QUẢN LÝ SẢN PHẨM (3 ngày)
+=====================================================
+
+NGÀY 6: PRODUCT MODELS & SERVICES
+□ Tạo ProductService
+□ CRUD operations cho Products
+□ Upload và quản lý hình ảnh
+□ Validation cho sản phẩm
+□ AutoMapper profiles
+
+NGÀY 7: PRODUCT MANAGEMENT UI
+□ Admin: ProductController
+□ Views: Index, Create, Edit, Delete, Details
+□ Form validation
+□ Image upload functionality
+□ Search và filter sản phẩm
+
+NGÀY 8: CATEGORY & BRAND MANAGEMENT
+□ CategoryController và BrandController
+□ CRUD cho Categories và Brands
+□ Hierarchical categories (parent-child)
+□ Views cho quản lý danh mục và thương hiệu
+
+=====================================================
+PHẦN 4: INVENTORY MANAGEMENT (2 ngày)
+=====================================================
+
+NGÀY 9: INVENTORY SYSTEM
+□ InventoryService
+□ CRUD cho Inventory
+□ InventoryTransaction tracking
+□ Low stock alerts
+□ Import/Export functionality
+
+NGÀY 10: INVENTORY UI
+□ InventoryController
+□ Views: Stock management, Transaction history
+□ Dashboard hiển thị tồn kho
+□ Reports: Import/Export summary
+
+=====================================================
+PHẦN 5: CUSTOMER INTERFACE (3 ngày)
+=====================================================
+
+NGÀY 11: PRODUCT DISPLAY
+□ HomeController cho trang chủ
+□ Product listing pages
+□ Product detail pages
+□ Search và filter functionality
+□ Pagination
+
+NGÀY 12: CART SYSTEM
+□ CartService
+□ CartController
+□ Add to cart, Update quantity, Remove
+□ Cart views
+□ Session-based cart
+
+NGÀY 13: CUSTOMER PROFILE
+□ Customer profile management
+□ Address management
+□ Order history
+□ Membership levels và points
+
+=====================================================
+PHẦN 6: ORDER MANAGEMENT (3 ngày)
+=====================================================
+
+NGÀY 14: ORDER PROCESSING
+□ OrderService
+□ Checkout process
+□ Order creation từ cart
+□ Payment method selection
+□ Order validation
+
+NGÀY 15: ORDER MANAGEMENT UI
+□ OrderController
+□ Checkout views
+□ Order confirmation
+□ Order tracking
+□ Email notifications
+
+NGÀY 16: ADMIN ORDER MANAGEMENT
+□ Admin OrderController
+□ Order status management
+□ Order details view
+□ Bulk order operations
+□ Order status history
+
+=====================================================
+PHẦN 7: PROMOTION SYSTEM (2 ngày)
+=====================================================
+
+NGÀY 17: PROMOTION MANAGEMENT
+□ PromotionService
+□ CRUD cho Promotions
+□ Discount calculation logic
+□ Promotion validation
+□ Usage tracking
+
+NGÀY 18: PROMOTION UI
+□ PromotionController
+□ Admin promotion management
+□ Customer promotion application
+□ Banner management
+□ Promotion reports
+
+=====================================================
+PHẦN 8: ADMIN DASHBOARD & REPORTS (2 ngày)
+=====================================================
+
+NGÀY 19: DASHBOARD & ANALYTICS
+□ DashboardController
+□ Statistics calculation:
+  - Daily/Monthly/Yearly revenue
+  - Top selling products
+  - Order status statistics
+  - Customer analytics
+□ Charts và graphs
+□ Export reports
+
+NGÀY 20: FINAL TESTING & DEPLOYMENT
+□ Unit testing
+□ Integration testing
+□ Performance optimization
+□ Security testing
+□ Deployment preparation
+□ Documentation
+
+=====================================================
+PHẦN 9: SUPPORT & CONTACT (1 ngày)
+=====================================================
+
+NGÀY 21: CONTACT SYSTEM
+□ ContactController
+□ Contact form
+□ Message management
+□ FAQ (hardcoded trong code)
+□ Support ticket system
+
+=====================================================
+PHẦN 10: FINAL POLISHING (2 ngày cuối)
+=====================================================
+
+NGÀY 22: UI/UX IMPROVEMENTS
+□ Responsive design
+□ Mobile optimization
+□ User experience improvements
+□ Error handling
+□ Loading states
+
+NGÀY 23: FINAL TESTING & DEPLOYMENT
+□ Comprehensive testing
+□ Bug fixes
+□ Performance optimization
+□ Security review
+□ Production deployment
+□ Final documentation
+
+=====================================================
+CHI TIẾT CÁC CHỨC NĂNG CHÍNH
+=====================================================
+
+1. MODULE QUẢN LÝ SẢN PHẨM:
+   - CRUD sản phẩm (tên, loại, thương hiệu, trọng lượng, hạn sử dụng, mô tả, hình ảnh)
+   - Quản lý tồn kho
+   - Phân loại: Thức ăn chó/mèo, Phụ kiện chó/mèo
+   - Tìm kiếm, lọc theo giá, thương hiệu, loại
+   - Đánh dấu "sản phẩm mới"
+
+2. MODULE QUẢN LÝ KHÁCH HÀNG:
+   - Đăng ký/đăng nhập/đăng xuất
+   - Hồ sơ: tên, địa chỉ, SĐT, email
+   - Lịch sử mua hàng
+   - Nhiều địa chỉ giao hàng
+   - Tích điểm/hạng thành viên
+
+3. MODULE GIỎ HÀNG & THANH TOÁN:
+   - Thêm/xóa/cập nhật sản phẩm trong giỏ
+   - Tính tổng tiền, phí vận chuyển
+   - Thanh toán: COD, VNPay
+   - Mã giảm giá
+   - Xác nhận đơn hàng
+
+4. MODULE QUẢN LÝ ĐƠN HÀNG:
+   - Trạng thái: Mới → Đang xử lý → Đang giao → Hoàn thành → Hủy
+   - Cập nhật trạng thái
+   - Thông báo email
+   - In/xuất hóa đơn
+
+5. MODULE QUẢN LÝ KHO:
+   - Cập nhật tồn kho tự động
+   - Nhập/xuất hàng
+   - Cảnh báo hết hàng
+   - Báo cáo nhập-xuất-tồn
+
+6. MODULE KHUYẾN MÃI:
+   - Quản lý mã giảm giá
+   - Khuyến mãi theo đơn hàng
+   - Banner quảng cáo
+
+7. MODULE BÁO CÁO & THỐNG KÊ:
+   - Doanh thu theo ngày/tháng/năm
+   - Sản phẩm bán chạy
+   - Báo cáo tồn kho
+   - Thống kê đơn hàng
+   - Khách hàng thân thiết
+
+8. MODULE HỖ TRỢ & LIÊN HỆ:
+   - Form liên hệ/góp ý
+   - FAQ (hardcoded)
+
+9. QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN:
+   - Admin/Employee/Customer
+   - Trang quản trị chỉ đăng nhập
+
+
+=====================================================
+KẾT THÚC PHÂN CÔNG
+=====================================================
