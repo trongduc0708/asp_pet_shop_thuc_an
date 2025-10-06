@@ -620,3 +620,12 @@ Thumbs.db
 web.config.local
 appsettings.local.json
 connectionstrings.config
+
+# Project specific ignores for Code folder
+Code/**/bin/
+Code/**/obj/
+Code/**/Properties/launchSettings.json
+Code/**/*.user
+Code/**/appsettings.Development.json
+Code/**/appsettings.Production.json
+Code/**/appsettings.Staging.json
