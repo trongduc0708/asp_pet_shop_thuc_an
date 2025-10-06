@@ -1,0 +1,189 @@
+@model IEnumerable<Pet_Shop.Models.Entities.Product>
+
+@{
+    ViewData["Title"] = "LINQ to Entities Demo";
+}
+
+<div class="container mt-4">
+    <h2>LINQ to Entities Demo - Pet Shop Products</h2>
+    
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            <strong>Error:</strong> @ViewBag.Error
+        </div>
+    }
+    else
+    {
+        <!-- Search Form -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form asp-action="Search" method="get" class="d-flex">
+                    <input type="text" name="searchTerm" class="form-control me-2" placeholder="Search products..." />
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Product Statistics by Category</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Product Count</th>
+                                <th>Average Price</th>
+                                <th>Min Price</th>
+                                <th>Max Price</th>
+                                <th>Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Statistics != null)
+                            {
+                                @foreach (var stat in ViewBag.Statistics as dynamic)
+                                {
+                                    <tr>
+                                        <td>@stat.CategoryName</td>
+                                        <td>@stat.ProductCount</td>
+                                        <td>@stat.AveragePrice.ToString("C")</td>
+                                        <td>@stat.MinPrice.ToString("C")</td>
+                                        <td>@stat.MaxPrice.ToString("C")</td>
+                                        <td>@stat.TotalValue.ToString("C")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories and Brands -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>Categories</h5>
+                <ul class="list-group">
+                    @if (ViewBag.Categories != null)
+                    {
+                        @foreach (var category in ViewBag.Categories as IEnumerable<Pet_Shop.Models.Entities.Category>)
+                        {
+                            <li class="list-group-item">@category.CategoryName - @category.Description</li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h5>Brands</h5>
+                <ul class="list-group">
+                    @if (ViewBag.Brands != null)
+                    {
+                        @foreach (var brand in ViewBag.Brands as IEnumerable<Pet_Shop.Models.Entities.Brand>)
+                        {
+                            <li class="list-group-item">@brand.BrandName - @brand.Description</li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Featured Products -->
+        @if (ViewBag.FeaturedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.FeaturedProducts).Any())
+        {
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4>Featured Products</h4>
+                    <div class="row">
+                        @foreach (var product in ViewBag.FeaturedProducts as IEnumerable<Pet_Shop.Models.Entities.Product>)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@product.ProductName</h6>
+                                        <p class="card-text">@product.Category.CategoryName - @product.Brand.BrandName</p>
+                                        <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- New Products -->
+        @if (ViewBag.NewProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.NewProducts).Any())
+        {
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4>New Products</h4>
+                    <div class="row">
+                        @foreach (var product in ViewBag.NewProducts as IEnumerable<Pet_Shop.Models.Entities.Product>)
+                        {
+                            <div class="col-md-3 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@product.ProductName</h6>
+                                        <p class="card-text">@product.Category.CategoryName - @product.Brand.BrandName</p>
+                                        <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- All Products -->
+        <div class="row">
+            <div class="col-12">
+                <h4>All Products</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Brand</th>
+                                <th>Type</th>
+                                <th>Pet Type</th>
+                                <th>Price</th>
+                                <th>Sale Price</th>
+                                <th>Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Products != null)
+                            {
+                                @foreach (var product in ViewBag.Products as IEnumerable<Pet_Shop.Models.Entities.Product>)
+                                {
+                                    <tr>
+                                        <td>@product.ProductID</td>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.Category.CategoryName</td>
+                                        <td>@product.Brand.BrandName</td>
+                                        <td>@product.ProductType</td>
+                                        <td>@product.PetType</td>
+                                        <td>@product.Price.ToString("C")</td>
+                                        <td>@(product.SalePrice?.ToString("C") ?? "N/A")</td>
+                                        <td>@(product.IsActive ? "Yes" : "No")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Back to Home</a>
+        <a href="@Url.Action("TestConnection", "Database")" class="btn btn-info">Test Database Connection</a>
+    </div>
+</div>

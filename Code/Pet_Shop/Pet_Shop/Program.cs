@@ -1,7 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using Pet_Shop.Data;
+using Pet_Shop.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add Entity Framework
+builder.Services.AddDbContext<PetShopDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
+
+// Add Services
+builder.Services.AddScoped<DatabaseService>();
+builder.Services.AddScoped<ProductService>();
 
 var app = builder.Build();
 

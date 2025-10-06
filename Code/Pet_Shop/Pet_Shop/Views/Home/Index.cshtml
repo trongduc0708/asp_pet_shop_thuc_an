@@ -1,8 +1,53 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Pet Shop - Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-4">Welcome to Pet Shop</h1>
+        <p class="lead">Your one-stop shop for pet food and accessories</p>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Database Setup</h5>
+                    <p class="card-text">Test database connection and setup initial data</p>
+                    <a href="@Url.Action("TestConnection", "Database")" class="btn btn-primary">Test Database</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">LINQ to Entities Demo</h5>
+                    <p class="card-text">Explore products using LINQ to Entities queries</p>
+                    <a href="@Url.Action("Products", "Demo")" class="btn btn-success">View Products</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Project Information</h5>
+                    <p class="card-text">
+                        This is a Pet Shop website built with ASP.NET Core MVC and Entity Framework Core.
+                        The project demonstrates:
+                    </p>
+                    <ul>
+                        <li>Entity Framework Core with SQL Server</li>
+                        <li>LINQ to Entities for data queries</li>
+                        <li>Code-First approach with Entity Models</li>
+                        <li>Repository pattern with Services</li>
+                        <li>Dependency Injection</li>
+                        <li>AutoMapper for object mapping</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
