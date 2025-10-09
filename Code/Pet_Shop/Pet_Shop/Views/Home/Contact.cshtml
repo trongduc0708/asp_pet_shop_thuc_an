@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "Liên hệ";
+}
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">Liên hệ với chúng tôi</h2>
+                <p class="lead text-muted">Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-5">
+                        <h4 class="mb-4">Gửi tin nhắn cho chúng tôi</h4>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fullName" class="form-label">Họ và tên *</label>
+                                    <input type="text" class="form-control" id="fullName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Số điện thoại</label>
+                                    <input type="tel" class="form-control" id="phone">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="subject" class="form-label">Chủ đề *</label>
+                                    <input type="text" class="form-control" id="subject" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Tin nhắn *</label>
+                                <textarea class="form-control" id="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Gửi tin nhắn
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-warning">
+                            <i class="fas fa-map-marker-alt me-2"></i>Địa chỉ
+                        </h5>
+                        <p class="card-text">
+                            <br>
+                            Thành phố Hồ Chí Minh, Việt Nam
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-warning">
+                            <i class="fas fa-phone me-2"></i>Điện thoại
+                        </h5>
+                        <p class="card-text">
+                            <a href="tel:+98034984089" class="text-decoration-none">+980-34984089</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-warning">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </h5>
+                        <p class="card-text">
+                            <a href="mailto:HyHy@Gmail.Com" class="text-decoration-none">HyHy@Gmail.Com</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-warning">
+                            <i class="fas fa-clock me-2"></i>Giờ làm việc
+                        </h5>
+                        <p class="card-text">
+                            Thứ 2 - Thứ 6: 8:00 - 18:00<br>
+                            Thứ 7: 8:00 - 12:00<br>
+                            Chủ nhật: Nghỉ
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

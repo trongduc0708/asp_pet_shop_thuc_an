@@ -1,53 +1,158 @@
 ﻿@{
-    ViewData["Title"] = "Pet Shop - Home";
+    ViewData["Title"] = "Home";
 }
 
-<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4">Welcome to Pet Shop</h1>
-        <p class="lead">Your one-stop shop for pet food and accessories</p>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-text fade-in-up">
+                        <div class="discount-badge">SAVE 10 - 20 % OFF</div>
+                        <h1>
+                            Best Destination<br>
+                            For <span class="highlight">Your Pets</span>
+                        </h1>
+                        <p class="lead">
+                            Chuyên cung cấp thức ăn và phụ kiện chất lượng cao cho thú cưng của bạn. 
+                            Với hơn 10,000 sản phẩm từ các thương hiệu uy tín.
+                        </p>
+                        <a href="#" class="shop-btn">
+                            SHOP NOW <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image fade-in-up">
+                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                             alt="Happy Dog with Toy" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Database Setup</h5>
-                    <p class="card-text">Test database connection and setup initial data</p>
-                    <a href="@Url.Action("TestConnection", "Database")" class="btn btn-primary">Test Database</a>
-                </div>
+<!-- Featured Products Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">Sản phẩm nổi bật</h2>
+                <p class="lead text-muted">Những sản phẩm được yêu thích nhất</p>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">LINQ to Entities Demo</h5>
-                    <p class="card-text">Explore products using LINQ to Entities queries</p>
-                    <a href="@Url.Action("Products", "Demo")" class="btn btn-success">View Products</a>
+        <div class="row">
+            <!-- Product 1 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                         class="card-img-top" alt="Dog Food">
+                    <div class="card-body">
+                        <h5 class="card-title">Thức ăn chó Royal Canin</h5>
+                        <p class="card-text">Thức ăn cao cấp cho chó trưởng thành</p>
+                        <div class="price">299,000 VNĐ</div>
+                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                         class="card-img-top" alt="Cat Food">
+                    <div class="card-body">
+                        <h5 class="card-title">Thức ăn mèo Whiskas</h5>
+                        <p class="card-text">Thức ăn ướt cho mèo</p>
+                        <div class="price">45,000 VNĐ</div>
+                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                         class="card-img-top" alt="Dog Toy">
+                    <div class="card-body">
+                        <h5 class="card-title">Đồ chơi cho chó</h5>
+                        <p class="card-text">Bóng cao su bền bỉ</p>
+                        <div class="price">89,000 VNĐ</div>
+                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                         class="card-img-top" alt="Cat Accessory">
+                    <div class="card-body">
+                        <h5 class="card-title">Khay cát cho mèo</h5>
+                        <p class="card-text">Khay cát cao cấp có nắp</p>
+                        <div class="price">199,000 VNĐ</div>
+                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</section>
 
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Project Information</h5>
-                    <p class="card-text">
-                        This is a Pet Shop website built with ASP.NET Core MVC and Entity Framework Core.
-                        The project demonstrates:
-                    </p>
-                    <ul>
-                        <li>Entity Framework Core with SQL Server</li>
-                        <li>LINQ to Entities for data queries</li>
-                        <li>Code-First approach with Entity Models</li>
-                        <li>Repository pattern with Services</li>
-                        <li>Dependency Injection</li>
-                        <li>AutoMapper for object mapping</li>
-                    </ul>
+<!-- Categories Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">Danh mục sản phẩm</h2>
+                <p class="lead text-muted">Tìm kiếm theo loại thú cưng</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card text-center border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <i class="fas fa-dog fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Thức ăn chó</h5>
+                        <p class="card-text">Thức ăn khô và ướt cho chó</p>
+                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card text-center border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <i class="fas fa-cat fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Thức ăn mèo</h5>
+                        <p class="card-text">Thức ăn khô và ướt cho mèo</p>
+                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card text-center border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <i class="fas fa-bone fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Phụ kiện chó</h5>
+                        <p class="card-text">Dây dắt, đồ chơi, chuồng</p>
+                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card text-center border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <i class="fas fa-paw fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Phụ kiện mèo</h5>
+                        <p class="card-text">Khay cát, vòng cổ, đồ chơi</p>
+                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>

@@ -1,138 +1,182 @@
-# Pet Shop Website - ASP.NET Core MVC
+# HyHy Pet Shop - Website Bán Phụ Kiện Thú Cưng
 
-## Tổng quan
-Website bán phụ kiện và thức ăn cho chó mèo được xây dựng bằng ASP.NET Core MVC với Entity Framework Core và LINQ to Entities.
+## 🐕 Tổng quan
+Website bán phụ kiện và thức ăn cho chó mèo được xây dựng bằng ASP.NET Core MVC với giao diện hiện đại và thân thiện.
 
-## Công nghệ sử dụng
-- **ASP.NET Core 7.0** - Web framework
-- **Entity Framework Core 7.0** - ORM
-- **SQL Server** - Database
-- **LINQ to Entities** - Data querying
-- **AutoMapper** - Object mapping
-- **Bootstrap 5** - UI framework
+## ✨ Tính năng đã hoàn thành
 
-## Cấu trúc dự án
+### 🎨 Giao diện người dùng
+- **Header hiện đại** với logo, thanh tìm kiếm và thông tin liên hệ
+- **Navigation bar** với menu đầy đủ và dropdown categories
+- **Hero section** với thiết kế bắt mắt theo yêu cầu
+- **Product cards** với hiệu ứng hover và animation
+- **Responsive design** tối ưu cho mobile và desktop
 
-### Models/Entities
-- `UserRole`, `User`, `CustomerProfile` - Quản lý người dùng
-- `Category`, `Brand`, `Product`, `ProductImage` - Quản lý sản phẩm
-- `Inventory`, `InventoryTransaction` - Quản lý kho
-- `Address`, `Cart` - Địa chỉ và giỏ hàng
-- `Promotion`, `ProductPromotion` - Khuyến mãi
-- `OrderStatus`, `PaymentMethod`, `Order`, `OrderItem`, `OrderStatusHistory` - Quản lý đơn hàng
-- `Banner`, `ContactMessage` - Banner và liên hệ
+### 🔐 Hệ thống Authentication
+- **Đăng nhập** với email/password
+- **Đăng ký** tài khoản mới với validation
+- **Quên mật khẩu** và đặt lại mật khẩu
+- **Session management** với Cookie Authentication
+- **Phân quyền** Admin/Employee/Customer
 
-### Services
-- `DatabaseService` - Quản lý kết nối và seed data
-- `ProductService` - Demo LINQ to Entities queries
+### 🛍️ Chức năng Shop
+- **Trang chủ** với hero section và sản phẩm nổi bật
+- **Danh mục sản phẩm** theo loại thú cưng
+- **Tìm kiếm sản phẩm** với thanh search
+- **Giỏ hàng** (UI ready, chưa implement logic)
+- **Liên hệ** với form gửi tin nhắn
 
-### Controllers
-- `HomeController` - Trang chủ
-- `DatabaseController` - Test kết nối database
-- `DemoController` - Demo LINQ to Entities
+## 🚀 Cài đặt và chạy
 
-## Cài đặt và chạy
+### 1. Yêu cầu hệ thống
+- .NET 7.0 SDK
+- SQL Server (LocalDB hoặc SQL Server)
+- Visual Studio 2022 hoặc VS Code
 
-### 1. Cài đặt packages
+### 2. Cài đặt packages
 ```bash
 dotnet restore
 ```
 
-### 2. Cấu hình database
-- Cập nhật connection string trong `appsettings.json`
-- Đảm bảo SQL Server đang chạy
+### 3. Cấu hình database
+Cập nhật connection string trong `appsettings.json`:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=PetShopDB_10_2025;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=true"
+  }
+}
+```
 
-### 3. Chạy ứng dụng
+### 4. Chạy ứng dụng
 ```bash
 dotnet run
 ```
 
-### 4. Test database
-- Truy cập `/Database/TestConnection` để test kết nối
-- Database sẽ được tạo tự động với dữ liệu mẫu
+### 5. Truy cập website
+- Mở trình duyệt và truy cập: `https://localhost:7000`
+- Test database: `/Database/TestConnection`
+- Demo products: `/Demo/Products`
 
-### 5. Demo LINQ to Entities
-- Truy cập `/Demo/Products` để xem demo
-- Sử dụng chức năng search để test queries
+## 📁 Cấu trúc dự án
 
-## LINQ to Entities Examples
-
-### Lấy tất cả sản phẩm
-```csharp
-var products = await _context.Products
-    .Include(p => p.Category)
-    .Include(p => p.Brand)
-    .Where(p => p.IsActive)
-    .OrderBy(p => p.ProductName)
-    .ToListAsync();
+```
+Pet_Shop/
+├── Controllers/
+│   ├── HomeController.cs          # Trang chủ, liên hệ
+│   ├── AccountController.cs       # Authentication
+│   ├── DatabaseController.cs     # Test database
+│   └── DemoController.cs         # Demo LINQ queries
+├── Models/
+│   ├── Auth/                      # Authentication models
+│   │   ├── LoginViewModel.cs
+│   │   ├── RegisterViewModel.cs
+│   │   └── ForgotPasswordViewModel.cs
+│   └── Entities/                  # Database entities
+├── Services/
+│   ├── AuthenticationService.cs   # Xử lý đăng nhập/đăng ký
+│   ├── DatabaseService.cs        # Quản lý database
+│   └── ProductService.cs         # Quản lý sản phẩm
+├── Views/
+│   ├── Home/                      # Trang chủ, liên hệ
+│   ├── Account/                   # Authentication views
+│   └── Shared/
+│       └── _Layout.cshtml        # Layout chính
+├── wwwroot/
+│   ├── css/site.css              # Custom styles
+│   └── js/site.js                # Custom JavaScript
+└── Data/
+    └── PetShopDbContext.cs       # Entity Framework context
 ```
 
-### Tìm kiếm sản phẩm
-```csharp
-var products = await _context.Products
-    .Include(p => p.Category)
-    .Include(p => p.Brand)
-    .Where(p => p.IsActive && 
-               p.ProductName.Contains(searchTerm))
-    .ToListAsync();
-```
+## 🎨 Giao diện
 
-### Thống kê theo danh mục
-```csharp
-var stats = await _context.Products
-    .Where(p => p.IsActive)
-    .GroupBy(p => p.Category.CategoryName)
-    .Select(g => new {
-        CategoryName = g.Key,
-        ProductCount = g.Count(),
-        AveragePrice = g.Average(p => p.Price)
-    })
-    .ToListAsync();
-```
+### Header Design
+- Logo "WAGGY Pet Shop" với icon chó
+- Thanh tìm kiếm ở giữa
+- Thông tin liên hệ bên phải
+- Navigation menu với dropdown categories
 
-## Database Schema
-Database được thiết kế với các bảng chính:
-- **User Management**: UserRoles, Users, CustomerProfiles
-- **Product Management**: Categories, Brands, Products, ProductImages
-- **Inventory**: Inventory, InventoryTransactions
-- **Orders**: Orders, OrderItems, OrderStatuses, PaymentMethods
-- **Promotions**: Promotions, ProductPromotions
-- **Support**: Banners, ContactMessages
+### Hero Section
+- Background gradient đẹp mắt
+- Text "Best Destination For Your Pets"
+- Badge "SAVE 10-20% OFF"
+- Button "SHOP NOW" với icon
+- Hình ảnh chó với đồ chơi
 
-## Tính năng đã implement
-- ✅ Entity Framework Core setup
-- ✅ LINQ to Entities queries
-- ✅ Database connection testing
-- ✅ Data seeding
-- ✅ Product management demo
-- ✅ Search functionality
-- ✅ Statistics and reporting
+### Product Cards
+- Hover effects với transform
+- Giá tiền nổi bật
+- Button "Thêm vào giỏ"
+- Responsive grid layout
 
-## Tính năng sắp tới
-- 🔄 User authentication & authorization
-- 🔄 Shopping cart functionality
-- 🔄 Order management
-- 🔄 Admin dashboard
-- 🔄 Image upload
-- 🔄 Payment integration
+## 🔧 Tính năng kỹ thuật
 
-## Hướng dẫn phát triển
+### Authentication
+- Cookie-based authentication
+- Password hashing với SHA256
+- Session management
+- Role-based authorization
 
-### Thêm Entity mới
-1. Tạo class trong `Models/Entities/`
-2. Thêm DbSet vào `PetShopDbContext`
-3. Cấu hình relationships trong `OnModelCreating`
+### Database
+- Entity Framework Core 7.0
+- Code-first approach
+- LINQ to Entities queries
+- AutoMapper integration
 
-### Thêm Service mới
-1. Tạo class trong `Services/`
-2. Đăng ký trong `Program.cs`
-3. Inject vào Controller
+### Frontend
+- Bootstrap 5
+- Font Awesome icons
+- Custom CSS animations
+- Responsive design
+- JavaScript interactions
 
-### Thêm LINQ queries
-- Sử dụng `Include()` để load related data
-- Sử dụng `Where()` để filter
-- Sử dụng `OrderBy()` để sort
-- Sử dụng `GroupBy()` cho aggregation
+## 📱 Responsive Design
 
-## Liên hệ
+Website được tối ưu cho:
+- **Desktop** (1200px+)
+- **Tablet** (768px - 1199px)
+- **Mobile** (< 768px)
+
+## 🎯 Tính năng sắp tới
+
+- [ ] Shopping cart functionality
+- [ ] Order management system
+- [ ] Payment integration (VNPay)
+- [ ] Admin dashboard
+- [ ] Product management
+- [ ] Inventory management
+- [ ] Email notifications
+- [ ] Image upload
+- [ ] Product reviews
+- [ ] Wishlist functionality
+
+## 🐛 Debug và Test
+
+### Test Database Connection
+Truy cập `/Database/TestConnection` để:
+- Kiểm tra kết nối database
+- Tạo database tự động
+- Seed dữ liệu mẫu
+
+### Demo LINQ Queries
+Truy cập `/Demo/Products` để:
+- Xem demo LINQ to Entities
+- Test search functionality
+- Xem thống kê sản phẩm
+
+## 📞 Hỗ trợ
+
+Nếu gặp vấn đề, vui lòng:
+1. Kiểm tra connection string
+2. Đảm bảo SQL Server đang chạy
+3. Chạy `dotnet restore` để cài đặt packages
+4. Kiểm tra logs trong console
+
+## 📄 License
+
 Dự án được phát triển cho mục đích học tập và demo.
+
+---
+
+**HyHy Pet Shop** - Nơi tốt nhất cho thú cưng của bạn! 🐕🐱
