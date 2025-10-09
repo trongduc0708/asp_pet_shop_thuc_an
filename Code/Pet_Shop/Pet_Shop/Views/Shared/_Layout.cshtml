@@ -87,8 +87,8 @@
                             <i class="fas fa-user"></i> @User.FindFirst("FullName")?.Value
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Orders</a></li>
+                            <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Profile</a></li>
+                            <li><a class="dropdown-item" asp-controller="Profile" asp-action="Orders">Orders</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">

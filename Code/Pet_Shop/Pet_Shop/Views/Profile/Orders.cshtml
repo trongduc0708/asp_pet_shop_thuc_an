@@ -1,0 +1,192 @@
+@model IEnumerable<Pet_Shop.Models.Entities.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Profile Sidebar -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mb-3">
+                        <i class="fas fa-user-circle fa-5x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">@User.FindFirst("FullName")?.Value</h5>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="card mt-3">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="@Url.Action("Index", "Profile")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                        </a>
+                        <a href="@Url.Action("Edit", "Profile")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin
+                        </a>
+                        <a href="@Url.Action("ChangePassword", "Profile")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                        </a>
+                        <a href="@Url.Action("Orders")" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["ErrorMessage"]
+                        </div>
+                    }
+
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn hàng</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Trạng thái</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>#@order.OrderNumber</strong>
+                                            </td>
+                                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <span class="badge 
+                                                    @(order.Status.StatusName switch {
+                                                        "New" => "bg-primary",
+                                                        "Processing" => "bg-warning",
+                                                        "Shipping" => "bg-info",
+                                                        "Delivered" => "bg-success",
+                                                        "Cancelled" => "bg-danger",
+                                                        _ => "bg-secondary"
+                                                    })">
+                                                    @order.Status.StatusName
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <strong>@order.TotalAmount.ToString("N0") VNĐ</strong>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("OrderDetails", new { id = order.OrderID })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        @if (ViewBag.TotalPages > 1)
+                        {
+                            <nav aria-label="Orders pagination">
+                                <ul class="pagination justify-content-center">
+                                    @if (ViewBag.CurrentPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("Orders", new { page = ViewBag.CurrentPage - 1 })">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    }
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Orders", new { page = i })">@i</a>
+                                        </li>
+                                    }
+
+                                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("Orders", new { page = ViewBag.CurrentPage + 1 })">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
+
+                        <div class="text-center mt-3">
+                            <p class="text-muted">
+                                Hiển thị @Model.Count() trong tổng số @ViewBag.TotalOrders đơn hàng
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                            <h5>Chưa có đơn hàng nào</h5>
+                            <p class="text-muted">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart me-2"></i>Mua sắm ngay
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-avatar {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37, #f4d03f);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.list-group-item-action:hover {
+    background-color: #f8f9fa;
+    color: #d4af37;
+}
+
+.list-group-item.active {
+    background-color: #d4af37;
+    border-color: #d4af37;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+}
+</style>

@@ -1,0 +1,196 @@
+@model Pet_Shop.Models.Profile.ProfileViewModel
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Profile Sidebar -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mb-3">
+                        <i class="fas fa-user-circle fa-5x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">@Model.FullName</h5>
+                    <p class="text-muted">@Model.RoleName</p>
+                    <div class="membership-badge mb-3">
+                        <span class="badge bg-warning text-dark fs-6">@Model.MembershipLevel</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="card mt-3">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="@Url.Action("Index")" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                        </a>
+                        <a href="@Url.Action("Edit")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin
+                        </a>
+                        <a href="@Url.Action("ChangePassword")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                        </a>
+                        <a href="@Url.Action("Orders")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <!-- Profile Content -->
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Tên đăng nhập:</label>
+                                <p class="form-control-plaintext">@Model.Username</p>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Email:</label>
+                                <p class="form-control-plaintext">@Model.Email</p>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Họ và tên:</label>
+                                <p class="form-control-plaintext">@Model.FullName</p>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Số điện thoại:</label>
+                                <p class="form-control-plaintext">@(Model.Phone ?? "Chưa cập nhật")</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Địa chỉ:</label>
+                                <p class="form-control-plaintext">@(Model.Address ?? "Chưa cập nhật")</p>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Ngày sinh:</label>
+                                <p class="form-control-plaintext">@(Model.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Giới tính:</label>
+                                <p class="form-control-plaintext">@(Model.Gender ?? "Chưa cập nhật")</p>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="form-label fw-bold">Ngày tạo tài khoản:</label>
+                                <p class="form-control-plaintext">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Thống kê mua hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-warning">@Model.TotalOrders</h3>
+                                <p class="text-muted">Tổng đơn hàng</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-success">@Model.TotalSpent.ToString("N0") VNĐ</h3>
+                                <p class="text-muted">Tổng chi tiêu</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-info">@Model.Points</h3>
+                                <p class="text-muted">Điểm tích lũy</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-primary">@Model.MembershipLevel</h3>
+                                <p class="text-muted">Hạng thành viên</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Membership Benefits -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-gift me-2"></i>Quyền lợi thành viên
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Miễn phí vận chuyển</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Ưu đãi đặc biệt</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Tích điểm mua hàng</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Hỗ trợ 24/7</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-avatar {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37, #f4d03f);
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.membership-badge .badge {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+}
+
+.info-item {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.stat-item h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.list-group-item-action:hover {
+    background-color: #f8f9fa;
+    color: #d4af37;
+}
+
+.list-group-item.active {
+    background-color: #d4af37;
+    border-color: #d4af37;
+}
+</style>
