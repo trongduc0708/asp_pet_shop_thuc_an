@@ -1,4 +1,5 @@
 1. Module Quản lý Sản phẩm (Phụ kiện & Thức ăn)
+
 Thêm / sửa / xóa sản phẩm.
 Thông tin sản phẩm: tên, loại (phụ kiện, thức ăn), thương hiệu, trọng lượng, hạn sử dụng, mô tả, hình ảnh.
 Quản lý tồn kho (số lượng còn lại).

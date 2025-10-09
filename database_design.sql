@@ -3,6 +3,7 @@
 -- Website bán phụ kiện và thức ăn cho chó mèo
 -- =====================================================
 
+
 -- Tạo database
 CREATE DATABASE PetShopDB_10_2025;
 USE PetShopDB_10_2025;
