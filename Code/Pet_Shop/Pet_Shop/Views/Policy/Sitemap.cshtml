@@ -1,0 +1,213 @@
+@{
+    ViewData["Title"] = "Sơ đồ trang web";
+}
+
+<!-- Hero Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold text-dark mb-4">Sơ đồ trang web</h1>
+                <p class="lead text-muted">Tìm hiểu cấu trúc và các trang của website</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sitemap Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-5">
+                        <!-- Trang chủ -->
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-warning mb-3">
+                                <i class="fas fa-home me-2"></i>Trang chủ
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="@Url.Action("Index", "Home")" class="text-decoration-none">Trang chủ</a></li>
+                                        <li><a href="@Url.Action("Privacy", "Home")" class="text-decoration-none">Chính sách riêng tư</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sản phẩm -->
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-primary mb-3">
+                                <i class="fas fa-box me-2"></i>Sản phẩm
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#" class="text-decoration-none">Tất cả sản phẩm</a></li>
+                                        <li><a href="#" class="text-decoration-none">Thức ăn chó</a></li>
+                                        <li><a href="#" class="text-decoration-none">Thức ăn mèo</a></li>
+                                        <li><a href="#" class="text-decoration-none">Phụ kiện chó</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#" class="text-decoration-none">Phụ kiện mèo</a></li>
+                                        <li><a href="#" class="text-decoration-none">Đồ chơi</a></li>
+                                        <li><a href="#" class="text-decoration-none">Sản phẩm mới</a></li>
+                                        <li><a href="#" class="text-decoration-none">Sản phẩm khuyến mãi</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tài khoản -->
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-success mb-3">
+                                <i class="fas fa-user me-2"></i>Tài khoản
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="@Url.Action("Login", "Account")" class="text-decoration-none">Đăng nhập</a></li>
+                                        <li><a href="@Url.Action("Register", "Account")" class="text-decoration-none">Đăng ký</a></li>
+                                        <li><a href="@Url.Action("ForgotPassword", "Account")" class="text-decoration-none">Quên mật khẩu</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="@Url.Action("Index", "Profile")" class="text-decoration-none">Thông tin cá nhân</a></li>
+                                        <li><a href="#" class="text-decoration-none">Đơn hàng của tôi</a></li>
+                                        <li><a href="#" class="text-decoration-none">Địa chỉ giao hàng</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Giỏ hàng & Thanh toán -->
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-info mb-3">
+                                <i class="fas fa-shopping-cart me-2"></i>Mua sắm
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#" class="text-decoration-none">Giỏ hàng</a></li>
+                                        <li><a href="#" class="text-decoration-none">Thanh toán</a></li>
+                                        <li><a href="#" class="text-decoration-none">Đơn hàng</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#" class="text-decoration-none">Lịch sử mua hàng</a></li>
+                                        <li><a href="#" class="text-decoration-none">Theo dõi đơn hàng</a></li>
+                                        <li><a href="#" class="text-decoration-none">Yêu thích</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chính sách -->
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-warning mb-3">
+                                <i class="fas fa-file-contract me-2"></i>Chính sách
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="@Url.Action("About")" class="text-decoration-none">Về chúng tôi</a></li>
+                                        <li><a href="@Url.Action("Contact")" class="text-decoration-none">Liên hệ</a></li>
+                                        <li><a href="@Url.Action("Privacy")" class="text-decoration-none">Chính sách bảo mật</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="@Url.Action("Terms")" class="text-decoration-none">Điều khoản sử dụng</a></li>
+                                        <li><a href="@Url.Action("Shipping")" class="text-decoration-none">Chính sách vận chuyển</a></li>
+                                        <li><a href="@Url.Action("Returns")" class="text-decoration-none">Chính sách đổi trả</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hỗ trợ -->
+                        <div class="mb-5">
+                            <h2 class="fw-bold text-danger mb-3">
+                                <i class="fas fa-headset me-2"></i>Hỗ trợ
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="@Url.Action("FAQ")" class="text-decoration-none">Câu hỏi thường gặp</a></li>
+                                        <li><a href="#" class="text-decoration-none">Hướng dẫn mua hàng</a></li>
+                                        <li><a href="#" class="text-decoration-none">Hướng dẫn thanh toán</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#" class="text-decoration-none">Hướng dẫn đổi trả</a></li>
+                                        <li><a href="#" class="text-decoration-none">Bảo hành sản phẩm</a></li>
+                                        <li><a href="#" class="text-decoration-none">Tư vấn sản phẩm</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin (chỉ hiển thị nếu là admin) -->
+                        @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                        {
+                            <div class="mb-5">
+                                <h2 class="fw-bold text-dark mb-3">
+                                    <i class="fas fa-cog me-2"></i>Quản trị
+                                </h2>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><a href="@Url.Action("Dashboard", "Admin")" class="text-decoration-none">Dashboard</a></li>
+                                            <li><a href="@Url.Action("Categories", "Admin")" class="text-decoration-none">Quản lý danh mục</a></li>
+                                            <li><a href="@Url.Action("Banners", "Admin")" class="text-decoration-none">Quản lý banner</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            <li><a href="#" class="text-decoration-none">Quản lý sản phẩm</a></li>
+                                            <li><a href="#" class="text-decoration-none">Quản lý đơn hàng</a></li>
+                                            <li><a href="#" class="text-decoration-none">Quản lý khách hàng</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Contact Info -->
+                        <div class="bg-light p-4 rounded">
+                            <h4 class="fw-bold mb-3">Thông tin liên hệ</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <i class="fas fa-phone text-warning me-2"></i>
+                                        <strong>Hotline:</strong> +84 123 456 789
+                                    </p>
+                                    <p class="mb-2">
+                                        <i class="fas fa-envelope text-warning me-2"></i>
+                                        <strong>Email:</strong> info@hyhy.com
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <i class="fas fa-map-marker-alt text-warning me-2"></i>
+                                        <strong>Địa chỉ:</strong> 123 Đường ABC, Quận 1, TP. Hồ Chí Minh
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-clock text-warning me-2"></i>
+                                        <strong>Giờ làm việc:</strong> 8:00 - 18:00 (Thứ 2 - Thứ 6)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

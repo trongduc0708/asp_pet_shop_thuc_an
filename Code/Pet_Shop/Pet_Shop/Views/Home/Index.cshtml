@@ -5,32 +5,97 @@
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container">
-        <div class="hero-content">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="hero-text fade-in-up">
-                        <div class="discount-badge">SAVE 10 - 20 % OFF</div>
-                        <h1>
-                            Best Destination<br>
-                            For <span class="highlight">Your Pets</span>
-                        </h1>
-                        <p class="lead">
-                            Chuyên cung cấp thức ăn và phụ kiện chất lượng cao cho thú cưng của bạn. 
-                            Với hơn 10,000 sản phẩm từ các thương hiệu uy tín.
-                        </p>
-                        <a href="#" class="shop-btn">
-                            SHOP NOW <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
+        @if (ViewBag.Banners != null && ((IEnumerable<Pet_Shop.Models.Entities.Banner>)ViewBag.Banners).Any())
+        {
+            <!-- Banner Carousel -->
+            <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    @{
+                        var banners = (IEnumerable<Pet_Shop.Models.Entities.Banner>)ViewBag.Banners;
+                        var bannerList = banners.ToList();
+                    }
+                    @for (int i = 0; i < bannerList.Count; i++)
+                    {
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="@i" 
+                                class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" 
+                                aria-label="Slide @(i + 1)"></button>
+                    }
                 </div>
-                <div class="col-lg-6">
-                    <div class="hero-image fade-in-up">
-                        <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-                             alt="Happy Dog with Toy" class="img-fluid">
+                <div class="carousel-inner">
+                    @for (int i = 0; i < bannerList.Count; i++)
+                    {
+                        var banner = bannerList[i];
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            <div class="hero-content">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <div class="hero-text fade-in-up">
+                                            <div class="discount-badge">SAVE 10 - 20 % OFF</div>
+                                            <h1>
+                                                @Html.Raw(banner.BannerName.Replace("\n", "<br>"))
+                                            </h1>
+                                            <p class="lead">
+                                                Chuyên cung cấp thức ăn và phụ kiện chất lượng cao cho thú cưng của bạn. 
+                                                Với hơn 10,000 sản phẩm từ các thương hiệu uy tín.
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(banner.LinkURL))
+                                            {
+                                                <a href="@banner.LinkURL" class="shop-btn">
+                                                    SHOP NOW <i class="fas fa-arrow-right ms-2"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="hero-image fade-in-up">
+                                            <img src="@banner.ImageURL" alt="@banner.BannerName" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        }
+        else
+        {
+            <!-- Fallback Hero Section -->
+            <div class="hero-content">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="hero-text fade-in-up">
+                            <div class="discount-badge">SAVE 10 - 20 % OFF</div>
+                            <h1>
+                                Best Destination<br>
+                                For <span class="highlight">Your Pets</span>
+                            </h1>
+                            <p class="lead">
+                                Chuyên cung cấp thức ăn và phụ kiện chất lượng cao cho thú cưng của bạn. 
+                                Với hơn 10,000 sản phẩm từ các thương hiệu uy tín.
+                            </p>
+                            <a href="#" class="shop-btn">
+                                SHOP NOW <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="hero-image fade-in-up">
+                            <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                                 alt="Happy Dog with Toy" class="img-fluid">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
 </section>
 
@@ -113,46 +178,75 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card text-center border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <i class="fas fa-dog fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">Thức ăn chó</h5>
-                        <p class="card-text">Thức ăn khô và ướt cho chó</p>
-                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+            @if (ViewBag.Categories != null)
+            {
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                @{
+                                    var iconClass = category.CategoryName.ToLower() switch
+                                    {
+                                        var name when name.Contains("chó") => "fas fa-dog",
+                                        var name when name.Contains("mèo") => "fas fa-cat",
+                                        var name when name.Contains("phụ kiện") => "fas fa-bone",
+                                        _ => "fas fa-paw"
+                                    };
+                                }
+                                <i class="@iconClass fa-3x text-warning mb-3"></i>
+                                <h5 class="card-title">@category.CategoryName</h5>
+                                <p class="card-text">@(category.Description ?? "Sản phẩm chất lượng cao")</p>
+                                <a href="@Url.Action("Products", "Shop", new { categoryId = category.CategoryID })" class="btn btn-outline-warning">Xem sản phẩm</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Fallback categories if database is not available -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <i class="fas fa-dog fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Thức ăn chó</h5>
+                            <p class="card-text">Thức ăn khô và ướt cho chó</p>
+                            <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card text-center border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <i class="fas fa-cat fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">Thức ăn mèo</h5>
-                        <p class="card-text">Thức ăn khô và ướt cho mèo</p>
-                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <i class="fas fa-cat fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Thức ăn mèo</h5>
+                            <p class="card-text">Thức ăn khô và ướt cho mèo</p>
+                            <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card text-center border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <i class="fas fa-bone fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">Phụ kiện chó</h5>
-                        <p class="card-text">Dây dắt, đồ chơi, chuồng</p>
-                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <i class="fas fa-bone fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Phụ kiện chó</h5>
+                            <p class="card-text">Dây dắt, đồ chơi, chuồng</p>
+                            <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card text-center border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <i class="fas fa-paw fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">Phụ kiện mèo</h5>
-                        <p class="card-text">Khay cát, vòng cổ, đồ chơi</p>
-                        <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <i class="fas fa-paw fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Phụ kiện mèo</h5>
+                            <p class="card-text">Khay cát, vòng cổ, đồ chơi</p>
+                            <a href="#" class="btn btn-outline-warning">Xem sản phẩm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </section>

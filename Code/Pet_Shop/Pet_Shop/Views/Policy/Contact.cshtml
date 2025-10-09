@@ -1,0 +1,183 @@
+@model Pet_Shop.Models.Entities.ContactMessage
+@{
+    ViewData["Title"] = "Liên hệ";
+}
+
+<!-- Hero Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold text-dark mb-4">Liên hệ với chúng tôi</h1>
+                <p class="lead text-muted">Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-8 mb-5">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="fas fa-envelope me-2"></i>Gửi tin nhắn cho chúng tôi
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-action="Contact" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="FullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Phone" class="form-label">Số điện thoại</label>
+                                    <input asp-for="Phone" class="form-control" placeholder="Nhập số điện thoại" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Subject" class="form-label">Chủ đề</label>
+                                    <select asp-for="Subject" class="form-select">
+                                        <option value="">-- Chọn chủ đề --</option>
+                                        <option value="Hỗ trợ sản phẩm">Hỗ trợ sản phẩm</option>
+                                        <option value="Đặt hàng">Đặt hàng</option>
+                                        <option value="Góp ý">Góp ý</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                    <span asp-validation-for="Subject" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Message" class="form-label">Nội dung tin nhắn <span class="text-danger">*</span></label>
+                                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Nhập nội dung tin nhắn..."></textarea>
+                                <span asp-validation-for="Message" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Gửi tin nhắn
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>Thông tin liên hệ
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-map-marker-alt text-warning me-2"></i>Địa chỉ
+                            </h6>
+                            <p class="mb-0">
+                                123 Đường ABC, Quận 1<br>
+                                TP. Hồ Chí Minh, Việt Nam
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-phone text-warning me-2"></i>Điện thoại
+                            </h6>
+                            <p class="mb-0">
+                                <a href="tel:+84123456789" class="text-decoration-none">+84 123 456 789</a>
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-envelope text-warning me-2"></i>Email
+                            </h6>
+                            <p class="mb-0">
+                                <a href="mailto:info@hyhy.com" class="text-decoration-none">info@hyhy.com</a>
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-clock text-warning me-2"></i>Giờ làm việc
+                            </h6>
+                            <p class="mb-0">
+                                Thứ 2 - Thứ 6: 8:00 - 18:00<br>
+                                Thứ 7 - Chủ nhật: 9:00 - 17:00
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-share-alt me-2"></i>Theo dõi chúng tôi
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="row">
+                            <div class="col-4 mb-3">
+                                <a href="#" class="btn btn-outline-primary btn-lg">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <p class="small mt-2 mb-0">Facebook</p>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <a href="#" class="btn btn-outline-info btn-lg">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <p class="small mt-2 mb-0">Instagram</p>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <a href="#" class="btn btn-outline-success btn-lg">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                <p class="small mt-2 mb-0">WhatsApp</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center mb-4">Vị trí cửa hàng</h3>
+                <div class="ratio ratio-21x9">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.325123456789!2d106.629123456789!3d10.776123456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzM0LjAiTiAxMDbCsDM3JzQ0LjAiRQ!5e0!3m2!1svi!2s!4v1234567890123!5m2!1svi!2s" 
+                            style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

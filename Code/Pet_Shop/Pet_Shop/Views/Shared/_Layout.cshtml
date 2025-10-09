@@ -55,28 +55,36 @@
                         Shop by Category
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Thức ăn chó</a></li>
-                        <li><a class="dropdown-item" href="#">Thức ăn mèo</a></li>
-                        <li><a class="dropdown-item" href="#">Phụ kiện chó</a></li>
-                        <li><a class="dropdown-item" href="#">Phụ kiện mèo</a></li>
+                        @if (ViewBag.Categories != null)
+                        {
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                <li><a class="dropdown-item" href="@Url.Action("Products", "Shop", new { categoryId = category.CategoryID })">@category.CategoryName</a></li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>
 
             <div class="navbar-nav mx-auto">
                 <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                <a class="nav-link" href="#">Shop</a>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        Pages
+                        Chính sách
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">About Us</a></li>
-                        <li><a class="dropdown-item" href="#">Contact</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("About", "Policy")">Về chúng tôi</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Contact", "Policy")">Liên hệ</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("FAQ", "Policy")">Câu hỏi thường gặp</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Privacy", "Policy")">Chính sách bảo mật</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Terms", "Policy")">Điều khoản sử dụng</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Shipping", "Policy")">Chính sách vận chuyển</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Returns", "Policy")">Chính sách đổi trả</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Sitemap", "Policy")">Sơ đồ trang web</a></li>
                     </ul>
                 </div>
-                <a class="nav-link" href="#">Shop</a>
-                <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
-                <a class="nav-link" href="#">Others</a>
             </div>
 
             <div class="navbar-nav ms-auto">

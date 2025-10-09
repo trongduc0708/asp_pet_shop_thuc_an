@@ -1,0 +1,157 @@
+@model IEnumerable<Pet_Shop.Models.Entities.Banner>
+@{
+    ViewData["Title"] = "Quản lý Banner";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-image me-2"></i>Quản lý Banner
+            </h2>
+            <a href="@Url.Action("CreateBanner")" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Thêm banner mới
+            </a>
+        </div>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form asp-action="SearchBanners" method="get" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" name="searchTerm" class="form-control" placeholder="Tìm kiếm banner..." value="@ViewBag.SearchTerm">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search me-1"></i>Tìm kiếm
+                        </button>
+                        <a href="@Url.Action("Banners")" class="btn btn-outline-secondary">
+                            <i class="fas fa-refresh me-1"></i>Làm mới
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Mô tả</th>
+                                    <th>Loại</th>
+                                    <th>Thứ tự</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var banner in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@banner.ImageURL" alt="@banner.BannerName" 
+                                                 class="img-thumbnail" style="width: 60px; height: 40px; object-fit: cover;">
+                                        </td>
+                                        <td>
+                                            <strong>@banner.BannerName</strong>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(banner.AltText))
+                                            {
+                                                <span title="@banner.AltText">
+                                                    @(banner.AltText.Length > 50 ? banner.AltText.Substring(0, 50) + "..." : banner.AltText)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Chưa có mô tả</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@banner.Position</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@banner.SortOrder</span>
+                                        </td>
+                                        <td>
+                                            @if (banner.IsActive)
+                                            {
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Không hoạt động</span>
+                                            }
+                                        </td>
+                                        <td>@banner.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="@Url.Action("EditBanner", new { id = banner.BannerID })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="confirmDelete(@banner.BannerID, '@banner.BannerName')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                <h5>Chưa có banner nào</h5>
+                <p class="text-muted">Hãy thêm banner đầu tiên để bắt đầu quản lý.</p>
+                <a href="@Url.Action("CreateBanner")" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Thêm banner mới
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa banner <strong id="bannerName"></strong>?</p>
+                <p class="text-danger">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(bannerId, bannerName) {
+    document.getElementById('bannerName').textContent = bannerName;
+    document.getElementById('deleteForm').action = '@Url.Action("DeleteBanner")/' + bannerId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>

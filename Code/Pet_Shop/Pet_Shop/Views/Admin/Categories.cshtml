@@ -1,0 +1,159 @@
+@model IEnumerable<Pet_Shop.Models.Entities.Category>
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-list me-2"></i>Quản lý danh mục
+            </h2>
+            <a href="@Url.Action("CreateCategory")" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Thêm danh mục mới
+            </a>
+        </div>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form asp-action="SearchCategories" method="get" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" name="searchTerm" class="form-control" placeholder="Tìm kiếm danh mục..." value="@ViewBag.SearchTerm">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search me-1"></i>Tìm kiếm
+                        </button>
+                        <a href="@Url.Action("Categories")" class="btn btn-outline-secondary">
+                            <i class="fas fa-refresh me-1"></i>Làm mới
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tên danh mục</th>
+                                    <th>Danh mục cha</th>
+                                    <th>Mô tả</th>
+                                    <th>Thứ tự</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@category.CategoryName</strong>
+                                        </td>
+                                        <td>
+                                            @if (category.ParentCategory != null)
+                                            {
+                                                <span class="badge bg-info">@category.ParentCategory.CategoryName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Danh mục gốc</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(category.Description))
+                                            {
+                                                <span title="@category.Description">
+                                                    @(category.Description.Length > 50 ? category.Description.Substring(0, 50) + "..." : category.Description)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Chưa có mô tả</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@category.SortOrder</span>
+                                        </td>
+                                        <td>
+                                            @if (category.IsActive)
+                                            {
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Không hoạt động</span>
+                                            }
+                                        </td>
+                                        <td>@category.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="@Url.Action("EditCategory", new { id = category.CategoryID })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="confirmDelete(@category.CategoryID, '@category.CategoryName')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-list fa-4x text-muted mb-3"></i>
+                <h5>Chưa có danh mục nào</h5>
+                <p class="text-muted">Hãy thêm danh mục đầu tiên để bắt đầu quản lý.</p>
+                <a href="@Url.Action("CreateCategory")" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Thêm danh mục mới
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa danh mục <strong id="categoryName"></strong>?</p>
+                <p class="text-danger">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(categoryId, categoryName) {
+    document.getElementById('categoryName').textContent = categoryName;
+    document.getElementById('deleteForm').action = '@Url.Action("DeleteCategory")/' + categoryId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>

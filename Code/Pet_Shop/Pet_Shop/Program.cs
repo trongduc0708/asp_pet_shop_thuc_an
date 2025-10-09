@@ -21,6 +21,8 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<BannerService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
