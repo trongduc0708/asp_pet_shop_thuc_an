@@ -86,8 +86,26 @@ namespace Pet_Shop.Services
                 _context.CustomerProfiles.Add(customerProfile);
                 await _context.SaveChangesAsync();
 
-                // Send welcome email
-                await _emailService.SendWelcomeEmailAsync(email, fullName);
+                // Send welcome email (non-blocking)
+                try
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await _emailService.SendWelcomeEmailAsync(email, fullName);
+                            _logger.LogInformation($"Welcome email sent successfully to {email}");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Failed to send welcome email to {email}: {ex.Message}");
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error starting welcome email task for {email}: {ex.Message}");
+                }
 
                 return true;
             }

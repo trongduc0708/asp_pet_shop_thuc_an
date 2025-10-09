@@ -26,8 +26,16 @@ namespace Pet_Shop.Services
                 var fromEmail = _configuration["EmailSettings:FromEmail"];
                 var fromName = _configuration["EmailSettings:FromName"];
 
+                // Check if email settings are configured
+                if (string.IsNullOrEmpty(smtpUsername) || smtpUsername == "your-email@gmail.com")
+                {
+                    _logger.LogWarning("Email settings not configured, skipping email send");
+                    return true; // Return true to not block registration
+                }
+
                 using var client = new SmtpClient(smtpServer, smtpPort);
                 client.EnableSsl = true;
+                client.Timeout = 10000; // 10 seconds timeout
                 client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
 
                 using var message = new MailMessage();
@@ -37,9 +45,17 @@ namespace Pet_Shop.Services
                 message.Body = body;
                 message.IsBodyHtml = isHtml;
 
-                await client.SendMailAsync(message);
+                // Use timeout for send operation
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await client.SendMailAsync(message, cts.Token);
+                
                 _logger.LogInformation($"Email sent successfully to {toEmail}");
                 return true;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning($"Email send timeout for {toEmail}");
+                return false;
             }
             catch (Exception ex)
             {

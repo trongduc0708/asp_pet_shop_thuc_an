@@ -20,6 +20,5 @@ namespace Pet_Shop.Models.Entities
 
         // Navigation properties
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-        public virtual ICollection<OrderStatusHistory> OrderStatusHistories { get; set; } = new List<OrderStatusHistory>();
     }
 }

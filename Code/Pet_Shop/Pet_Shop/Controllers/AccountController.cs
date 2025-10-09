@@ -91,21 +91,30 @@ namespace Pet_Shop.Controllers
                 return View(model);
             }
 
-            var success = await _authService.RegisterAsync(
-                model.FullName, 
-                model.Username, 
-                model.Email, 
-                model.Phone, 
-                model.Password, 
-                model.Address);
-
-            if (success)
+            try
             {
-                TempData["SuccessMessage"] = "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.";
-                return RedirectToAction("Login");
+                var success = await _authService.RegisterAsync(
+                    model.FullName, 
+                    model.Username, 
+                    model.Email, 
+                    model.Phone, 
+                    model.Password, 
+                    model.Address);
+
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.";
+                    return RedirectToAction("Login");
+                }
+
+                ModelState.AddModelError(string.Empty, "Đăng ký thất bại. Email hoặc tên đăng nhập có thể đã tồn tại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Registration error: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại sau.");
             }
 
-            ModelState.AddModelError(string.Empty, "Đăng ký thất bại. Email hoặc tên đăng nhập có thể đã tồn tại.");
             return View(model);
         }
 

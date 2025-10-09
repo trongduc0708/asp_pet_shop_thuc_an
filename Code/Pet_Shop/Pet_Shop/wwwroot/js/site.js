@@ -59,8 +59,18 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             const submitButton = form.querySelector('button[type="submit"]');
             if (submitButton) {
+                const originalText = submitButton.innerHTML;
                 submitButton.innerHTML = '<span class="spinner"></span> Đang xử lý...';
                 submitButton.disabled = true;
+                
+                // Reset button after 30 seconds timeout
+                setTimeout(() => {
+                    if (submitButton.disabled) {
+                        submitButton.innerHTML = originalText;
+                        submitButton.disabled = false;
+                        showNotification('Yêu cầu đang được xử lý, vui lòng chờ...', 'info');
+                    }
+                }, 30000);
             }
         });
     });

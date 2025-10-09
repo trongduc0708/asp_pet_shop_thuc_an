@@ -248,6 +248,12 @@ namespace Pet_Shop.Data
                 entity.HasKey(e => e.StatusID);
                 entity.Property(e => e.StatusName).IsRequired().HasMaxLength(50);
                 entity.HasIndex(e => e.StatusName).IsUnique();
+                
+                // Configure relationship with Orders
+                entity.HasMany(d => d.Orders)
+                    .WithOne(p => p.Status)
+                    .HasForeignKey(d => d.StatusID)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configure PaymentMethod
@@ -325,12 +331,12 @@ namespace Pet_Shop.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.OldStatus)
-                    .WithMany(p => p.OrderStatusHistories)
+                    .WithMany()
                     .HasForeignKey(d => d.OldStatusID)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(d => d.NewStatus)
-                    .WithMany(p => p.OrderStatusHistories)
+                    .WithMany()
                     .HasForeignKey(d => d.NewStatusID)
                     .OnDelete(DeleteBehavior.Restrict);
 
