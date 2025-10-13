@@ -1,0 +1,174 @@
+@model Pet_Shop.Models.ViewModels.OrderConfirmationViewModel
+
+@{
+    ViewData["Title"] = "Xác nhận đơn hàng";
+}
+
+<div class="container py-4">
+    <!-- Success Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="text-center">
+                <div class="success-icon mb-3">
+                    <i class="fas fa-check-circle fa-4x text-success"></i>
+                </div>
+                <h2 class="text-success mb-2">Đặt hàng thành công!</h2>
+                <p class="text-muted">Cảm ơn bạn đã mua sắm tại HyHy Pet Shop</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Order Details Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>
+                        Thông tin đơn hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <label class="fw-bold text-muted">Mã đơn hàng:</label>
+                                <div class="h5 text-primary">@Model.OrderNumber</div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="fw-bold text-muted">Ngày đặt hàng:</label>
+                                <div>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <label class="fw-bold text-muted">Trạng thái:</label>
+                                <div>
+                                    <span class="badge bg-warning">@Model.Status</span>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <label class="fw-bold text-muted">Dự kiến giao hàng:</label>
+                                <div>@Model.EstimatedDelivery.ToString("dd/MM/yyyy")</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="info-item">
+                                <label class="fw-bold text-muted">Tổng tiền:</label>
+                                <div class="h4 text-primary">@Model.TotalAmount.ToString("N0") ₫</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        Tiến trình đơn hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Đặt hàng thành công</h6>
+                                <p class="text-muted mb-0">Đơn hàng đã được tiếp nhận</p>
+                                <small class="text-muted">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Đang chuẩn bị hàng</h6>
+                                <p class="text-muted mb-0">Đơn hàng đang được chuẩn bị</p>
+                                <small class="text-muted">Dự kiến: @DateTime.Now.AddHours(2).ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Đang giao hàng</h6>
+                                <p class="text-muted mb-0">Đơn hàng đang được vận chuyển</p>
+                                <small class="text-muted">Dự kiến: @Model.EstimatedDelivery.ToString("dd/MM/yyyy")</small>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Giao hàng thành công</h6>
+                                <p class="text-muted mb-0">Đơn hàng đã được giao đến bạn</p>
+                                <small class="text-muted">Dự kiến: @Model.EstimatedDelivery.ToString("dd/MM/yyyy")</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Bước tiếp theo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="fas fa-envelope text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="mb-1">Email xác nhận</h6>
+                                    <p class="text-muted mb-0 small">Chúng tôi đã gửi email xác nhận đến hộp thư của bạn</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="fas fa-phone text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="mb-1">Liên hệ hỗ trợ</h6>
+                                    <p class="text-muted mb-0 small">Hotline: +980-34984089</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="@Url.Action("Index", "Profile")" class="btn btn-primary btn-lg me-md-2">
+                        <i class="fas fa-user me-2"></i>
+                        Xem đơn hàng của tôi
+                    </a>
+                    <a href="@Url.Action("Index", "Search")" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>
+                        Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

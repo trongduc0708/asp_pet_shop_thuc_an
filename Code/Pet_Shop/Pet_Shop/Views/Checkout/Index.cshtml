@@ -1,0 +1,433 @@
+@model Pet_Shop.Models.ViewModels.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-credit-card text-primary me-2"></i>
+                        Thanh toán
+                    </h2>
+                    <p class="text-muted mb-0">Hoàn tất đơn hàng của bạn</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Quay lại giỏ hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="ProcessOrder" method="post" id="checkoutForm">
+        <div class="row">
+            <!-- Checkout Form -->
+            <div class="col-lg-8">
+                <!-- Step 1: Delivery Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-truck me-2"></i>
+                            1. Thông tin giao hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Address Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Chọn địa chỉ giao hàng</label>
+                            <div class="row">
+                                @if (ViewBag.Addresses != null && ((List<Pet_Shop.Models.ViewModels.AddressViewModel>)ViewBag.Addresses).Any())
+                                {
+                                    @foreach (var address in (List<Pet_Shop.Models.ViewModels.AddressViewModel>)ViewBag.Addresses)
+                                    {
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card address-card @(address.IsDefault ? "border-primary" : "")">
+                                                <div class="card-body">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="AddressId" 
+                                                               value="@address.AddressID" @(address.IsDefault ? "checked" : "")>
+                                                        <label class="form-check-label w-100">
+                                                            <div class="d-flex justify-content-between align-items-start">
+                                                                <div>
+                                                                    <strong>@address.FullName</strong>
+                                                                    @if (address.IsDefault)
+                                                                    {
+                                                                        <span class="badge bg-primary ms-2">Mặc định</span>
+                                                                    }
+                                                                </div>
+                                                                <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                                                        onclick="editAddress(@address.AddressID)">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                            </div>
+                                                            <div class="text-muted small mt-1">
+                                                                <div>📞 @address.Phone</div>
+                                                                <div>📍 @address.Address, @address.Ward, @address.District, @address.City</div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                
+                                <!-- Add New Address -->
+                                <div class="col-md-6 mb-3">
+                                    <div class="card address-card border-dashed">
+                                        <div class="card-body text-center">
+                                            <button type="button" class="btn btn-outline-primary" onclick="showNewAddressForm()">
+                                                <i class="fas fa-plus me-2"></i>
+                                                Thêm địa chỉ mới
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Address Form (Hidden by default) -->
+                        <div id="newAddressForm" style="display: none;">
+                            <div class="border rounded p-3 bg-light">
+                                <h6 class="mb-3">Thông tin địa chỉ mới</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Họ và tên *</label>
+                                        <input type="text" class="form-control" asp-for="FullName" required>
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Số điện thoại *</label>
+                                        <input type="tel" class="form-control" asp-for="Phone" required>
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">Địa chỉ chi tiết *</label>
+                                        <input type="text" class="form-control" asp-for="Address" required>
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Phường/Xã</label>
+                                        <input type="text" class="form-control" asp-for="Ward">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Quận/Huyện</label>
+                                        <input type="text" class="form-control" asp-for="District">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Tỉnh/Thành phố</label>
+                                        <input type="text" class="form-control" asp-for="City">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Payment Method -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-credit-card me-2"></i>
+                            2. Phương thức thanh toán
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @if (ViewBag.PaymentMethods != null)
+                            {
+                                @foreach (var method in (List<Pet_Shop.Models.ViewModels.PaymentMethodViewModel>)ViewBag.PaymentMethods)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card payment-method-card">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="PaymentMethodId" 
+                                                           value="@method.Id" @(method.Id == 1 ? "checked" : "")>
+                                                    <label class="form-check-label w-100">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="@method.Icon fa-2x text-primary me-3"></i>
+                                                            <div>
+                                                                <strong>@method.Name</strong>
+                                                                <div class="text-muted small">@method.Description</div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Promo Code & Notes -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tags me-2"></i>
+                            3. Mã giảm giá & Ghi chú
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mã giảm giá</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" asp-for="PromoCode" placeholder="Nhập mã giảm giá">
+                                    <button class="btn btn-outline-primary" type="button" onclick="applyPromoCode()">
+                                        Áp dụng
+                                    </button>
+                                </div>
+                                <div id="promoMessage" class="mt-2"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ghi chú đơn hàng</label>
+                                <textarea class="form-control" asp-for="Notes" rows="3" placeholder="Ghi chú cho đơn hàng (tùy chọn)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="AgreeToTerms" required>
+                            <label class="form-check-label">
+                                Tôi đồng ý với <a href="@Url.Action("Terms", "Policy")" target="_blank">điều khoản sử dụng</a> 
+                                và <a href="@Url.Action("Privacy", "Policy")" target="_blank">chính sách bảo mật</a>
+                            </label>
+                        </div>
+                        <span asp-validation-for="AgreeToTerms" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-shopping-bag me-2"></i>
+                            Tóm tắt đơn hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Cart Items -->
+                        <div class="order-items mb-3">
+                            @if (ViewBag.CartItems != null && ((List<Pet_Shop.Models.ViewModels.CartItemViewModel>)ViewBag.CartItems).Any())
+                            {
+                                @foreach (var item in (List<Pet_Shop.Models.ViewModels.CartItemViewModel>)ViewBag.CartItems)
+                                {
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="@item.ProductImage" alt="@item.ProductName" 
+                                             class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold small">@item.ProductName</div>
+                                            <div class="text-muted small">Số lượng: @item.Quantity</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-bold">@item.TotalPrice.ToString("N0") ₫</div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-3">
+                                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                                    <div>Giỏ hàng trống</div>
+                                </div>
+                            }
+                        </div>
+
+                        <hr>
+
+                        <!-- Order Summary -->
+                        <div class="order-summary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tạm tính:</span>
+                                <span id="subtotal">@ViewBag.Subtotal.ToString("N0") ₫</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Phí vận chuyển:</span>
+                                <span id="shippingFee">@ViewBag.ShippingFee.ToString("N0") ₫</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success" id="discountRow" style="display: none;">
+                                <span>Giảm giá:</span>
+                                <span class="text-success">-<span id="discountAmount">0</span> ₫</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Tổng cộng:</strong>
+                                <strong class="text-primary" id="totalAmount">@ViewBag.TotalAmount.ToString("N0") ₫</strong>
+                            </div>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="checkoutBtn">
+                                <i class="fas fa-lock me-2"></i>
+                                Hoàn tất đơn hàng
+                            </button>
+                        </div>
+
+                        <!-- Security Info -->
+                        <div class="mt-3">
+                            <div class="text-center text-muted small">
+                                <i class="fas fa-shield-alt text-success me-1"></i>
+                                Thanh toán an toàn 100%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize form
+            updateOrderSummary();
+        });
+
+        function showNewAddressForm() {
+            $('#newAddressForm').slideDown();
+            $('input[name="AddressId"]').prop('checked', false);
+        }
+
+        function editAddress(addressId) {
+            // TODO: Implement edit address
+            alert('Chức năng chỉnh sửa địa chỉ sẽ được triển khai');
+        }
+
+        function applyPromoCode() {
+            const promoCode = $('input[name="PromoCode"]').val();
+            if (!promoCode) {
+                showPromoMessage('Vui lòng nhập mã giảm giá', 'warning');
+                return;
+            }
+
+            // TODO: Call API to validate promo code
+            $.ajax({
+                url: '@Url.Action("ValidatePromoCode", "Checkout")',
+                type: 'POST',
+                data: { promoCode: promoCode },
+                success: function(response) {
+                    if (response.success) {
+                        showPromoMessage(response.message, 'success');
+                        $('#discountRow').show();
+                        $('#discountAmount').text(response.discountAmount.toLocaleString());
+                        updateOrderSummary();
+                    } else {
+                        showPromoMessage(response.message, 'error');
+                    }
+                },
+                error: function() {
+                    showPromoMessage('Có lỗi xảy ra khi kiểm tra mã giảm giá', 'error');
+                }
+            });
+        }
+
+        function showPromoMessage(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 
+                              type === 'error' ? 'alert-danger' : 'alert-warning';
+            
+            $('#promoMessage').html(`
+                <div class="alert ${alertClass} alert-dismissible fade show">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+        }
+
+        function updateOrderSummary() {
+            // TODO: Calculate from actual cart data
+            let subtotal = 0;
+            $('.order-items .d-flex').each(function() {
+                const priceText = $(this).find('.fw-bold').last().text();
+                const price = parseFloat(priceText.replace(/[^\d]/g, ''));
+                subtotal += price;
+            });
+
+            const shippingFee = subtotal > 500000 ? 0 : 30000;
+            const discountAmount = $('#discountAmount').text() ? parseFloat($('#discountAmount').text().replace(/[^\d]/g, '')) : 0;
+            const total = subtotal + shippingFee - discountAmount;
+
+            $('#subtotal').text(subtotal.toLocaleString() + ' ₫');
+            $('#shippingFee').text(shippingFee.toLocaleString() + ' ₫');
+            $('#totalAmount').text(total.toLocaleString() + ' ₫');
+        }
+
+        // Form validation
+        $('#checkoutForm').on('submit', function(e) {
+            if (!$('input[name="AgreeToTerms"]').is(':checked')) {
+                e.preventDefault();
+                alert('Vui lòng đồng ý với điều khoản sử dụng');
+                return false;
+            }
+        });
+    </script>
+}
+
+<style>
+    .address-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .address-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .address-card.border-primary {
+        border-color: #0d6efd !important;
+        background-color: #f8f9ff;
+    }
+    
+    .address-card.border-dashed {
+        border: 2px dashed #dee2e6;
+    }
+    
+    .payment-method-card {
+        transition: all 0.3s ease;
+    }
+    
+    .payment-method-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .order-items .img-thumbnail {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+    }
+    
+    .sticky-top {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .form-check-input:checked + .form-check-label .address-card {
+        border-color: #0d6efd !important;
+        background-color: #f8f9ff;
+    }
+    
+    .form-check-input:checked + .form-check-label .payment-method-card {
+        border-color: #0d6efd !important;
+        background-color: #f8f9ff;
+    }
+</style>
