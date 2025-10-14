@@ -10,27 +10,29 @@ namespace Pet_Shop.Controllers
     [Authorize]
     public class CartController : Controller
     {
-        private readonly ProductService _productService;
+        private readonly CartService _cartService;
         private readonly ILogger<CartController> _logger;
 
-        public CartController(ProductService productService, ILogger<CartController> logger)
+        public CartController(CartService cartService, ILogger<CartController> logger)
         {
-            _productService = productService;
+            _cartService = cartService;
             _logger = logger;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
                 ViewData["Title"] = "Giỏ hàng";
                 
-                // TODO: Get cart items from database
-                // For now, return empty cart
-                var cartItems = new List<CartItemViewModel>();
-                ViewBag.CartTotal = 0;
-                ViewBag.CartCount = 0;
+                var userId = GetCurrentUserId();
+                var cartItems = await _cartService.GetCartItemsAsync(userId);
+                var cartTotal = await _cartService.GetCartTotalAsync(userId);
+                var cartCount = await _cartService.GetCartCountAsync(userId);
+                
+                ViewBag.CartTotal = cartTotal;
+                ViewBag.CartCount = cartCount;
                 
                 return View(cartItems);
             }
@@ -47,25 +49,22 @@ namespace Pet_Shop.Controllers
         {
             try
             {
-                // TODO: Implement add to cart logic
-                // 1. Check if product exists
-                // 2. Check if user is authenticated
-                // 3. Add or update cart item
+                var userId = GetCurrentUserId();
+                var success = await _cartService.AddToCartAsync(userId, productId, quantity);
                 
-                var product = await _productService.GetProductByIdAsync(productId);
-                if (product == null)
+                if (success)
                 {
-                    return Json(new { success = false, message = "Sản phẩm không tồn tại" });
+                    var cartCount = await _cartService.GetCartCountAsync(userId);
+                    return Json(new { 
+                        success = true, 
+                        message = "Đã thêm sản phẩm vào giỏ hàng",
+                        cartCount = cartCount
+                    });
                 }
-
-                // TODO: Add to database cart
-                // For now, just return success
-                
-                return Json(new { 
-                    success = true, 
-                    message = "Đã thêm sản phẩm vào giỏ hàng",
-                    cartCount = 1 // TODO: Get actual cart count
-                });
+                else
+                {
+                    return Json(new { success = false, message = "Không thể thêm sản phẩm vào giỏ hàng. Có thể sản phẩm không còn hàng." });
+                }
             }
             catch (Exception ex)
             {
@@ -79,19 +78,21 @@ namespace Pet_Shop.Controllers
         {
             try
             {
-                // TODO: Implement update quantity logic
-                if (quantity <= 0)
-                {
-                    return Json(new { success = false, message = "Số lượng phải lớn hơn 0" });
-                }
-
-                // TODO: Update cart item quantity in database
+                var userId = GetCurrentUserId();
+                var success = await _cartService.UpdateQuantityAsync(userId, productId, quantity);
                 
-                return Json(new { 
-                    success = true, 
-                    message = "Đã cập nhật số lượng",
-                    newQuantity = quantity
-                });
+                if (success)
+                {
+                    return Json(new { 
+                        success = true, 
+                        message = "Đã cập nhật số lượng",
+                        newQuantity = quantity
+                    });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Không thể cập nhật số lượng. Có thể sản phẩm không còn đủ hàng." });
+                }
             }
             catch (Exception ex)
             {
@@ -105,13 +106,20 @@ namespace Pet_Shop.Controllers
         {
             try
             {
-                // TODO: Implement remove item logic
-                // Remove item from database cart
+                var userId = GetCurrentUserId();
+                var success = await _cartService.RemoveItemAsync(userId, productId);
                 
-                return Json(new { 
-                    success = true, 
-                    message = "Đã xóa sản phẩm khỏi giỏ hàng"
-                });
+                if (success)
+                {
+                    return Json(new { 
+                        success = true, 
+                        message = "Đã xóa sản phẩm khỏi giỏ hàng"
+                    });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Không thể xóa sản phẩm khỏi giỏ hàng" });
+                }
             }
             catch (Exception ex)
             {
@@ -125,13 +133,20 @@ namespace Pet_Shop.Controllers
         {
             try
             {
-                // TODO: Implement clear cart logic
-                // Clear all items from database cart
+                var userId = GetCurrentUserId();
+                var success = await _cartService.ClearCartAsync(userId);
                 
-                return Json(new { 
-                    success = true, 
-                    message = "Đã xóa tất cả sản phẩm khỏi giỏ hàng"
-                });
+                if (success)
+                {
+                    return Json(new { 
+                        success = true, 
+                        message = "Đã xóa tất cả sản phẩm khỏi giỏ hàng"
+                    });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Không thể xóa giỏ hàng" });
+                }
             }
             catch (Exception ex)
             {
@@ -145,8 +160,8 @@ namespace Pet_Shop.Controllers
         {
             try
             {
-                // TODO: Get actual cart count from database
-                var cartCount = 0;
+                var userId = GetCurrentUserId();
+                var cartCount = await _cartService.GetCartCountAsync(userId);
                 
                 return Json(new { cartCount = cartCount });
             }
@@ -155,6 +170,12 @@ namespace Pet_Shop.Controllers
                 _logger.LogError($"Error getting cart count: {ex.Message}");
                 return Json(new { cartCount = 0 });
             }
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
         }
     }
 

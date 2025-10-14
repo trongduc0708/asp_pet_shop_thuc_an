@@ -22,6 +22,7 @@ namespace Pet_Shop.Controllers
         {
             try
             {
+
                 ViewData["Title"] = "Tìm kiếm sản phẩm";
                 
                 // Get filter options
