@@ -154,6 +154,9 @@
                                         <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-product-id="@product.ProductID">
                                             <i class="fas fa-shopping-cart"></i>
                                         </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm wishlist-btn" data-product-id="@product.ProductID" title="Thêm vào yêu thích">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -347,9 +350,46 @@ $(document).ready(function() {
                 $btn.prop('disabled', false).html(originalHtml);
             }
         });
-    });
-    
-    function showToast(type, message) {
+            });
+            
+            // Wishlist functionality
+            $('.wishlist-btn').on('click', function() {
+                var productId = $(this).data('product-id');
+                var $btn = $(this);
+                var originalHtml = $btn.html();
+                
+                // Disable button and show loading
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    url: '/Wishlist/AddToWishlist',
+                    type: 'POST',
+                    data: {
+                        productId: productId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Change button to filled heart
+                            $btn.removeClass('btn-outline-danger').addClass('btn-danger');
+                            $btn.html('<i class="fas fa-heart"></i>');
+                            $btn.attr('title', 'Đã thêm vào yêu thích');
+                            
+                            showToast('success', response.message);
+                        } else {
+                            showToast('error', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showToast('error', 'Có lỗi xảy ra khi thêm vào yêu thích');
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+            
+            function showToast(type, message) {
         // Create toast element
         var toastHtml = `
             <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">

@@ -126,7 +126,7 @@
                                 <button type="submit" class="btn btn-primary btn-lg me-md-2" id="addToCartBtn">
                                     <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary btn-lg">
+                                <button type="button" class="btn btn-outline-danger btn-lg wishlist-btn" data-product-id="@product.ProductID">
                                     <i class="fas fa-heart me-2"></i>Yêu thích
                                 </button>
                             </div>
@@ -303,6 +303,42 @@ $(document).ready(function() {
             $(this).remove();
         });
     }
+    
+    // Wishlist functionality
+    $('.wishlist-btn').on('click', function() {
+        var productId = $(this).data('product-id');
+        var $btn = $(this);
+        var originalHtml = $btn.html();
+        
+        // Disable button and show loading
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...');
+        
+        $.ajax({
+            url: '/Wishlist/AddToWishlist',
+            type: 'POST',
+            data: {
+                productId: productId
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Change button to filled heart
+                    $btn.removeClass('btn-outline-danger').addClass('btn-danger');
+                    $btn.html('<i class="fas fa-heart me-2"></i>Đã yêu thích');
+                    
+                    showToast('success', response.message);
+                } else {
+                    showToast('error', response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                showToast('error', 'Có lỗi xảy ra khi thêm vào yêu thích');
+            },
+            complete: function() {
+                // Re-enable button
+                $btn.prop('disabled', false);
+            }
+        });
+    });
 });
 </script>
 }

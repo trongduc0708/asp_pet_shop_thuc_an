@@ -26,6 +26,7 @@ builder.Services.AddScoped<BannerService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<AddressService>();
+builder.Services.AddScoped<WishlistService>();
 builder.Services.AddScoped<VNPayService>();
 
 // Add Authentication

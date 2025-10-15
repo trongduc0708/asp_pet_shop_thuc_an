@@ -28,6 +28,9 @@ namespace Pet_Shop.Data
         // Cart Management
         public DbSet<Cart> Cart { get; set; }
 
+        // Wishlist Management
+        public DbSet<Wishlist> Wishlist { get; set; }
+
         // Promotion Management
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<ProductPromotion> ProductPromotions { get; set; }

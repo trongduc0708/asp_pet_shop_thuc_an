@@ -1,0 +1,207 @@
+@model IEnumerable<Pet_Shop.Models.ViewModels.WishlistItemViewModel>
+@{
+    ViewData["Title"] = "Danh sách yêu thích";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-heart me-2 text-danger"></i>
+                    Danh sách yêu thích
+                </h2>
+                <div class="text-muted">
+                    <span id="wishlistCount">@Model.Count()</span> sản phẩm
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="row" id="wishlistContainer">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4" id="wishlist-item-@item.WishlistID">
+                            <div class="card product-card h-100">
+                                @if (item.ProductImage != null && item.ProductImage != "/images/no-image.jpg")
+                                {
+                                    <img src="@item.ProductImage" class="card-img-top" alt="@item.ProductName" style="height: 200px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                }
+                                
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title">@item.ProductName</h6>
+                                    <p class="card-text text-muted small">
+                                        <i class="fas fa-tag me-1"></i>@item.CategoryName<br>
+                                        <i class="fas fa-building me-1"></i>@item.BrandName
+                                    </p>
+                                    
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            @if (item.SalePrice.HasValue && item.SalePrice < item.Price)
+                                            {
+                                                <div>
+                                                    <span class="text-danger fw-bold">@String.Format("{0:N0}", item.SalePrice) ₫</span>
+                                                    <small class="text-muted text-decoration-line-through d-block">@item.Price.ToString("N0") ₫</small>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-bold">@item.Price.ToString("N0") ₫</span>
+                                            }
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
+                                            <a href="/Shop/Product/@item.ProductID" class="btn btn-outline-primary btn-sm flex-fill">
+                                                <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-from-wishlist-btn" 
+                                                    data-wishlist-id="@item.WishlistID" title="Xóa khỏi yêu thích">
+                                                <i class="fas fa-heart-broken"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="text-muted small mt-2">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            Thêm ngày: @item.AddedDate.ToString("dd/MM/yyyy")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-heart fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Danh sách yêu thích trống</h4>
+                    <p class="text-muted">Hãy thêm sản phẩm yêu thích để xem lại sau</p>
+                    <a href="/Shop/Products" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag me-2"></i>Mua sắm ngay
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Remove from wishlist
+            $('.remove-from-wishlist-btn').on('click', function() {
+                var wishlistId = $(this).data('wishlist-id');
+                var $btn = $(this);
+                var $card = $btn.closest('.col-lg-3');
+                
+                if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?')) {
+                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                    
+                    $.ajax({
+                        url: '/Wishlist/RemoveFromWishlist',
+                        type: 'POST',
+                        data: { wishlistId: wishlistId },
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove card with animation
+                                $card.fadeOut(300, function() {
+                                    $(this).remove();
+                                    updateWishlistCount();
+                                });
+                                
+                                showToast('success', response.message);
+                            } else {
+                                showToast('error', response.message);
+                                $btn.prop('disabled', false).html('<i class="fas fa-heart-broken"></i>');
+                            }
+                        },
+                        error: function() {
+                            showToast('error', 'Có lỗi xảy ra khi xóa khỏi yêu thích');
+                            $btn.prop('disabled', false).html('<i class="fas fa-heart-broken"></i>');
+                        }
+                    });
+                }
+            });
+            
+            function updateWishlistCount() {
+                $.ajax({
+                    url: '/Wishlist/GetWishlistCount',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#wishlistCount').text(response.count);
+                            
+                            // If no items left, show empty state
+                            if (response.count == 0) {
+                                $('#wishlistContainer').html(`
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-heart fa-4x text-muted mb-3"></i>
+                                        <h4 class="text-muted">Danh sách yêu thích trống</h4>
+                                        <p class="text-muted">Hãy thêm sản phẩm yêu thích để xem lại sau</p>
+                                        <a href="/Shop/Products" class="btn btn-primary">
+                                            <i class="fas fa-shopping-bag me-2"></i>Mua sắm ngay
+                                        </a>
+                                    </div>
+                                `);
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function showToast(type, message) {
+                var toastHtml = `
+                    <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                if ($('#toastContainer').length === 0) {
+                    $('body').append('<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
+                }
+                
+                $('#toastContainer').append(toastHtml);
+                
+                var toastElement = $('#toastContainer .toast').last();
+                var toast = new bootstrap.Toast(toastElement[0]);
+                toast.show();
+                
+                toastElement.on('hidden.bs.toast', function() {
+                    $(this).remove();
+                });
+            }
+        });
+    </script>
+}
+
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .remove-from-wishlist-btn:hover {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+</style>
