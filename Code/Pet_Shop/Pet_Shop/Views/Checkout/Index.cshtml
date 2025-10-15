@@ -310,7 +310,7 @@
 
         function editAddress(addressId) {
             // TODO: Implement edit address
-            alert('Chức năng chỉnh sửa địa chỉ sẽ được triển khai');
+            showToast('info', 'Chức năng chỉnh sửa địa chỉ sẽ được triển khai');
         }
 
         function applyPromoCode() {
@@ -375,10 +375,38 @@
         $('#checkoutForm').on('submit', function(e) {
             if (!$('input[name="AgreeToTerms"]').is(':checked')) {
                 e.preventDefault();
-                alert('Vui lòng đồng ý với điều khoản sử dụng');
+                showToast('warning', 'Vui lòng đồng ý với điều khoản sử dụng');
                 return false;
             }
         });
+        
+        function showToast(type, message) {
+            var toastHtml = `
+                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'info'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            if ($('#toastContainer').length === 0) {
+                $('body').append('<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
+            }
+            
+            $('#toastContainer').append(toastHtml);
+            
+            var toastElement = $('#toastContainer .toast').last();
+            var toast = new bootstrap.Toast(toastElement[0]);
+            toast.show();
+            
+            toastElement.on('hidden.bs.toast', function() {
+                $(this).remove();
+            });
+        }
     </script>
 }
 
