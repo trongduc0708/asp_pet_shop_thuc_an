@@ -1,0 +1,250 @@
+@model IEnumerable<Pet_Shop.Models.ViewModels.AddressViewModel>
+@{
+    ViewData["Title"] = "Quản lý địa chỉ";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Profile Sidebar -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mb-3">
+                        <i class="fas fa-user-circle fa-5x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">@(User.Identity?.Name ?? "User")</h5>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="card mt-3">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="@Url.Action("Index")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                        </a>
+                        <a href="@Url.Action("Edit")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin
+                        </a>
+                        <a href="@Url.Action("ChangePassword")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                        </a>
+                        <a href="@Url.Action("Orders")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
+                        </a>
+                        <a href="@Url.Action("Addresses")" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-map-marker-alt me-2"></i>Quản lý địa chỉ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <!-- Address Management -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>Quản lý địa chỉ
+                    </h4>
+                    <a href="@Url.Action("CreateAddress")" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Thêm địa chỉ mới
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="row">
+                            @foreach (var address in Model)
+                            {
+                                <div class="col-md-6 mb-4">
+                                    <div class="card address-card @(address.IsDefault ? "border-primary" : "")">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
+                                                    <h6 class="card-title mb-1">
+                                                        <strong>@address.FullName</strong>
+                                                        @if (address.IsDefault)
+                                                        {
+                                                            <span class="badge bg-primary ms-2">Mặc định</span>
+                                                        }
+                                                    </h6>
+                                                    <p class="text-muted small mb-0">📞 @address.Phone</p>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("EditAddress", new { id = address.AddressID })">
+                                                                <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                                                            </a>
+                                                        </li>
+                                                        @if (!address.IsDefault)
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item set-default-btn" href="#" data-address-id="@address.AddressID">
+                                                                    <i class="fas fa-star me-2"></i>Đặt mặc định
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger delete-address-btn" href="#" data-address-id="@address.AddressID">
+                                                                <i class="fas fa-trash me-2"></i>Xóa
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="address-details">
+                                                <p class="mb-0">
+                                                    📍 @address.Address, @address.Ward, @address.District, @address.City
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có địa chỉ nào</h5>
+                            <p class="text-muted">Thêm địa chỉ để thuận tiện cho việc giao hàng</p>
+                            <a href="@Url.Action("CreateAddress")" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Thêm địa chỉ đầu tiên
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Set default address
+            $('.set-default-btn').on('click', function(e) {
+                e.preventDefault();
+                var addressId = $(this).data('address-id');
+                var $btn = $(this);
+                
+                if (confirm('Bạn có chắc chắn muốn đặt địa chỉ này làm mặc định?')) {
+                    $.ajax({
+                        url: '@Url.Action("SetDefaultAddress")',
+                        type: 'POST',
+                        data: { id: addressId },
+                        success: function(response) {
+                            if (response.success) {
+                                showToast('success', response.message);
+                                location.reload();
+                            } else {
+                                showToast('error', response.message);
+                            }
+                        },
+                        error: function() {
+                            showToast('error', 'Có lỗi xảy ra khi đặt địa chỉ mặc định');
+                        }
+                    });
+                }
+            });
+            
+            // Delete address
+            $('.delete-address-btn').on('click', function(e) {
+                e.preventDefault();
+                var addressId = $(this).data('address-id');
+                
+                if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteAddress")',
+                        type: 'POST',
+                        data: { id: addressId },
+                        success: function(response) {
+                            if (response.success) {
+                                showToast('success', response.message);
+                                location.reload();
+                            } else {
+                                showToast('error', response.message);
+                            }
+                        },
+                        error: function() {
+                            showToast('error', 'Có lỗi xảy ra khi xóa địa chỉ');
+                        }
+                    });
+                }
+            });
+            
+            function showToast(type, message) {
+                var toastHtml = `
+                    <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                if ($('#toastContainer').length === 0) {
+                    $('body').append('<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
+                }
+                
+                $('#toastContainer').append(toastHtml);
+                
+                var toastElement = $('#toastContainer .toast').last();
+                var toast = new bootstrap.Toast(toastElement[0]);
+                toast.show();
+                
+                toastElement.on('hidden.bs.toast', function() {
+                    $(this).remove();
+                });
+            }
+        });
+    </script>
+}
+
+<style>
+    .profile-avatar {
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d4af37, #f4d03f);
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .address-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #dee2e6;
+    }
+
+    .address-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .address-card.border-primary {
+        border-color: #0d6efd !important;
+        background-color: #f8f9ff;
+    }
+
+    .list-group-item-action:hover {
+        background-color: #f8f9fa;
+        color: #d4af37;
+    }
+
+    .list-group-item.active {
+        background-color: #d4af37;
+        border-color: #d4af37;
+    }
+</style>

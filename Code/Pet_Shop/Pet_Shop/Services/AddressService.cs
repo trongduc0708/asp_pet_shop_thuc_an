@@ -36,7 +36,7 @@ namespace Pet_Shop.Services
                     District = a.District,
                     City = a.City,
                     IsDefault = a.IsDefault
-                });
+                }).ToList();
             }
             catch (Exception ex)
             {
