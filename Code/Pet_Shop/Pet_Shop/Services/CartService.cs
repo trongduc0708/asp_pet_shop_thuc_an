@@ -45,7 +45,7 @@ namespace Pet_Shop.Services
                     BrandName = c.Product.Brand.BrandName,
                     IsAvailable = c.Product.IsActive,
                     StockQuantity = c.Product.Inventory?.QuantityInStock ?? 0
-                });
+                }).ToList();
             }
             catch (Exception ex)
             {

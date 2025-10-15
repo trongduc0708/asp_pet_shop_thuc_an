@@ -145,9 +145,13 @@
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="card product-card h-100">
                                 <div class="position-relative">
-                                    @if (product.ProductImages.Any())
+                                    @if (product.ProductImages != null && product.ProductImages.Count > 0)
                                     {
-                                        <img src="@product.ProductImages.First().ImageURL" class="card-img-top" alt="@product.ProductName" style="height: 250px; object-fit: cover;">
+                                        @foreach (var image in product.ProductImages)
+                                        {
+                                            <img src="@image.ImageURL" class="card-img-top" alt="@product.ProductName" style="height: 250px; object-fit: cover;">
+                                            break;
+                                        }
                                     }
                                     else
                                     {
@@ -179,9 +183,9 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
                                                 <span class="h5 text-primary">@product.Price.ToString("N0") ₫</span>
-                                                @if (product.SalePrice.HasValue && product.SalePrice < product.Price)
+                                                @if (product.SalePrice != null && product.SalePrice < product.Price)
                                                 {
-                                                    <span class="text-muted text-decoration-line-through ms-2">@product.SalePrice.Value.ToString("N0") ₫</span>
+                                                    <span class="text-muted text-decoration-line-through ms-2">@String.Format("{0:N0}", product.SalePrice) ₫</span>
                                                 }
                                             </div>
                                             <div class="text-muted small">
@@ -191,10 +195,13 @@
                                         </div>
                                         
                                         <div class="mt-2">
-                                            <a href="@Url.Action("Details", "Product", new { id = product.ProductID })" class="btn btn-outline-primary btn-sm w-100">
+                                            <a href="/Shop/Product/@product.ProductID" class="btn btn-outline-primary btn-sm me-1">
                                                 <i class="fas fa-eye me-1"></i>
                                                 Xem chi tiết
                                             </a>
+                                            <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-product-id="@product.ProductID">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -263,10 +270,48 @@
             });
             
             // Add to cart functionality
-            window.addToCart = function(productId) {
-                // TODO: Implement add to cart
-                alert('Thêm sản phẩm vào giỏ hàng: ' + productId);
-            };
+            $('.add-to-cart-btn').on('click', function() {
+                var productId = $(this).data('product-id');
+                var $btn = $(this);
+                var originalHtml = $btn.html();
+                
+                // Disable button and show loading
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    url: '/Cart/AddToCart',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: 1
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            showToast('success', response.message);
+                            
+                            // Update cart count in header if exists
+                            if (response.cartCount !== undefined) {
+                                $('#cartCount').text(response.cartCount);
+                                if (response.cartCount > 0) {
+                                    $('#cartCount').show();
+                                } else {
+                                    $('#cartCount').hide();
+                                }
+                            }
+                        } else {
+                            showToast('error', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showToast('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            });
             
             // View toggle
             $('#gridView').click(function() {
@@ -280,6 +325,38 @@
                 $('#gridView').removeClass('active');
                 $('#productsGrid').removeClass('grid-view').addClass('list-view');
             });
+            
+            function showToast(type, message) {
+                // Create toast element
+                var toastHtml = `
+                    <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to toast container
+                if ($('#toastContainer').length === 0) {
+                    $('body').append('<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
+                }
+                
+                $('#toastContainer').append(toastHtml);
+                
+                // Show toast
+                var toastElement = $('#toastContainer .toast').last();
+                var toast = new bootstrap.Toast(toastElement[0]);
+                toast.show();
+                
+                // Remove toast element after it's hidden
+                toastElement.on('hidden.bs.toast', function() {
+                    $(this).remove();
+                });
+            }
         });
     </script>
 }
@@ -323,3 +400,4 @@
         color: rgba(255,255,255,0.8) !important;
     }
 </style>
+
