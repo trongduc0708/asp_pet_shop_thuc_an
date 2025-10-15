@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pet_Shop.Data;
 using Pet_Shop.Models.Profile;
+using Pet_Shop.Models.ViewModels;
 using Pet_Shop.Services;
 using System.Security.Claims;
 
@@ -12,12 +13,14 @@ namespace Pet_Shop.Controllers
     public class ProfileController : Controller
     {
         private readonly ProfileService _profileService;
+        private readonly AddressService _addressService;
         private readonly PetShopDbContext _context;
         private readonly ILogger<ProfileController> _logger;
 
-        public ProfileController(ProfileService profileService, PetShopDbContext context, ILogger<ProfileController> logger)
+        public ProfileController(ProfileService profileService, AddressService addressService, PetShopDbContext context, ILogger<ProfileController> logger)
         {
             _profileService = profileService;
+            _addressService = addressService;
             _context = context;
             _logger = logger;
         }
@@ -227,6 +230,184 @@ namespace Pet_Shop.Controllers
                 _logger.LogError($"Error loading order details: {ex.Message}");
                 TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải chi tiết đơn hàng.";
                 return RedirectToAction("Orders");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Addresses()
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var addresses = await _addressService.GetUserAddressesAsync(userId);
+                return View(addresses);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading addresses: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải danh sách địa chỉ.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CreateAddress()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAddress(AddressViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var success = await _addressService.CreateAddressAsync(userId, model);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Thêm địa chỉ thành công!";
+                    return RedirectToAction("Addresses");
+                }
+
+                ModelState.AddModelError(string.Empty, "Thêm địa chỉ thất bại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error creating address: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi thêm địa chỉ.");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditAddress(int id)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var address = await _addressService.GetAddressByIdAsync(id, userId);
+                if (address == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy địa chỉ.";
+                    return RedirectToAction("Addresses");
+                }
+
+                return View(address);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading address: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải địa chỉ.";
+                return RedirectToAction("Addresses");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAddress(AddressViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var success = await _addressService.UpdateAddressAsync(userId, model);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Cập nhật địa chỉ thành công!";
+                    return RedirectToAction("Addresses");
+                }
+
+                ModelState.AddModelError(string.Empty, "Cập nhật địa chỉ thất bại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating address: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi cập nhật địa chỉ.");
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAddress(int id)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return Json(new { success = false, message = "Vui lòng đăng nhập." });
+                }
+
+                var success = await _addressService.DeleteAddressAsync(id, userId);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Xóa địa chỉ thành công!" });
+                }
+
+                return Json(new { success = false, message = "Xóa địa chỉ thất bại." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting address: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi xóa địa chỉ." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetDefaultAddress(int id)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == 0)
+                {
+                    return Json(new { success = false, message = "Vui lòng đăng nhập." });
+                }
+
+                var success = await _addressService.SetDefaultAddressAsync(id, userId);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Đặt địa chỉ mặc định thành công!" });
+                }
+
+                return Json(new { success = false, message = "Đặt địa chỉ mặc định thất bại." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error setting default address: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi đặt địa chỉ mặc định." });
             }
         }
 

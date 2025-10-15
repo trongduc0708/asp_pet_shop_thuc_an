@@ -103,6 +103,18 @@ namespace Pet_Shop.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Product>> GetRelatedProductsAsync(int productId, int categoryId, int count = 4)
+        {
+            return await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.ProductImages)
+                .Where(p => p.CategoryID == categoryId && p.ProductID != productId && p.IsActive)
+                .OrderBy(p => Guid.NewGuid()) // Random order
+                .Take(count)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
             return await _context.Categories

@@ -10,14 +10,22 @@ namespace Pet_Shop.Controllers
     [Authorize]
     public class CheckoutController : Controller
     {
-        private readonly ProductService _productService;
+        private readonly CartService _cartService;
+        private readonly OrderService _orderService;
+        private readonly AddressService _addressService;
         private readonly EmailService _emailService;
+        private readonly VNPayService _vnpayService;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<CheckoutController> _logger;
 
-        public CheckoutController(ProductService productService, EmailService emailService, ILogger<CheckoutController> logger)
+        public CheckoutController(CartService cartService, OrderService orderService, AddressService addressService, EmailService emailService, VNPayService vnpayService, IConfiguration configuration, ILogger<CheckoutController> logger)
         {
-            _productService = productService;
+            _cartService = cartService;
+            _orderService = orderService;
+            _addressService = addressService;
             _emailService = emailService;
+            _vnpayService = vnpayService;
+            _configuration = configuration;
             _logger = logger;
         }
 
@@ -28,18 +36,29 @@ namespace Pet_Shop.Controllers
             {
                 ViewData["Title"] = "Thanh toán";
                 
-                // TODO: Get cart items from database
-                var cartItems = new List<CartItemViewModel>();
-                var addresses = new List<AddressViewModel>();
+                var userId = GetCurrentUserId();
+                var cartItems = await _cartService.GetCartItemsAsync(userId);
+                var addresses = await _addressService.GetUserAddressesAsync(userId);
                 var paymentMethods = GetPaymentMethods();
+                
+                if (!cartItems.Any())
+                {
+                    TempData["ErrorMessage"] = "Giỏ hàng trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.";
+                    return RedirectToAction("Index", "Cart");
+                }
+                
+                var subtotal = cartItems.Sum(item => item.TotalPrice);
+                var shippingFee = subtotal > 500000 ? 0 : 30000;
+                var discountAmount = 0m;
+                var totalAmount = subtotal + shippingFee - discountAmount;
                 
                 ViewBag.CartItems = cartItems;
                 ViewBag.Addresses = addresses;
                 ViewBag.PaymentMethods = paymentMethods;
-                ViewBag.Subtotal = 0;
-                ViewBag.ShippingFee = 0;
-                ViewBag.DiscountAmount = 0;
-                ViewBag.TotalAmount = 0;
+                ViewBag.Subtotal = subtotal;
+                ViewBag.ShippingFee = shippingFee;
+                ViewBag.DiscountAmount = discountAmount;
+                ViewBag.TotalAmount = totalAmount;
                 
                 return View();
             }
@@ -62,23 +81,29 @@ namespace Pet_Shop.Controllers
                     return await Index();
                 }
 
-                // TODO: Implement order processing
-                // 1. Validate cart items
-                // 2. Check stock availability
-                // 3. Calculate totals
-                // 4. Create order
-                // 5. Process payment
-                // 6. Send confirmation email
-                // 7. Clear cart
-
-                var orderNumber = GenerateOrderNumber();
+                var userId = GetCurrentUserId();
                 
-                // TODO: Save order to database
-                // TODO: Process payment
-                // TODO: Send confirmation email
+                // Create order
+                var order = await _orderService.CreateOrderAsync(userId, model);
                 
-                TempData["SuccessMessage"] = "Đặt hàng thành công! Mã đơn hàng: " + orderNumber;
-                return RedirectToAction("OrderConfirmation", new { orderNumber = orderNumber });
+                if (order == null)
+                {
+                    TempData["ErrorMessage"] = "Không thể tạo đơn hàng. Vui lòng kiểm tra lại giỏ hàng.";
+                    return await Index();
+                }
+                
+                // Handle payment method
+                if (model.PaymentMethodId == 2) // VNPay
+                {
+                    var returnUrl = Url.Action("PaymentReturn", "Checkout", new { orderNumber = order.OrderNumber }, Request.Scheme);
+                    var paymentUrl = _vnpayService.CreatePaymentUrl(order.OrderNumber, order.TotalAmount, returnUrl);
+                    return Redirect(paymentUrl);
+                }
+                else // COD
+                {
+                    TempData["SuccessMessage"] = "Đặt hàng thành công! Mã đơn hàng: " + order.OrderNumber;
+                    return RedirectToAction("OrderConfirmation", new { orderNumber = order.OrderNumber });
+                }
             }
             catch (Exception ex)
             {
@@ -89,21 +114,26 @@ namespace Pet_Shop.Controllers
         }
 
         [HttpGet]
-        public IActionResult OrderConfirmation(string orderNumber)
+        public async Task<IActionResult> OrderConfirmation(string orderNumber)
         {
             try
             {
                 ViewData["Title"] = "Xác nhận đơn hàng";
-                ViewBag.OrderNumber = orderNumber;
                 
-                // TODO: Get order details from database
+                var order = await _orderService.GetOrderByNumberAsync(orderNumber);
+                if (order == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+                    return RedirectToAction("Index", "Home");
+                }
+                
                 var orderDetails = new OrderConfirmationViewModel
                 {
-                    OrderNumber = orderNumber,
-                    OrderDate = DateTime.Now,
-                    Status = "Đang xử lý",
-                    EstimatedDelivery = DateTime.Now.AddDays(3),
-                    TotalAmount = 0
+                    OrderNumber = order.OrderNumber,
+                    OrderDate = order.OrderDate,
+                    Status = order.Status.StatusName,
+                    EstimatedDelivery = order.OrderDate.AddDays(3),
+                    TotalAmount = order.TotalAmount
                 };
                 
                 return View(orderDetails);
@@ -188,9 +218,84 @@ namespace Pet_Shop.Controllers
             }
         }
 
-        private string GenerateOrderNumber()
+        [HttpGet]
+        public async Task<IActionResult> PaymentReturn(string orderNumber)
         {
-            return "PS" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            try
+            {
+                // Get VNPay response parameters
+                var vnpParams = new Dictionary<string, string>();
+                foreach (var key in Request.Query.Keys)
+                {
+                    vnpParams.Add(key, Request.Query[key].ToString());
+                }
+
+                // Process VNPay response
+                var paymentResult = _vnpayService.ProcessPaymentResponse(vnpParams);
+                
+                if (paymentResult.IsSuccess)
+                {
+                    // Update order status to paid
+                    var order = await _orderService.GetOrderByNumberAsync(orderNumber);
+                    if (order != null)
+                    {
+                        await _orderService.UpdateOrderStatusAsync(order.OrderID, 2, GetCurrentUserId(), "Thanh toán VNPay thành công");
+                    }
+                    
+                    TempData["SuccessMessage"] = "Thanh toán thành công! Đơn hàng đã được xác nhận.";
+                    return RedirectToAction("OrderConfirmation", new { orderNumber = orderNumber });
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Thanh toán thất bại. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.";
+                    return RedirectToAction("Index", "Cart");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error processing VNPay return for order {orderNumber}: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xử lý thanh toán.";
+                return RedirectToAction("Index", "Cart");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PaymentIPN()
+        {
+            try
+            {
+                // Get VNPay IPN parameters
+                var vnpParams = new Dictionary<string, string>();
+                foreach (var key in Request.Form.Keys)
+                {
+                    vnpParams.Add(key, Request.Form[key].ToString());
+                }
+
+                // Process IPN
+                var paymentResult = _vnpayService.ProcessPaymentResponse(vnpParams);
+                
+                if (paymentResult.IsSuccess)
+                {
+                    var order = await _orderService.GetOrderByNumberAsync(paymentResult.OrderId);
+                    if (order != null)
+                    {
+                        await _orderService.UpdateOrderStatusAsync(order.OrderID, 2, GetCurrentUserId(), "IPN: Thanh toán VNPay thành công");
+                    }
+                }
+
+                return Ok("OK");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error processing VNPay IPN: {ex.Message}");
+                return BadRequest("Error");
+            }
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
         }
 
         private List<PaymentMethodViewModel> GetPaymentMethods()

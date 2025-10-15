@@ -22,6 +22,7 @@ namespace Pet_Shop.Models.Entities
 
         [Required]
         [StringLength(200)]
+        [Column("Address")]
         public string AddressLine { get; set; } = string.Empty;
 
         [StringLength(100)]

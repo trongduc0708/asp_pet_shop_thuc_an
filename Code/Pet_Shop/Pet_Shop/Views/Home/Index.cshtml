@@ -109,61 +109,113 @@
             </div>
         </div>
         <div class="row">
-            <!-- Product 1 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card product-card">
-                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                         class="card-img-top" alt="Dog Food">
-                    <div class="card-body">
-                        <h5 class="card-title">Thức ăn chó Royal Canin</h5>
-                        <p class="card-text">Thức ăn cao cấp cho chó trưởng thành</p>
-                        <div class="price">299,000 VNĐ</div>
-                        <button class="btn btn-primary">Thêm vào giỏ</button>
+            @if (ViewBag.FeaturedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.FeaturedProducts).Any())
+            {
+                @foreach (var product in ViewBag.FeaturedProducts)
+                {
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card product-card h-100">
+                            @if (product.ProductImages != null && product.ProductImages.Count > 0)
+                            {
+                                @foreach (var image in product.ProductImages)
+                                {
+                                    <img src="@image.ImageURL" class="card-img-top" alt="@image.AltText" style="height: 200px; object-fit: cover;">
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            }
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">@product.ProductName</h5>
+                                <p class="card-text">@product.ShortDescription</p>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        @if (product.SalePrice != null && product.SalePrice < product.Price)
+                                        {
+                                            <div>
+                                                <span class="text-danger fw-bold">@product.SalePrice.ToString("N0") ₫</span>
+                                                <small class="text-muted text-decoration-line-through">@product.Price.ToString("N0") ₫</small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="fw-bold">@product.Price.ToString("N0") ₫</span>
+                                        }
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <a href="/Shop/Product/@product.ProductID" class="btn btn-outline-primary btn-sm flex-fill">Xem chi tiết</a>
+                                        <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-product-id="@product.ProductID">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Fallback products if database is not available -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             class="card-img-top" alt="Dog Food">
+                        <div class="card-body">
+                            <h5 class="card-title">Thức ăn chó Royal Canin</h5>
+                            <p class="card-text">Thức ăn cao cấp cho chó trưởng thành</p>
+                            <div class="price">299,000 VNĐ</div>
+                            <button class="btn btn-primary">Thêm vào giỏ</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Product 2 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card product-card">
-                    <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                         class="card-img-top" alt="Cat Food">
-                    <div class="card-body">
-                        <h5 class="card-title">Thức ăn mèo Whiskas</h5>
-                        <p class="card-text">Thức ăn ướt cho mèo</p>
-                        <div class="price">45,000 VNĐ</div>
-                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             class="card-img-top" alt="Cat Food">
+                        <div class="card-body">
+                            <h5 class="card-title">Thức ăn mèo Whiskas</h5>
+                            <p class="card-text">Thức ăn ướt cho mèo</p>
+                            <div class="price">45,000 VNĐ</div>
+                            <button class="btn btn-primary">Thêm vào giỏ</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Product 3 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card product-card">
-                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                         class="card-img-top" alt="Dog Toy">
-                    <div class="card-body">
-                        <h5 class="card-title">Đồ chơi cho chó</h5>
-                        <p class="card-text">Bóng cao su bền bỉ</p>
-                        <div class="price">89,000 VNĐ</div>
-                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             class="card-img-top" alt="Dog Toy">
+                        <div class="card-body">
+                            <h5 class="card-title">Đồ chơi cho chó</h5>
+                            <p class="card-text">Bóng cao su bền bỉ</p>
+                            <div class="price">89,000 VNĐ</div>
+                            <button class="btn btn-primary">Thêm vào giỏ</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Product 4 -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card product-card">
-                    <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                         class="card-img-top" alt="Cat Accessory">
-                    <div class="card-body">
-                        <h5 class="card-title">Khay cát cho mèo</h5>
-                        <p class="card-text">Khay cát cao cấp có nắp</p>
-                        <div class="price">199,000 VNĐ</div>
-                        <button class="btn btn-primary">Thêm vào giỏ</button>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card product-card">
+                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                             class="card-img-top" alt="Cat Accessory">
+                        <div class="card-body">
+                            <h5 class="card-title">Khay cát cho mèo</h5>
+                            <p class="card-text">Khay cát cao cấp có nắp</p>
+                            <div class="price">199,000 VNĐ</div>
+                            <button class="btn btn-primary">Thêm vào giỏ</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </section>
@@ -250,3 +302,84 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    $('.add-to-cart-btn').on('click', function() {
+        var productId = $(this).data('product-id');
+        var $btn = $(this);
+        var originalHtml = $btn.html();
+        
+        // Disable button and show loading
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+        
+        $.ajax({
+            url: '/Cart/AddToCart',
+            type: 'POST',
+            data: {
+                productId: productId,
+                quantity: 1
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Show success message
+                    showToast('success', response.message);
+                    
+                    // Update cart count in header if exists
+                    if (response.cartCount !== undefined) {
+                        $('#cartCount').text(response.cartCount);
+                        if (response.cartCount > 0) {
+                            $('#cartCount').show();
+                        } else {
+                            $('#cartCount').hide();
+                        }
+                    }
+                } else {
+                    showToast('error', response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                showToast('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+            },
+            complete: function() {
+                // Re-enable button
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+    
+    function showToast(type, message) {
+        // Create toast element
+        var toastHtml = `
+            <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        
+        // Add to toast container
+        if ($('#toastContainer').length === 0) {
+            $('body').append('<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
+        }
+        
+        $('#toastContainer').append(toastHtml);
+        
+        // Show toast
+        var toastElement = $('#toastContainer .toast').last();
+        var toast = new bootstrap.Toast(toastElement[0]);
+        toast.show();
+        
+        // Remove toast element after it's hidden
+        toastElement.on('hidden.bs.toast', function() {
+            $(this).remove();
+        });
+    }
+});
+</script>
+}

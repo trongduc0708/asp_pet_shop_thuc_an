@@ -23,6 +23,10 @@ builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<BannerService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<AddressService>();
+builder.Services.AddScoped<VNPayService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

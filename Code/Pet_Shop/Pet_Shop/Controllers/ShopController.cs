@@ -4,13 +4,13 @@ using Pet_Shop.Models.Entities;
 
 namespace Pet_Shop.Controllers
 {
-    public class SearchController : Controller
+    public class ShopController : Controller
     {
         private readonly ProductService _productService;
         private readonly CategoryService _categoryService;
-        private readonly ILogger<SearchController> _logger;
+        private readonly ILogger<ShopController> _logger;
 
-        public SearchController(ProductService productService, CategoryService categoryService, ILogger<SearchController> logger)
+        public ShopController(ProductService productService, CategoryService categoryService, ILogger<ShopController> logger)
         {
             _productService = productService;
             _categoryService = categoryService;
@@ -18,12 +18,11 @@ namespace Pet_Shop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string? q, int? categoryId, int? brandId, decimal? minPrice, decimal? maxPrice, string? sortBy, int page = 1)
+        public async Task<IActionResult> Products(int? categoryId, int? brandId, decimal? minPrice, decimal? maxPrice, string? sortBy, int page = 1)
         {
             try
             {
-
-                ViewData["Title"] = "Tìm kiếm sản phẩm";
+                ViewData["Title"] = "Cửa hàng sản phẩm";
                 
                 // Get filter options
                 var categories = await _categoryService.GetAllCategoriesAsync();
@@ -31,7 +30,6 @@ namespace Pet_Shop.Controllers
                 
                 ViewBag.Categories = categories;
                 ViewBag.Brands = brands;
-                ViewBag.SearchQuery = q;
                 ViewBag.SelectedCategoryId = categoryId;
                 ViewBag.SelectedBrandId = brandId;
                 ViewBag.MinPrice = minPrice;
@@ -39,17 +37,8 @@ namespace Pet_Shop.Controllers
                 ViewBag.SortBy = sortBy;
                 ViewBag.CurrentPage = page;
 
-                // Search products
-                IEnumerable<Product> products;
-                
-                if (!string.IsNullOrEmpty(q))
-                {
-                    products = await _productService.SearchProductsAsync(q);
-                }
-                else
-                {
-                    products = await _productService.GetAllProductsAsync();
-                }
+                // Get products
+                IEnumerable<Product> products = await _productService.GetAllProductsAsync();
 
                 // Apply filters
                 if (categoryId.HasValue)
@@ -104,45 +93,81 @@ namespace Pet_Shop.Controllers
 
                 ViewBag.TotalItems = totalItems;
                 ViewBag.TotalPages = totalPages;
-                ViewBag.HasPreviousPage = page > 1;
-                ViewBag.HasNextPage = page < totalPages;
+                ViewBag.Products = products;
 
-                return View(products.ToList());
+                return View();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in search: {ex.Message}");
-                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tìm kiếm sản phẩm.";
-                return View(new List<Product>());
+                _logger.LogError($"Error loading products: {ex.Message}");
+                ViewBag.Error = "Có lỗi xảy ra khi tải danh sách sản phẩm";
+                return View();
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> QuickSearch(string term)
+        public async Task<IActionResult> Category(int id, int page = 1)
         {
             try
             {
-                if (string.IsNullOrEmpty(term))
+                var category = await _categoryService.GetCategoryByIdAsync(id);
+                if (category == null)
                 {
-                    return Json(new { success = false, message = "Vui lòng nhập từ khóa tìm kiếm" });
+                    return NotFound();
                 }
 
-                var products = await _productService.SearchProductsAsync(term);
-                var results = products.Take(5).Select(p => new
-                {
-                    id = p.ProductID,
-                    name = p.ProductName,
-                    price = p.Price,
-                    image = p.ProductImages.FirstOrDefault()?.ImageURL ?? "/images/no-image.jpg",
-                    url = Url.Action("Details", "Product", new { id = p.ProductID })
-                });
+                ViewData["Title"] = $"Danh mục: {category.CategoryName}";
+                
+                // Get products for this category
+                var products = await _productService.GetProductsByCategoryAsync(id);
+                
+                // Pagination
+                const int pageSize = 12;
+                var totalItems = products.Count();
+                var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+                
+                products = products.Skip((page - 1) * pageSize).Take(pageSize);
 
-                return Json(new { success = true, results = results });
+                ViewBag.Category = category;
+                ViewBag.Products = products;
+                ViewBag.TotalItems = totalItems;
+                ViewBag.TotalPages = totalPages;
+                ViewBag.CurrentPage = page;
+
+                return View();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in quick search: {ex.Message}");
-                return Json(new { success = false, message = "Có lỗi xảy ra khi tìm kiếm" });
+                _logger.LogError($"Error loading category {id}: {ex.Message}");
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Product(int id)
+        {
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["Title"] = product.ProductName;
+                
+                // Get related products (same category)
+                var relatedProducts = await _productService.GetRelatedProductsAsync(id, product.CategoryID, 4);
+                
+                ViewBag.Product = product;
+                ViewBag.RelatedProducts = relatedProducts;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading product {id}: {ex.Message}");
+                return NotFound();
             }
         }
     }
