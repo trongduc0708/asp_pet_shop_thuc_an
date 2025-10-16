@@ -28,6 +28,7 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<WishlistService>();
 builder.Services.AddScoped<VNPayService>();
+builder.Services.AddScoped<PromotionService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

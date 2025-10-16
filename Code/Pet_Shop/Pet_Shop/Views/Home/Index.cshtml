@@ -306,9 +306,31 @@
     </div>
 </section>
 
+<!-- Promotion Popup -->
+<div id="promotionPopup" class="promotion-popup-overlay">
+    <div class="promotion-popup">
+        <div class="promotion-popup-header">
+            <button class="promotion-popup-close" onclick="closePromotionPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="promotion-popup-title">
+                <i class="fas fa-gift me-2"></i>
+                Mã Khuyến Mãi Đặc Biệt
+            </h3>
+            <p class="promotion-popup-subtitle">Những ưu đãi hấp dẫn đang chờ bạn!</p>
+        </div>
+        <div class="promotion-popup-body" id="promotionPopupBody">
+            <!-- Promotion cards will be loaded here -->
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 <script>
 $(document).ready(function() {
+    // Check for active promotions and show popup
+    checkAndShowPromotionPopup();
+    
     $('.add-to-cart-btn').on('click', function() {
         var productId = $(this).data('product-id');
         var $btn = $(this);
@@ -350,46 +372,46 @@ $(document).ready(function() {
                 $btn.prop('disabled', false).html(originalHtml);
             }
         });
-            });
-            
-            // Wishlist functionality
-            $('.wishlist-btn').on('click', function() {
-                var productId = $(this).data('product-id');
-                var $btn = $(this);
-                var originalHtml = $btn.html();
-                
-                // Disable button and show loading
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
-                
-                $.ajax({
-                    url: '/Wishlist/AddToWishlist',
-                    type: 'POST',
-                    data: {
-                        productId: productId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Change button to filled heart
-                            $btn.removeClass('btn-outline-danger').addClass('btn-danger');
-                            $btn.html('<i class="fas fa-heart"></i>');
-                            $btn.attr('title', 'Đã thêm vào yêu thích');
-                            
-                            showToast('success', response.message);
-                        } else {
-                            showToast('error', response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showToast('error', 'Có lỗi xảy ra khi thêm vào yêu thích');
-                    },
-                    complete: function() {
-                        // Re-enable button
-                        $btn.prop('disabled', false);
-                    }
-                });
-            });
-            
-            function showToast(type, message) {
+    });
+    
+    // Wishlist functionality
+    $('.wishlist-btn').on('click', function() {
+        var productId = $(this).data('product-id');
+        var $btn = $(this);
+        var originalHtml = $btn.html();
+        
+        // Disable button and show loading
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+        
+        $.ajax({
+            url: '/Wishlist/AddToWishlist',
+            type: 'POST',
+            data: {
+                productId: productId
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Change button to filled heart
+                    $btn.removeClass('btn-outline-danger').addClass('btn-danger');
+                    $btn.html('<i class="fas fa-heart"></i>');
+                    $btn.attr('title', 'Đã thêm vào yêu thích');
+                    
+                    showToast('success', response.message);
+                } else {
+                    showToast('error', response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                showToast('error', 'Có lỗi xảy ra khi thêm vào yêu thích');
+            },
+            complete: function() {
+                // Re-enable button
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+    
+    function showToast(type, message) {
         // Create toast element
         var toastHtml = `
             <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -419,6 +441,130 @@ $(document).ready(function() {
         toastElement.on('hidden.bs.toast', function() {
             $(this).remove();
         });
+    }
+});
+
+// Function to check and show promotion popup
+function checkAndShowPromotionPopup() {
+    // Check if popup was already shown in this session
+    if (sessionStorage.getItem('promotionPopupShown') === 'true') {
+        return;
+    }
+    
+    // Load active promotions
+    $.ajax({
+        url: '/Home/GetActivePromotions',
+        type: 'GET',
+        success: function(response) {
+            if (response.success && response.data && response.data.length > 0) {
+                loadPromotionPopup(response.data);
+                showPromotionPopup();
+                // Mark as shown in this session
+                sessionStorage.setItem('promotionPopupShown', 'true');
+            }
+        },
+        error: function() {
+            console.log('Error loading promotions');
+        }
+    });
+}
+
+// Function to load promotion data into popup
+function loadPromotionPopup(promotions) {
+    var popupBody = $('#promotionPopupBody');
+    popupBody.empty();
+    
+    if (promotions.length === 0) {
+        popupBody.html(`
+            <div class="promotion-empty">
+                <i class="fas fa-gift"></i>
+                <h4>Không có mã khuyến mãi</h4>
+                <p>Hiện tại chưa có mã khuyến mãi nào đang hoạt động</p>
+            </div>
+        `);
+        return;
+    }
+    
+    promotions.forEach(function(promotion) {
+        var discountText = '';
+        if (promotion.discountType === 'Percentage') {
+            discountText = `Giảm ${promotion.discountValue}%`;
+        } else {
+            discountText = `Giảm ${promotion.discountValue.toLocaleString('vi-VN')} ₫`;
+        }
+        
+        var minOrderText = promotion.minOrderAmount > 0 ? 
+            `Đơn tối thiểu ${promotion.minOrderAmount.toLocaleString('vi-VN')} ₫` : 
+            'Không giới hạn';
+        
+        var usageText = promotion.usageLimit ? 
+            `Còn ${promotion.usageLimit - promotion.usedCount} lượt` : 
+            'Không giới hạn lượt';
+        
+        var cardHtml = `
+            <div class="promotion-card">
+                <div class="promotion-code">${promotion.promotionCode}</div>
+                <div class="promotion-name">${promotion.promotionName}</div>
+                <div class="promotion-description">${promotion.description || 'Mã khuyến mãi đặc biệt'}</div>
+                <div class="promotion-details">
+                    <div class="promotion-discount">${discountText}</div>
+                    <div class="promotion-min-order">${minOrderText}</div>
+                    <button class="promotion-copy-btn" onclick="copyPromotionCode('${promotion.promotionCode}', this)">
+                        <i class="fas fa-copy"></i>
+                        Sao chép mã
+                    </button>
+                </div>
+                <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 8px;">
+                    <i class="fas fa-clock"></i> ${usageText}
+                </div>
+            </div>
+        `;
+        
+        popupBody.append(cardHtml);
+    });
+}
+
+// Function to show promotion popup
+function showPromotionPopup() {
+    $('#promotionPopup').addClass('show');
+    $('body').css('overflow', 'hidden'); // Prevent background scrolling
+}
+
+// Function to close promotion popup
+function closePromotionPopup() {
+    $('#promotionPopup').removeClass('show');
+    $('body').css('overflow', ''); // Restore scrolling
+}
+
+// Function to copy promotion code
+function copyPromotionCode(code, button) {
+    navigator.clipboard.writeText(code).then(function() {
+        var $btn = $(button);
+        var originalText = $btn.html();
+        
+        $btn.addClass('copied').html('<i class="fas fa-check"></i> Đã sao chép');
+        
+        setTimeout(function() {
+            $btn.removeClass('copied').html(originalText);
+        }, 2000);
+        
+        showToast('success', 'Đã sao chép mã khuyến mãi: ' + code);
+    }).catch(function() {
+        showToast('error', 'Không thể sao chép mã khuyến mãi');
+    });
+}
+
+// Close popup when clicking outside
+$(document).on('click', '#promotionPopup', function(e) {
+    if (e.target === this) {
+        closePromotionPopup();
+    }
+});
+
+// Close popup with Escape key
+$(document).on('keydown', function(e) {
+    if (e.key === 'Escape' && $('#promotionPopup').hasClass('show')) {
+        closePromotionPopup();
     }
 });
 </script>
