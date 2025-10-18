@@ -12,7 +12,7 @@
  Target Server Version : 16001000 (16.00.1000)
  File Encoding         : 65001
 
- Date: 15/10/2025 22:57:37
+ Date: 18/10/2025 22:51:51
 */
 
 
@@ -2188,7 +2188,7 @@ GO
 -- ----------------------------
 -- Auto increment value for Wishlist
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[Wishlist]', RESEED, 1)
+DBCC CHECKIDENT ('[dbo].[Wishlist]', RESEED, 2)
 GO
 
 
