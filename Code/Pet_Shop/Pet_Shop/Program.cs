@@ -29,6 +29,8 @@ builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<WishlistService>();
 builder.Services.AddScoped<VNPayService>();
 builder.Services.AddScoped<PromotionService>();
+builder.Services.AddScoped<ChatbotService>();
+builder.Services.AddHttpClient<ChatbotService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
