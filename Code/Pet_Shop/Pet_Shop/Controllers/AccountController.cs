@@ -63,10 +63,18 @@ namespace Pet_Shop.Controllers
                     return Redirect(returnUrl);
                 }
 
-                return RedirectToAction("Index", "Home");
+                // Phân biệt role để redirect
+                if (user.Role.RoleName == "Admin" || user.Role.RoleName == "Employee")
+                {
+                    return RedirectToAction("Dashboard", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
-            ModelState.AddModelError(string.Empty, "Email hoặc mật khẩu không đúng.");
+            ModelState.AddModelError(string.Empty, "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập.");
             return View(model);
         }
 

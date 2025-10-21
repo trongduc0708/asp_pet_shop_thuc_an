@@ -23,6 +23,16 @@
         </div>
     }
 
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
     <form asp-action="Register" method="post">
         <div class="form-group">
             <label asp-for="FullName" class="form-label"></label>
