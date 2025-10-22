@@ -13,13 +13,15 @@ namespace Pet_Shop.Controllers.Admin
         private readonly CategoryService _categoryService;
         private readonly ProductService _productService;
         private readonly BannerService _bannerService;
+        private readonly OrderService _orderService;
 
-        public AdminController(ILogger<AdminController> logger, CategoryService categoryService, ProductService productService, BannerService bannerService)
+        public AdminController(ILogger<AdminController> logger, CategoryService categoryService, ProductService productService, BannerService bannerService, OrderService orderService)
         {
             _logger = logger;
             _categoryService = categoryService;
             _productService = productService;
             _bannerService = bannerService;
+            _orderService = orderService;
         }
 
         [HttpGet]
@@ -794,6 +796,159 @@ namespace Pet_Shop.Controllers.Admin
             {
                 _logger.LogError($"Error getting product images: {ex.Message}");
                 return Json(new { success = false, message = "Có lỗi xảy ra khi tải hình ảnh." });
+            }
+        }
+
+        // Order Management
+        [HttpGet]
+        [Route("Orders")]
+        public async Task<IActionResult> Orders()
+        {
+            try
+            {
+                var orders = await _orderService.GetAllOrdersForAdminAsync();
+                var orderStatuses = await _orderService.GetAllOrderStatusesAsync();
+                
+                ViewBag.OrderStatuses = orderStatuses;
+                return View(orders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading orders: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải danh sách đơn hàng.";
+                return View(new List<Pet_Shop.Models.Entities.Order>());
+            }
+        }
+
+        [HttpGet]
+        [Route("Orders/Details/{id}")]
+        public async Task<IActionResult> OrderDetails(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdForAdminAsync(id);
+                if (order == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+                    return RedirectToAction("Orders");
+                }
+
+                var orderStatuses = await _orderService.GetAllOrderStatusesAsync();
+                ViewBag.OrderStatuses = orderStatuses;
+                
+                return View(order);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading order details: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải chi tiết đơn hàng.";
+                return RedirectToAction("Orders");
+            }
+        }
+
+        [HttpPost]
+        [Route("Orders/{id}/UpdateStatus")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, int newStatusId, string? notes = null)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "1");
+                var success = await _orderService.UpdateOrderStatusAsync(id, newStatusId, userId, notes);
+                
+                if (success)
+                {
+                    return Json(new { success = true, message = "Cập nhật trạng thái đơn hàng thành công!" });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Cập nhật trạng thái đơn hàng thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating order status: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật trạng thái đơn hàng." });
+            }
+        }
+
+        [HttpPost]
+        [Route("Orders/{id}/UpdateNotes")]
+        public async Task<IActionResult> UpdateOrderNotes(int id, string adminNotes)
+        {
+            try
+            {
+                var success = await _orderService.UpdateOrderAdminNotesAsync(id, adminNotes);
+                
+                if (success)
+                {
+                    return Json(new { success = true, message = "Cập nhật ghi chú thành công!" });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Cập nhật ghi chú thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating order notes: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật ghi chú." });
+            }
+        }
+
+        [HttpGet]
+        [Route("Orders/Search")]
+        public async Task<IActionResult> SearchOrders(string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    return RedirectToAction("Orders");
+                }
+
+                var orders = await _orderService.SearchOrdersAsync(searchTerm);
+                var orderStatuses = await _orderService.GetAllOrderStatusesAsync();
+                
+                ViewBag.SearchTerm = searchTerm;
+                ViewBag.OrderStatuses = orderStatuses;
+                return View("Orders", orders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error searching orders: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tìm kiếm đơn hàng.";
+                return RedirectToAction("Orders");
+            }
+        }
+
+        [HttpGet]
+        [Route("Orders/Filter")]
+        public async Task<IActionResult> FilterOrders(int? statusId)
+        {
+            try
+            {
+                IEnumerable<Pet_Shop.Models.Entities.Order> orders;
+                
+                if (statusId.HasValue)
+                {
+                    orders = await _orderService.GetOrdersByStatusAsync(statusId.Value);
+                }
+                else
+                {
+                    orders = await _orderService.GetAllOrdersForAdminAsync();
+                }
+
+                var orderStatuses = await _orderService.GetAllOrderStatusesAsync();
+                
+                ViewBag.SelectedStatusId = statusId;
+                ViewBag.OrderStatuses = orderStatuses;
+                return View("Orders", orders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error filtering orders: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi lọc đơn hàng.";
+                return RedirectToAction("Orders");
             }
         }
     }

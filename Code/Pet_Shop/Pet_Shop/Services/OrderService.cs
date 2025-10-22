@@ -183,6 +183,142 @@ namespace Pet_Shop.Services
             }
         }
 
+        // Admin Order Management Methods
+        public async Task<IEnumerable<Order>> GetAllOrdersForAdminAsync()
+        {
+            try
+            {
+                return await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.Status)
+                    .Include(o => o.PaymentMethod)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting all orders for admin: {ex.Message}");
+                return new List<Order>();
+            }
+        }
+
+        public async Task<Order?> GetOrderByIdForAdminAsync(int orderId)
+        {
+            try
+            {
+                return await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.Status)
+                    .Include(o => o.PaymentMethod)
+                    .Include(o => o.Promotion)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product)
+                            .ThenInclude(p => p.ProductImages)
+                    .Include(o => o.OrderStatusHistories)
+                        .ThenInclude(osh => osh.OldStatus)
+                    .Include(o => o.OrderStatusHistories)
+                        .ThenInclude(osh => osh.NewStatus)
+                    .FirstOrDefaultAsync(o => o.OrderID == orderId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting order {orderId} for admin: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<Order>> SearchOrdersAsync(string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(searchTerm))
+                    return await GetAllOrdersForAdminAsync();
+
+                return await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.Status)
+                    .Include(o => o.PaymentMethod)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product)
+                    .Where(o => o.OrderNumber.Contains(searchTerm) ||
+                               o.User.FullName.Contains(searchTerm) ||
+                               o.User.Email.Contains(searchTerm) ||
+                               o.ShippingAddress.Contains(searchTerm))
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error searching orders: {ex.Message}");
+                return new List<Order>();
+            }
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(int statusId)
+        {
+            try
+            {
+                return await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.Status)
+                    .Include(o => o.PaymentMethod)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product)
+                    .Where(o => o.StatusID == statusId)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting orders by status {statusId}: {ex.Message}");
+                return new List<Order>();
+            }
+        }
+
+        public async Task<IEnumerable<OrderStatus>> GetAllOrderStatusesAsync()
+        {
+            try
+            {
+                return await _context.OrderStatuses
+                    .OrderBy(s => s.SortOrder)
+                    .ThenBy(s => s.StatusName)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting order statuses: {ex.Message}");
+                return new List<OrderStatus>();
+            }
+        }
+
+        public async Task<bool> UpdateOrderAdminNotesAsync(int orderId, string adminNotes)
+        {
+            try
+            {
+                var order = await _context.Orders.FindAsync(orderId);
+                if (order == null)
+                {
+                    _logger.LogWarning($"Order {orderId} not found");
+                    return false;
+                }
+
+                order.AdminNotes = adminNotes;
+                order.UpdatedDate = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+                
+                _logger.LogInformation($"Order {orderId} admin notes updated");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating order {orderId} admin notes: {ex.Message}");
+                return false;
+            }
+        }
+
         private string GenerateOrderNumber()
         {
             return "PS" + DateTime.Now.ToString("yyyyMMddHHmmss");

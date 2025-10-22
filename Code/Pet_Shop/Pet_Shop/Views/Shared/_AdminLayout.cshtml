@@ -48,7 +48,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="#">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Orders" || ViewContext.RouteData.Values["Action"]?.ToString() == "OrderDetails" ? "active" : "")" 
+                               href="@Url.Action("Orders", "Admin")">
                                 <i class="fas fa-shopping-cart me-2"></i>Đơn hàng
                             </a>
                         </li>
