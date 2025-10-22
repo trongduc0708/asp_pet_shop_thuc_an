@@ -1,5 +1,177 @@
 /* HyHy Pet Shop - Custom Styles */
 
+/* Admin Panel Styles */
+.admin-sidebar {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-right: 3px solid #d4af37;
+}
+
+.admin-sidebar .nav-link {
+    color: #ecf0f1 !important;
+    padding: 12px 20px;
+    margin: 2px 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.admin-sidebar .nav-link:hover {
+    background-color: rgba(212, 175, 55, 0.2);
+    color: #d4af37 !important;
+    transform: translateX(5px);
+}
+
+.admin-sidebar .nav-link.active {
+    background-color: #d4af37;
+    color: #2c3e50 !important;
+    font-weight: 600;
+}
+
+.admin-sidebar .nav-link.active:hover {
+    background-color: #c9a96e;
+    transform: translateX(5px);
+}
+
+.admin-header {
+    background: linear-gradient(135deg, #d4af37 0%, #c9a96e 100%);
+    color: #2c3e50;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.admin-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card .card-header {
+    background: linear-gradient(135deg, #d4af37 0%, #c9a96e 100%);
+    color: #2c3e50;
+    border-radius: 12px 12px 0 0;
+    font-weight: 600;
+}
+
+.btn-admin-primary {
+    background: linear-gradient(135deg, #d4af37 0%, #c9a96e 100%);
+    border: none;
+    color: #2c3e50;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-admin-primary:hover {
+    background: linear-gradient(135deg, #c9a96e 0%, #b8941f 100%);
+    color: #2c3e50;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-admin-secondary {
+    background: #6c757d;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-admin-secondary:hover {
+    background: #5a6268;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Image Upload Styles */
+.image-upload-container {
+    border: 2px dashed #d4af37;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.image-upload-container:hover {
+    border-color: #c9a96e;
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    transform: translateY(-2px);
+}
+
+.image-upload-container.dragover {
+    border-color: #d4af37;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+}
+
+.image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin: 10px auto;
+    display: block;
+}
+
+.image-upload-btn {
+    background: linear-gradient(135deg, #d4af37 0%, #c9a96e 100%);
+    border: none;
+    color: #2c3e50;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.image-upload-btn:hover {
+    background: linear-gradient(135deg, #c9a96e 0%, #b8941f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.image-edit-btn {
+    background: #17a2b8;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 5px;
+}
+
+.image-edit-btn:hover {
+    background: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.image-delete-btn {
+    background: #dc3545;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 5px;
+}
+
+.image-delete-btn:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
 /* Top Header Bar */
 .top-header {
     background-color: #f8f9fa;

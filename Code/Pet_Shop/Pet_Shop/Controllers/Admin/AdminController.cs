@@ -425,5 +425,376 @@ namespace Pet_Shop.Controllers.Admin
                 return RedirectToAction("Banners");
             }
         }
+
+        // Product Management
+        [HttpGet]
+        [Route("Products")]
+        public async Task<IActionResult> Products()
+        {
+            try
+            {
+                var products = await _productService.GetAllProductsForAdminAsync();
+                return View(products);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading products: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải danh sách sản phẩm.";
+                return View(new List<Pet_Shop.Models.Entities.Product>());
+            }
+        }
+
+        [HttpGet]
+        [Route("Products/Create")]
+        public async Task<IActionResult> CreateProduct()
+        {
+            try
+            {
+                var categories = await _productService.GetAllCategoriesAsync();
+                var brands = await _productService.GetAllBrandsAsync();
+                
+                ViewBag.Categories = categories;
+                ViewBag.Brands = brands;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading create product form: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải form tạo sản phẩm.";
+                return RedirectToAction("Products");
+            }
+        }
+
+        [HttpPost]
+        [Route("Products/Create")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateProduct(Pet_Shop.Models.Entities.Product product)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var categories = await _productService.GetAllCategoriesAsync();
+                    var brands = await _productService.GetAllBrandsAsync();
+                    
+                    ViewBag.Categories = categories;
+                    ViewBag.Brands = brands;
+                    return View(product);
+                }
+
+                // Check if product name already exists
+                var nameExists = await _productService.ProductExistsAsync(product.ProductName);
+                if (nameExists)
+                {
+                    ModelState.AddModelError("ProductName", "Tên sản phẩm đã tồn tại.");
+                    var categories = await _productService.GetAllCategoriesAsync();
+                    var brands = await _productService.GetAllBrandsAsync();
+                    
+                    ViewBag.Categories = categories;
+                    ViewBag.Brands = brands;
+                    return View(product);
+                }
+
+                // Check if product code already exists (if provided)
+                if (!string.IsNullOrEmpty(product.ProductCode))
+                {
+                    var codeExists = await _productService.ProductCodeExistsAsync(product.ProductCode);
+                    if (codeExists)
+                    {
+                        ModelState.AddModelError("ProductCode", "Mã sản phẩm đã tồn tại.");
+                        var categories = await _productService.GetAllCategoriesAsync();
+                        var brands = await _productService.GetAllBrandsAsync();
+                        
+                        ViewBag.Categories = categories;
+                        ViewBag.Brands = brands;
+                        return View(product);
+                    }
+                }
+
+                product.IsActive = true;
+                product.CreatedDate = DateTime.Now;
+                product.UpdatedDate = DateTime.Now;
+
+                var success = await _productService.CreateProductAsync(product);
+                if (success)
+                {
+                    // Handle product images if any
+                    if (Request.Form.ContainsKey("ProductImages"))
+                    {
+                        var imageUrls = Request.Form["ProductImages"].ToString().Split(',');
+                        for (int i = 0; i < imageUrls.Length; i++)
+                        {
+                            if (!string.IsNullOrEmpty(imageUrls[i]))
+                            {
+                                await _productService.AddProductImageAsync(product.ProductID, imageUrls[i], i == 0);
+                            }
+                        }
+                    }
+
+                    TempData["SuccessMessage"] = "Tạo sản phẩm thành công!";
+                    return RedirectToAction("Products");
+                }
+
+                ModelState.AddModelError(string.Empty, "Tạo sản phẩm thất bại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error creating product: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi tạo sản phẩm.");
+            }
+
+            var categoriesForError = await _productService.GetAllCategoriesAsync();
+            var brandsForError = await _productService.GetAllBrandsAsync();
+            
+            ViewBag.Categories = categoriesForError;
+            ViewBag.Brands = brandsForError;
+            return View(product);
+        }
+
+        [HttpGet]
+        [Route("Products/Edit/{id}")]
+        public async Task<IActionResult> EditProduct(int id)
+        {
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy sản phẩm.";
+                    return RedirectToAction("Products");
+                }
+
+                var categories = await _productService.GetAllCategoriesAsync();
+                var brands = await _productService.GetAllBrandsAsync();
+                
+                ViewBag.Categories = categories;
+                ViewBag.Brands = brands;
+                return View(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading edit product form: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải form chỉnh sửa sản phẩm.";
+                return RedirectToAction("Products");
+            }
+        }
+
+        [HttpPost]
+        [Route("Products/Edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProduct(Pet_Shop.Models.Entities.Product product)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var categories = await _productService.GetAllCategoriesAsync();
+                    var brands = await _productService.GetAllBrandsAsync();
+                    
+                    ViewBag.Categories = categories;
+                    ViewBag.Brands = brands;
+                    return View(product);
+                }
+
+                // Check if product name already exists (excluding current product)
+                var nameExists = await _productService.ProductExistsAsync(product.ProductName, product.ProductID);
+                if (nameExists)
+                {
+                    ModelState.AddModelError("ProductName", "Tên sản phẩm đã tồn tại.");
+                    var categories = await _productService.GetAllCategoriesAsync();
+                    var brands = await _productService.GetAllBrandsAsync();
+                    
+                    ViewBag.Categories = categories;
+                    ViewBag.Brands = brands;
+                    return View(product);
+                }
+
+                // Check if product code already exists (if provided)
+                if (!string.IsNullOrEmpty(product.ProductCode))
+                {
+                    var codeExists = await _productService.ProductCodeExistsAsync(product.ProductCode, product.ProductID);
+                    if (codeExists)
+                    {
+                        ModelState.AddModelError("ProductCode", "Mã sản phẩm đã tồn tại.");
+                        var categories = await _productService.GetAllCategoriesAsync();
+                        var brands = await _productService.GetAllBrandsAsync();
+                        
+                        ViewBag.Categories = categories;
+                        ViewBag.Brands = brands;
+                        return View(product);
+                    }
+                }
+
+                var success = await _productService.UpdateProductAsync(product);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Cập nhật sản phẩm thành công!";
+                    return RedirectToAction("Products");
+                }
+
+                ModelState.AddModelError(string.Empty, "Cập nhật sản phẩm thất bại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating product: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi cập nhật sản phẩm.");
+            }
+
+            var categoriesForError = await _productService.GetAllCategoriesAsync();
+            var brandsForError = await _productService.GetAllBrandsAsync();
+            
+            ViewBag.Categories = categoriesForError;
+            ViewBag.Brands = brandsForError;
+            return View(product);
+        }
+
+        [HttpGet]
+        [Route("Products/Details/{id}")]
+        public async Task<IActionResult> ProductDetails(int id)
+        {
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy sản phẩm.";
+                    return RedirectToAction("Products");
+                }
+
+                return View(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading product details: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải chi tiết sản phẩm.";
+                return RedirectToAction("Products");
+            }
+        }
+
+        [HttpPost]
+        [Route("Products/Delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                var success = await _productService.DeleteProductAsync(id);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Xóa sản phẩm thành công!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa sản phẩm.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting product: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa sản phẩm.";
+            }
+
+            return RedirectToAction("Products");
+        }
+
+        [HttpGet]
+        [Route("Products/Search")]
+        public async Task<IActionResult> SearchProducts(string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    return RedirectToAction("Products");
+                }
+
+                var products = await _productService.SearchProductsAsync(searchTerm);
+                ViewBag.SearchTerm = searchTerm;
+                return View("Products", products);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error searching products: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tìm kiếm sản phẩm.";
+                return RedirectToAction("Products");
+            }
+        }
+
+        // Product Image Management
+        [HttpPost]
+        [Route("Products/{productId}/Images/Add")]
+        public async Task<IActionResult> AddProductImage(int productId, string imageUrl, bool isPrimary = false)
+        {
+            try
+            {
+                var success = await _productService.AddProductImageAsync(productId, imageUrl, isPrimary);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Thêm hình ảnh thành công!" });
+                }
+                return Json(new { success = false, message = "Thêm hình ảnh thất bại." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error adding product image: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi thêm hình ảnh." });
+            }
+        }
+
+        [HttpPost]
+        [Route("Products/Images/{imageId}/Remove")]
+        public async Task<IActionResult> RemoveProductImage(int imageId)
+        {
+            try
+            {
+                var success = await _productService.RemoveProductImageAsync(imageId);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Xóa hình ảnh thành công!" });
+                }
+                return Json(new { success = false, message = "Xóa hình ảnh thất bại." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error removing product image: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi xóa hình ảnh." });
+            }
+        }
+
+        [HttpPost]
+        [Route("Products/{productId}/Images/{imageId}/SetPrimary")]
+        public async Task<IActionResult> SetPrimaryImage(int productId, int imageId)
+        {
+            try
+            {
+                var success = await _productService.SetPrimaryImageAsync(productId, imageId);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Đặt hình ảnh chính thành công!" });
+                }
+                return Json(new { success = false, message = "Đặt hình ảnh chính thất bại." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error setting primary image: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi đặt hình ảnh chính." });
+            }
+        }
+
+        [HttpGet]
+        [Route("Products/{productId}/Images")]
+        public async Task<IActionResult> GetProductImages(int productId)
+        {
+            try
+            {
+                var images = await _productService.GetProductImagesAsync(productId);
+                return Json(new { success = true, images = images });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting product images: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi tải hình ảnh." });
+            }
+        }
     }
 }

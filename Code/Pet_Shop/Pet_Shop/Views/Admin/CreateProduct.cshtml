@@ -1,0 +1,362 @@
+@model Pet_Shop.Models.Entities.Product
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateProduct" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <!-- Basic Information -->
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="ProductName" class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input asp-for="ProductName" class="form-control" placeholder="Nhập tên sản phẩm" />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ProductCode" class="form-label">Mã sản phẩm</label>
+                            <input asp-for="ProductCode" class="form-control" placeholder="Nhập mã sản phẩm" />
+                            <span asp-validation-for="ProductCode" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CategoryID" class="form-label">Danh mục <span class="text-danger">*</span></label>
+                            <select asp-for="CategoryID" class="form-select">
+                                <option value="">-- Chọn danh mục --</option>
+                                @if (ViewBag.Categories != null)
+                                {
+                                    @foreach (var category in ViewBag.Categories)
+                                    {
+                                        <option value="@category.CategoryID">@category.CategoryName</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="CategoryID" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="BrandID" class="form-label">Thương hiệu <span class="text-danger">*</span></label>
+                            <select asp-for="BrandID" class="form-select">
+                                <option value="">-- Chọn thương hiệu --</option>
+                                @if (ViewBag.Brands != null)
+                                {
+                                    @foreach (var brand in ViewBag.Brands)
+                                    {
+                                        <option value="@brand.BrandID">@brand.BrandName</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="BrandID" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Product Type and Pet Type -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ProductType" class="form-label">Loại sản phẩm <span class="text-danger">*</span></label>
+                            <select asp-for="ProductType" class="form-select">
+                                <option value="">-- Chọn loại sản phẩm --</option>
+                                <option value="Food">Thức ăn</option>
+                                <option value="Accessory">Phụ kiện</option>
+                                <option value="Toy">Đồ chơi</option>
+                                <option value="Health">Sức khỏe</option>
+                                <option value="Grooming">Chăm sóc</option>
+                            </select>
+                            <span asp-validation-for="ProductType" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PetType" class="form-label">Loại thú cưng <span class="text-danger">*</span></label>
+                            <select asp-for="PetType" class="form-select">
+                                <option value="">-- Chọn loại thú cưng --</option>
+                                <option value="Dog">Chó</option>
+                                <option value="Cat">Mèo</option>
+                                <option value="Both">Cả hai</option>
+                                <option value="Bird">Chim</option>
+                                <option value="Fish">Cá</option>
+                                <option value="Other">Khác</option>
+                            </select>
+                            <span asp-validation-for="PetType" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Physical Properties -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Weight" class="form-label">Trọng lượng (kg)</label>
+                            <input asp-for="Weight" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                            <span asp-validation-for="Weight" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Dimensions" class="form-label">Kích thước</label>
+                            <input asp-for="Dimensions" class="form-control" placeholder="VD: 30x20x10 cm" />
+                            <span asp-validation-for="Dimensions" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ExpiryDate" class="form-label">Hạn sử dụng</label>
+                            <input asp-for="ExpiryDate" type="date" class="form-control" />
+                            <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Descriptions -->
+                    <div class="mb-3">
+                        <label asp-for="ShortDescription" class="form-label">Mô tả ngắn</label>
+                        <textarea asp-for="ShortDescription" class="form-control" rows="2" placeholder="Mô tả ngắn về sản phẩm"></textarea>
+                        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Mô tả chi tiết</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả chi tiết về sản phẩm"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Price" class="form-label">Giá bán <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Price" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SalePrice" class="form-label">Giá khuyến mãi</label>
+                            <div class="input-group">
+                                <input asp-for="SalePrice" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="SalePrice" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Cost" class="form-label">Giá nhập</label>
+                            <div class="input-group">
+                                <input asp-for="Cost" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="Cost" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Product Images -->
+                    <div class="mb-3">
+                        <label class="form-label">Hình ảnh sản phẩm</label>
+                        <div class="border rounded p-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="file" id="productImages" class="form-control" multiple accept="image/*">
+                                    <div class="form-text">Chọn nhiều hình ảnh (JPG, PNG, GIF - tối đa 5MB mỗi file)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" id="uploadImages" class="btn btn-outline-primary">
+                                        <i class="fas fa-upload me-2"></i>Upload hình ảnh
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="imagePreview" class="mt-3"></div>
+                            <div id="uploadedImages" class="mt-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Status Options -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                                <label asp-for="IsActive" class="form-check-label">
+                                    Sản phẩm hoạt động
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsNew" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsNew" class="form-check-label">
+                                    Sản phẩm mới
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check">
+                                <input asp-for="IsFeatured" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsFeatured" class="form-check-label">
+                                    Sản phẩm nổi bật
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Products")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Lưu sản phẩm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        let uploadedImages = [];
+
+        // Preview selected images
+        document.getElementById('productImages').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+
+            files.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'col-md-3 mb-2';
+                        div.innerHTML = `
+                            <div class="position-relative">
+                                <img src="${e.target.result}" class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
+                                <div class="position-absolute top-0 end-0">
+                                    <span class="badge bg-primary">${file.name}</span>
+                                </div>
+                            </div>
+                        `;
+                        preview.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Upload images
+        document.getElementById('uploadImages').addEventListener('click', function() {
+            const files = document.getElementById('productImages').files;
+            if (files.length === 0) {
+                alert('Vui lòng chọn hình ảnh để upload');
+                return;
+            }
+
+            const formData = new FormData();
+            Array.from(files).forEach(file => {
+                formData.append('files', file);
+            });
+
+            // Show loading
+            const uploadBtn = document.getElementById('uploadImages');
+            const originalText = uploadBtn.innerHTML;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang upload...';
+            uploadBtn.disabled = true;
+
+            fetch('/api/FileUpload/upload-product-images', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add uploaded images to the list
+                    data.files.forEach(file => {
+                        uploadedImages.push(file);
+                    });
+
+                    // Display uploaded images
+                    displayUploadedImages();
+                    
+                    // Clear file input and preview
+                    document.getElementById('productImages').value = '';
+                    document.getElementById('imagePreview').innerHTML = '';
+                    
+                    alert(`Upload thành công ${data.files.length} hình ảnh!`);
+                } else {
+                    alert('Upload thất bại: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi upload hình ảnh');
+            })
+            .finally(() => {
+                uploadBtn.innerHTML = originalText;
+                uploadBtn.disabled = false;
+            });
+        });
+
+        function displayUploadedImages() {
+            const container = document.getElementById('uploadedImages');
+            container.innerHTML = '';
+
+            if (uploadedImages.length > 0) {
+                const header = document.createElement('h6');
+                header.textContent = `Hình ảnh đã upload (${uploadedImages.length}):`;
+                container.appendChild(header);
+
+                const row = document.createElement('div');
+                row.className = 'row';
+
+                uploadedImages.forEach((image, index) => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-3 mb-2';
+                    col.innerHTML = `
+                        <div class="position-relative">
+                            <img src="${image.fileUrl}" class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="removeImage(${index})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="text-center mt-1">
+                                <small class="text-muted">${image.originalName}</small>
+                            </div>
+                        </div>
+                    `;
+                    row.appendChild(col);
+                });
+
+                container.appendChild(row);
+            }
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            displayUploadedImages();
+        }
+
+        // Add hidden input for uploaded images before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Create hidden inputs for uploaded images
+            uploadedImages.forEach((image, index) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `ProductImages[${index}].ImageURL`;
+                input.value = image.fileUrl;
+                this.appendChild(input);
+            });
+        });
+    </script>
+}

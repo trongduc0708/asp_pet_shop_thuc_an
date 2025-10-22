@@ -13,7 +13,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <nav class="col-md-3 col-lg-2 d-md-block admin-sidebar sidebar collapse">
                 <div class="position-sticky pt-3">
                     <div class="text-center mb-4">
                         <h4 class="text-white">
@@ -42,7 +42,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="#">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Products" ? "active" : "")" 
+                               href="@Url.Action("Products", "Admin")">
                                 <i class="fas fa-box me-2"></i>Sản phẩm
                             </a>
                         </li>

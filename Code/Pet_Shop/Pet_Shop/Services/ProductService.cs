@@ -153,6 +153,198 @@ namespace Pet_Shop.Services
             return stats;
         }
 
+        // CRUD Operations for Admin
+        public async Task<IEnumerable<Product>> GetAllProductsForAdminAsync()
+        {
+            return await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.ProductImages)
+                .OrderByDescending(p => p.CreatedDate)
+                .ToListAsync();
+        }
+
+        public async Task<bool> CreateProductAsync(Product product)
+        {
+            try
+            {
+                product.CreatedDate = DateTime.Now;
+                product.UpdatedDate = DateTime.Now;
+                
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateProductAsync(Product product)
+        {
+            try
+            {
+                var existingProduct = await _context.Products.FindAsync(product.ProductID);
+                if (existingProduct == null)
+                    return false;
+
+                existingProduct.ProductName = product.ProductName;
+                existingProduct.ProductCode = product.ProductCode;
+                existingProduct.CategoryID = product.CategoryID;
+                existingProduct.BrandID = product.BrandID;
+                existingProduct.ProductType = product.ProductType;
+                existingProduct.PetType = product.PetType;
+                existingProduct.Weight = product.Weight;
+                existingProduct.Dimensions = product.Dimensions;
+                existingProduct.ExpiryDate = product.ExpiryDate;
+                existingProduct.Description = product.Description;
+                existingProduct.ShortDescription = product.ShortDescription;
+                existingProduct.Price = product.Price;
+                existingProduct.SalePrice = product.SalePrice;
+                existingProduct.Cost = product.Cost;
+                existingProduct.IsNew = product.IsNew;
+                existingProduct.IsActive = product.IsActive;
+                existingProduct.IsFeatured = product.IsFeatured;
+                existingProduct.UpdatedDate = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteProductAsync(int productId)
+        {
+            try
+            {
+                var product = await _context.Products.FindAsync(productId);
+                if (product == null)
+                    return false;
+
+                // Soft delete - set IsActive to false
+                product.IsActive = false;
+                product.UpdatedDate = DateTime.Now;
+                
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ProductExistsAsync(string productName, int? excludeId = null)
+        {
+            var query = _context.Products.Where(p => p.ProductName == productName);
+            
+            if (excludeId.HasValue)
+            {
+                query = query.Where(p => p.ProductID != excludeId.Value);
+            }
+            
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> ProductCodeExistsAsync(string productCode, int? excludeId = null)
+        {
+            if (string.IsNullOrEmpty(productCode))
+                return false;
+                
+            var query = _context.Products.Where(p => p.ProductCode == productCode);
+            
+            if (excludeId.HasValue)
+            {
+                query = query.Where(p => p.ProductID != excludeId.Value);
+            }
+            
+            return await query.AnyAsync();
+        }
+
+        // Product Image Management
+        public async Task<bool> AddProductImageAsync(int productId, string imageUrl, bool isPrimary = false)
+        {
+            try
+            {
+                var productImage = new ProductImage
+                {
+                    ProductID = productId,
+                    ImageURL = imageUrl,
+                    IsPrimary = isPrimary,
+                    CreatedDate = DateTime.Now
+                };
+
+                _context.ProductImages.Add(productImage);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveProductImageAsync(int imageId)
+        {
+            try
+            {
+                var image = await _context.ProductImages.FindAsync(imageId);
+                if (image == null)
+                    return false;
+
+                _context.ProductImages.Remove(image);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> SetPrimaryImageAsync(int productId, int imageId)
+        {
+            try
+            {
+                // Remove primary status from all images of this product
+                var allImages = await _context.ProductImages
+                    .Where(pi => pi.ProductID == productId)
+                    .ToListAsync();
+
+                foreach (var img in allImages)
+                {
+                    img.IsPrimary = false;
+                }
+
+                // Set the selected image as primary
+                var primaryImage = allImages.FirstOrDefault(pi => pi.ImageID == imageId);
+                if (primaryImage != null)
+                {
+                    primaryImage.IsPrimary = true;
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<ProductImage>> GetProductImagesAsync(int productId)
+        {
+            return await _context.ProductImages
+                .Where(pi => pi.ProductID == productId)
+                .OrderBy(pi => pi.IsPrimary ? 0 : 1)
+                .ThenBy(pi => pi.CreatedDate)
+                .ToListAsync();
+        }
+
         // Example of using stored procedures with Entity Framework
         public async Task<bool> UpdateInventoryAsync(int productId, int quantity, string transactionType, int createdBy)
         {
