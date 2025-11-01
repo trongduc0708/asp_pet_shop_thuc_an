@@ -99,6 +99,117 @@
     </div>
 </section>
 
+<!-- AI Chatbot Recommendations (Only for logged in users with purchase history) -->
+@if (ViewBag.AIRecommendedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.AIRecommendedProducts).Any())
+{
+    <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <div class="ai-badge mb-3">
+                        <span class="badge bg-warning text-dark px-4 py-2 fs-6 pulse-animation">
+                            <i class="fas fa-robot me-2"></i>AI CHATBOT GỢI Ý
+                        </span>
+                    </div>
+                    <h2 class="display-5 fw-bold text-white">Sản Phẩm Dành Riêng Cho Bạn</h2>
+                    <p class="lead text-white-50">
+                        <i class="fas fa-brain me-2"></i>
+                        Được phân tích bởi AI chatbot dựa trên lịch sử mua hàng của bạn
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                @foreach (var product in ViewBag.AIRecommendedProducts)
+                {
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card product-card h-100 shadow-lg border-0 ai-product-card">
+                            <div class="position-relative">
+                                @if (product.ProductImages != null && product.ProductImages.Count > 0)
+                                {
+                                    @foreach (var image in product.ProductImages)
+                                    {
+                                        <img src="@image.ImageURL" class="card-img-top" alt="@image.AltText" style="height: 200px; object-fit: cover;">
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                }
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-robot me-1"></i>AI Gợi ý
+                                    </span>
+                                </div>
+                                @{
+                                    var salePrice = product.SalePrice != null ? (decimal?)product.SalePrice : null;
+                                    var hasSalePrice = salePrice.HasValue && salePrice.Value > 0 && salePrice.Value < product.Price;
+                                }
+                                @if (hasSalePrice)
+                                {
+                                    var discount = ((product.Price - salePrice.Value) / product.Price) * 100;
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span class="badge bg-danger">
+                                            -@discount.ToString("0")%
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-dark">@product.ProductName</h5>
+                                <p class="card-text text-muted small">@product.ShortDescription</p>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        @{
+                                            var currentSalePrice = product.SalePrice != null ? (decimal?)product.SalePrice : null;
+                                            var hasDiscount = currentSalePrice.HasValue && currentSalePrice.Value > 0 && currentSalePrice.Value < product.Price;
+                                        }
+                                        @if (hasDiscount)
+                                        {
+                                            <div>
+                                                <span class="text-danger fw-bold fs-5">@currentSalePrice.Value.ToString("N0") ₫</span>
+                                                <small class="text-muted text-decoration-line-through d-block">@product.Price.ToString("N0") ₫</small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="fw-bold text-primary fs-5">@product.Price.ToString("N0") ₫</span>
+                                        }
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <a href="/Shop/Product/@product.ProductID" class="btn btn-outline-light btn-sm flex-fill">
+                                            <i class="fas fa-eye me-1"></i>Xem
+                                        </a>
+                                        <button type="button" class="btn btn-warning btn-sm add-to-cart-btn" data-product-id="@product.ProductID">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-light btn-sm wishlist-btn" data-product-id="@product.ProductID" title="Thêm vào yêu thích">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="text-white-50 small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Các sản phẩm được gợi ý bởi AI Chatbot dựa trên phân tích lịch sử mua hàng và sở thích của bạn
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
 <!-- Featured Products Section -->
 <section class="py-5">
     <div class="container">

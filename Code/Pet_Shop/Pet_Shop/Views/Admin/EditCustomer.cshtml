@@ -1,0 +1,211 @@
+@model Pet_Shop.Models.ViewModels.CustomerEditViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-user-edit"></i> Chỉnh sửa khách hàng
+                    </h3>
+                    <div class="card-tools">
+                        <a href="@Url.Action("CustomerDetails", new { id = Model.UserID })" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i> Xem chi tiết
+                        </a>
+                        <a href="@Url.Action("Customers")" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditCustomer" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <input asp-for="UserID" type="hidden" />
+                        
+                        <div class="row">
+                            <!-- Thông tin cơ bản -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Thông tin cơ bản</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label asp-for="Username" class="control-label">Tên đăng nhập</label>
+                                            <input asp-for="Username" class="form-control" />
+                                            <span asp-validation-for="Username" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label asp-for="Email" class="control-label">Email</label>
+                                            <input asp-for="Email" class="form-control" />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label asp-for="FullName" class="control-label">Họ tên</label>
+                                            <input asp-for="FullName" class="form-control" />
+                                            <span asp-validation-for="FullName" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label asp-for="Phone" class="control-label">Số điện thoại</label>
+                                            <input asp-for="Phone" class="form-control" />
+                                            <span asp-validation-for="Phone" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label asp-for="Address" class="control-label">Địa chỉ</label>
+                                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="Address" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input asp-for="IsActive" class="form-check-input" />
+                                                <label asp-for="IsActive" class="form-check-label">Tài khoản đang hoạt động</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Thông tin hồ sơ -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Thông tin hồ sơ</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label asp-for="DateOfBirth" class="control-label">Ngày sinh</label>
+                                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label asp-for="Gender" class="control-label">Giới tính</label>
+                                            <select asp-for="Gender" class="form-control">
+                                                <option value="">Chọn giới tính</option>
+                                                @foreach (var gender in Model.AvailableGenders)
+                                                {
+                                                    if (Model.Gender == gender)
+                                                    {
+                                                        <option value="@gender" selected>@gender</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@gender">@gender</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="Gender" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label asp-for="MembershipLevel" class="control-label">Hạng thành viên</label>
+                                            <select asp-for="MembershipLevel" class="form-control">
+                                                @foreach (var level in Model.AvailableMembershipLevels)
+                                                {
+                                                    if (Model.MembershipLevel == level)
+                                                    {
+                                                        <option value="@level" selected>@level</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@level">@level</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="MembershipLevel" class="text-danger"></span>
+                                        </div>
+                                        
+                                        <div class="alert alert-info">
+                                            <h5><i class="icon fas fa-info"></i> Thông tin hạng thành viên:</h5>
+                                            <ul class="mb-0">
+                                                <li><strong>Bronze:</strong> Khách hàng mới</li>
+                                                <li><strong>Silver:</strong> Chi tiêu từ 2 triệu VNĐ</li>
+                                                <li><strong>Gold:</strong> Chi tiêu từ 5 triệu VNĐ</li>
+                                                <li><strong>Platinum:</strong> Chi tiêu từ 10 triệu VNĐ</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save"></i> Lưu thay đổi
+                                        </button>
+                                        <a href="@Url.Action("CustomerDetails", new { id = Model.UserID })" class="btn btn-secondary btn-lg ml-2">
+                                            <i class="fas fa-times"></i> Hủy
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Simple form validation
+            $('form').on('submit', function(e) {
+                var isValid = true;
+                
+                // Clear previous error states
+                $('.form-control').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+                
+                // Validate required fields
+                $('input[required], select[required]').each(function() {
+                    if (!$(this).val()) {
+                        $(this).addClass('is-invalid');
+                        $(this).after('<div class="invalid-feedback">Trường này là bắt buộc</div>');
+                        isValid = false;
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    showAlert('error', 'Vui lòng kiểm tra lại thông tin đã nhập.');
+                }
+            });
+        });
+        
+        function showAlert(type, message) {
+            var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            var alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' +
+                message +
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                '<span aria-hidden="true">&times;</span>' +
+                '</button>' +
+                '</div>';
+            
+            // Remove existing alerts
+            $('.alert').remove();
+            
+            // Add new alert
+            $('.card-body').prepend(alertHtml);
+            
+            // Auto hide after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut();
+            }, 5000);
+        }
+    </script>
+}

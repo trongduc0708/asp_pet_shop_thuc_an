@@ -1,0 +1,333 @@
+@model IEnumerable<Pet_Shop.Models.Entities.Promotion>
+@{
+    ViewData["Title"] = "Quản lý mã khuyến mãi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-tags me-2"></i>Quản lý mã khuyến mãi
+            </h2>
+            <a href="@Url.Action("CreatePromotion", "Admin")" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Thêm mã khuyến mãi
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form method="get" action="@Url.Action("SearchPromotions", "Admin")" class="d-flex">
+            <input type="text" name="searchTerm" class="form-control me-2" placeholder="Tìm kiếm theo mã, tên hoặc mô tả..." value="@ViewBag.SearchTerm">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="fas fa-search me-1"></i>Tìm kiếm
+            </button>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("Promotions", "Admin")" class="btn btn-outline-secondary @(ViewBag.SelectedIsActive == null ? "active" : "")">
+                Tất cả
+            </a>
+            <a href="@Url.Action("FilterPromotions", "Admin", new { isActive = true })" class="btn btn-outline-success @(ViewBag.SelectedIsActive == true ? "active" : "")">
+                Đang hoạt động
+            </a>
+            <a href="@Url.Action("FilterPromotions", "Admin", new { isActive = false })" class="btn btn-outline-warning @(ViewBag.SelectedIsActive == false ? "active" : "")">
+                Không hoạt động
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Tổng mã</h6>
+                        <h4 class="mb-0" id="totalPromotions">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-tags fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Đang hoạt động</h6>
+                        <h4 class="mb-0" id="activePromotions">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Hết hạn</h6>
+                        <h4 class="mb-0" id="expiredPromotions">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Hết lượt</h6>
+                        <h4 class="mb-0" id="usedUpPromotions">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Promotions Table -->
+<div class="card shadow">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã khuyến mãi</th>
+                            <th>Tên</th>
+                            <th>Loại giảm giá</th>
+                            <th>Giá trị</th>
+                            <th>Đơn tối thiểu</th>
+                            <th>Thời gian</th>
+                            <th>Sử dụng</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var promotion in Model)
+                        {
+                            var isExpired = promotion.EndDate < DateTime.Now;
+                            var isUsedUp = promotion.UsageLimit.HasValue && promotion.UsedCount >= promotion.UsageLimit.Value;
+                            var statusClass = !promotion.IsActive ? "text-muted" : 
+                                            isExpired ? "text-warning" : 
+                                            isUsedUp ? "text-danger" : "text-success";
+                            
+                            <tr class="@statusClass">
+                                <td>
+                                    <strong>@promotion.PromotionCode</strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@promotion.PromotionName</strong>
+                                        @if (!string.IsNullOrEmpty(promotion.Description))
+                                        {
+                                            <br><small class="text-muted">@promotion.Description</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        @(promotion.DiscountType == "Percentage" ? "Phần trăm" : "Số tiền cố định")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (promotion.DiscountType == "Percentage")
+                                    {
+                                        <span>@promotion.DiscountValue%</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@promotion.DiscountValue.ToString("N0") ₫</span>
+                                    }
+                                    @if (promotion.MaxDiscountAmount.HasValue)
+                                    {
+                                        <br><small class="text-muted">Tối đa: @promotion.MaxDiscountAmount.Value.ToString("N0") ₫</small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (promotion.MinOrderAmount > 0)
+                                    {
+                                        <span>@promotion.MinOrderAmount.ToString("N0") ₫</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div>
+                                        <small class="text-muted">Từ:</small> @promotion.StartDate.ToString("dd/MM/yyyy")
+                                        <br>
+                                        <small class="text-muted">Đến:</small> @promotion.EndDate.ToString("dd/MM/yyyy")
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (promotion.UsageLimit.HasValue)
+                                    {
+                                        <span>@promotion.UsedCount/@promotion.UsageLimit</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@promotion.UsedCount/∞</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!promotion.IsActive)
+                                    {
+                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                    }
+                                    else if (isExpired)
+                                    {
+                                        <span class="badge bg-warning">Hết hạn</span>
+                                    }
+                                    else if (isUsedUp)
+                                    {
+                                        <span class="badge bg-danger">Hết lượt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="@Url.Action("EditPromotion", "Admin", new { id = promotion.PromotionID })" 
+                                           class="btn btn-outline-primary" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-@(promotion.IsActive ? "warning" : "success") toggle-status" 
+                                                data-id="@promotion.PromotionID" 
+                                                data-current-status="@promotion.IsActive.ToString().ToLower()"
+                                                title="@(promotion.IsActive ? "Vô hiệu hóa" : "Kích hoạt")">
+                                            <i class="fas fa-@(promotion.IsActive ? "pause" : "play")"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger delete-promotion" 
+                                                data-id="@promotion.PromotionID" 
+                                                data-name="@promotion.PromotionName"
+                                                title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có mã khuyến mãi nào</h5>
+                <p class="text-muted">Hãy tạo mã khuyến mãi đầu tiên để bắt đầu.</p>
+                <a href="@Url.Action("CreatePromotion", "Admin")" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Tạo mã khuyến mãi
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    // Load statistics
+    loadPromotionStatistics();
+    
+    // Toggle status
+    $('.toggle-status').click(function() {
+        var id = $(this).data('id');
+        var currentStatus = $(this).data('current-status');
+        var action = currentStatus === 'true' ? 'vô hiệu hóa' : 'kích hoạt';
+        
+        showConfirmModal(
+            `Bạn có chắc chắn muốn ${action} mã khuyến mãi này?`,
+            'Thao tác này sẽ thay đổi trạng thái của mã khuyến mãi.',
+            function() {
+                showLoadingModal('Đang cập nhật trạng thái...');
+                
+                $.post('@Url.Action("TogglePromotionStatus", "Admin")/' + id)
+                    .done(function(response) {
+                        hideLoadingModal();
+                        if (response.success) {
+                            showSuccessModal(response.message, 'Trạng thái mã khuyến mãi đã được cập nhật thành công.');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showErrorModal(response.message);
+                        }
+                    })
+                    .fail(function() {
+                        hideLoadingModal();
+                        showErrorModal('Có lỗi xảy ra khi cập nhật trạng thái.');
+                    });
+            }
+        );
+    });
+    
+    // Delete promotion
+    $('.delete-promotion').click(function() {
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+        
+        showConfirmModal(
+            'Bạn có chắc chắn muốn xóa mã khuyến mãi này?',
+            `Mã khuyến mãi "${name}" sẽ bị xóa vĩnh viễn và không thể khôi phục.`,
+            function() {
+                showLoadingModal('Đang xóa mã khuyến mãi...');
+                
+                $.post('@Url.Action("DeletePromotion", "Admin")/' + id)
+                    .done(function(response) {
+                        hideLoadingModal();
+                        showSuccessModal('Xóa mã khuyến mãi thành công!', 'Mã khuyến mãi đã được xóa khỏi hệ thống.');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    })
+                    .fail(function() {
+                        hideLoadingModal();
+                        showErrorModal('Có lỗi xảy ra khi xóa mã khuyến mãi.');
+                    });
+            }
+        );
+    });
+});
+
+function loadPromotionStatistics() {
+    $.get('@Url.Action("PromotionStatistics", "Admin")')
+        .done(function(response) {
+            if (response.success) {
+                $('#totalPromotions').text(response.statistics.total);
+                $('#activePromotions').text(response.statistics.active);
+                $('#expiredPromotions').text(response.statistics.expired);
+                $('#usedUpPromotions').text(response.statistics.usedUp);
+            }
+        });
+}
+</script>
+}

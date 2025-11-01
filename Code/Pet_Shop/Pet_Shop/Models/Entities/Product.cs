@@ -34,7 +34,7 @@ namespace Pet_Shop.Models.Entities
         [Required(ErrorMessage = "Loại thú cưng là bắt buộc")]
         [StringLength(20, ErrorMessage = "Loại thú cưng không được vượt quá 20 ký tự")]
         [Display(Name = "Loại thú cưng")]
-        public string PetType { get; set; } = string.Empty; // 'Dog', 'Cat', 'Both'
+        public string PetType { get; set; } = string.Empty; // 'Dog', 'Cat'
 
         [Range(0, 999.99, ErrorMessage = "Trọng lượng phải từ 0 đến 999.99 kg")]
         [Column(TypeName = "decimal(8,2)")]

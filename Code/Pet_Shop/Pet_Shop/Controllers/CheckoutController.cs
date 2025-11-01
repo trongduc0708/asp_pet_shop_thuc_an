@@ -52,6 +52,14 @@ namespace Pet_Shop.Controllers
                 var discountAmount = 0m;
                 var totalAmount = subtotal + shippingFee - discountAmount;
                 
+                // Initialize model with default values
+                var model = new CheckoutViewModel
+                {
+                    AddressId = addresses?.FirstOrDefault(a => a.IsDefault)?.AddressID, // Default address
+                    PaymentMethodId = 1, // Default to COD
+                    AgreeToTerms = false
+                };
+                
                 ViewBag.CartItems = cartItems;
                 ViewBag.Addresses = addresses;
                 ViewBag.PaymentMethods = paymentMethods;
@@ -60,7 +68,7 @@ namespace Pet_Shop.Controllers
                 ViewBag.DiscountAmount = discountAmount;
                 ViewBag.TotalAmount = totalAmount;
                 
-                return View();
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -75,10 +83,18 @@ namespace Pet_Shop.Controllers
         {
             try
             {
+                // Debug logging
+                _logger.LogInformation($"ProcessOrder received - AddressId: {model.AddressId}, PaymentMethodId: {model.PaymentMethodId}, AgreeToTerms: {model.AgreeToTerms}");
+                
                 if (!ModelState.IsValid)
                 {
+                    // Log validation errors
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    _logger.LogWarning($"ModelState invalid: {string.Join(", ", errors)}");
+                    
                     // Reload checkout page with errors
-                    return await Index();
+                    TempData["ErrorMessage"] = "Vui lòng kiểm tra lại thông tin đơn hàng. " + string.Join(", ", errors);
+                    return RedirectToAction("Index");
                 }
 
                 var userId = GetCurrentUserId();
@@ -89,7 +105,7 @@ namespace Pet_Shop.Controllers
                 if (order == null)
                 {
                     TempData["ErrorMessage"] = "Không thể tạo đơn hàng. Vui lòng kiểm tra lại giỏ hàng.";
-                    return await Index();
+                    return RedirectToAction("Index");
                 }
                 
                 // Handle payment method
@@ -109,7 +125,7 @@ namespace Pet_Shop.Controllers
             {
                 _logger.LogError($"Error processing order: {ex.Message}");
                 TempData["ErrorMessage"] = "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.";
-                return await Index();
+                return RedirectToAction("Index");
             }
         }
 

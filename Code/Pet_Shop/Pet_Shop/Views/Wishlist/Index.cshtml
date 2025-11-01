@@ -101,33 +101,37 @@
                 var $btn = $(this);
                 var $card = $btn.closest('.col-lg-3');
                 
-                if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?')) {
-                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
-                    
-                    $.ajax({
-                        url: '/Wishlist/RemoveFromWishlist',
-                        type: 'POST',
-                        data: { wishlistId: wishlistId },
-                        success: function(response) {
-                            if (response.success) {
-                                // Remove card with animation
-                                $card.fadeOut(300, function() {
-                                    $(this).remove();
-                                    updateWishlistCount();
-                                });
-                                
-                                showToast('success', response.message);
-                            } else {
-                                showToast('error', response.message);
+                showConfirmModal(
+                    'Bạn có chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?',
+                    'Sản phẩm sẽ được xóa khỏi danh sách yêu thích của bạn.',
+                    function() {
+                        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                        
+                        $.ajax({
+                            url: '/Wishlist/RemoveFromWishlist',
+                            type: 'POST',
+                            data: { wishlistId: wishlistId },
+                            success: function(response) {
+                                if (response.success) {
+                                    // Remove card with animation
+                                    $card.fadeOut(300, function() {
+                                        $(this).remove();
+                                        updateWishlistCount();
+                                    });
+                                    
+                                    showToast('success', response.message);
+                                } else {
+                                    showToast('error', response.message);
+                                    $btn.prop('disabled', false).html('<i class="fas fa-heart-broken"></i>');
+                                }
+                            },
+                            error: function() {
+                                showToast('error', 'Có lỗi xảy ra khi xóa khỏi yêu thích');
                                 $btn.prop('disabled', false).html('<i class="fas fa-heart-broken"></i>');
                             }
-                        },
-                        error: function() {
-                            showToast('error', 'Có lỗi xảy ra khi xóa khỏi yêu thích');
-                            $btn.prop('disabled', false).html('<i class="fas fa-heart-broken"></i>');
-                        }
-                    });
-                }
+                        });
+                    }
+                );
             });
             
             function updateWishlistCount() {

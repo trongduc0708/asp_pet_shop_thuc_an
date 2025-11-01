@@ -41,9 +41,14 @@
                                 {
                                     @foreach (var category in ViewBag.Categories)
                                     {
-                                        <option value="@category.CategoryID" selected="@(category.CategoryID == Model.CategoryID)">
-                                            @category.CategoryName
-                                        </option>
+                                        @if (category.CategoryID == Model.CategoryID)
+                                        {
+                                            <option value="@category.CategoryID" selected>@category.CategoryName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.CategoryID">@category.CategoryName</option>
+                                        }
                                     }
                                 }
                             </select>
@@ -58,9 +63,14 @@
                                 {
                                     @foreach (var brand in ViewBag.Brands)
                                     {
-                                        <option value="@brand.BrandID" selected="@(brand.BrandID == Model.BrandID)">
-                                            @brand.BrandName
-                                        </option>
+                                        @if (brand.BrandID == Model.BrandID)
+                                        {
+                                            <option value="@brand.BrandID" selected>@brand.BrandName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@brand.BrandID">@brand.BrandName</option>
+                                        }
                                     }
                                 }
                             </select>
@@ -72,27 +82,79 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="ProductType" class="form-label">Loại sản phẩm <span class="text-danger">*</span></label>
-                            <select asp-for="ProductType" class="form-select">
+                            <select name="ProductType" class="form-select">
                                 <option value="">-- Chọn loại sản phẩm --</option>
-                                <option value="Food" selected="@(Model.ProductType == "Food")">Thức ăn</option>
-                                <option value="Accessory" selected="@(Model.ProductType == "Accessory")">Phụ kiện</option>
-                                <option value="Toy" selected="@(Model.ProductType == "Toy")">Đồ chơi</option>
-                                <option value="Health" selected="@(Model.ProductType == "Health")">Sức khỏe</option>
-                                <option value="Grooming" selected="@(Model.ProductType == "Grooming")">Chăm sóc</option>
+                                @if (Model.ProductType == "Food")
+                                {
+                                    <option value="Food" selected>Thức ăn</option>
+                                    <option value="Accessory">Phụ kiện</option>
+                                    <option value="Toy">Đồ chơi</option>
+                                    <option value="Health">Sức khỏe</option>
+                                    <option value="Grooming">Chăm sóc</option>
+                                }
+                                else if (Model.ProductType == "Accessory")
+                                {
+                                    <option value="Food">Thức ăn</option>
+                                    <option value="Accessory" selected>Phụ kiện</option>
+                                    <option value="Toy">Đồ chơi</option>
+                                    <option value="Health">Sức khỏe</option>
+                                    <option value="Grooming">Chăm sóc</option>
+                                }
+                                else if (Model.ProductType == "Toy")
+                                {
+                                    <option value="Food">Thức ăn</option>
+                                    <option value="Accessory">Phụ kiện</option>
+                                    <option value="Toy" selected>Đồ chơi</option>
+                                    <option value="Health">Sức khỏe</option>
+                                    <option value="Grooming">Chăm sóc</option>
+                                }
+                                else if (Model.ProductType == "Health")
+                                {
+                                    <option value="Food">Thức ăn</option>
+                                    <option value="Accessory">Phụ kiện</option>
+                                    <option value="Toy">Đồ chơi</option>
+                                    <option value="Health" selected>Sức khỏe</option>
+                                    <option value="Grooming">Chăm sóc</option>
+                                }
+                                else if (Model.ProductType == "Grooming")
+                                {
+                                    <option value="Food">Thức ăn</option>
+                                    <option value="Accessory">Phụ kiện</option>
+                                    <option value="Toy">Đồ chơi</option>
+                                    <option value="Health">Sức khỏe</option>
+                                    <option value="Grooming" selected>Chăm sóc</option>
+                                }
+                                else
+                                {
+                                    <option value="Food">Thức ăn</option>
+                                    <option value="Accessory">Phụ kiện</option>
+                                    <option value="Toy">Đồ chơi</option>
+                                    <option value="Health">Sức khỏe</option>
+                                    <option value="Grooming">Chăm sóc</option>
+                                }
                             </select>
                             <span asp-validation-for="ProductType" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label asp-for="PetType" class="form-label">Loại thú cưng <span class="text-danger">*</span></label>
-                            <select asp-for="PetType" class="form-select">
+                            <select name="PetType" class="form-select">
                                 <option value="">-- Chọn loại thú cưng --</option>
-                                <option value="Dog" selected="@(Model.PetType == "Dog")">Chó</option>
-                                <option value="Cat" selected="@(Model.PetType == "Cat")">Mèo</option>
-                                <option value="Both" selected="@(Model.PetType == "Both")">Cả hai</option>
-                                <option value="Bird" selected="@(Model.PetType == "Bird")">Chim</option>
-                                <option value="Fish" selected="@(Model.PetType == "Fish")">Cá</option>
-                                <option value="Other" selected="@(Model.PetType == "Other")">Khác</option>
+                                @if (Model.PetType == "Dog")
+                                {
+                                    <option value="Dog" selected>Chó</option>
+                                    <option value="Cat">Mèo</option>
+                                }
+                                else if (Model.PetType == "Cat")
+                                {
+                                    <option value="Dog">Chó</option>
+                                    <option value="Cat" selected>Mèo</option>
+                                }
+                                else
+                                {
+                                    <option value="Dog">Chó</option>
+                                    <option value="Cat">Mèo</option>
+                                }
                             </select>
                             <span asp-validation-for="PetType" class="text-danger"></span>
                         </div>
@@ -364,7 +426,7 @@
     document.getElementById('editUploadNewImages').addEventListener('click', function() {
         const files = document.getElementById('editNewProductImages').files;
         if (files.length === 0) {
-            alert('Vui lòng chọn hình ảnh để upload');
+            showWarningModal('Vui lòng chọn hình ảnh để upload', 'Bạn cần chọn ít nhất một hình ảnh trước khi upload.');
             return;
         }
 
@@ -394,16 +456,16 @@
                 document.getElementById('editNewProductImages').value = '';
                 document.getElementById('editNewImagePreview').innerHTML = '';
                 
-                alert(`Upload thành công ${data.files.length} hình ảnh!`);
+                showSuccessModal(`Upload thành công ${data.files.length} hình ảnh!`, 'Tất cả hình ảnh đã được thêm vào sản phẩm.');
                 loadEditCurrentImages(); // Reload current images
                 updatePreviewImages(); // Update preview in form
             } else {
-                alert('Upload thất bại: ' + data.message);
+                showErrorModal('Upload thất bại: ' + data.message, 'Không thể upload hình ảnh.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi upload hình ảnh');
+            showErrorModal('Có lỗi xảy ra khi upload hình ảnh', 'Vui lòng thử lại sau.');
         })
         .finally(() => {
             uploadBtn.innerHTML = originalText;
@@ -485,48 +547,56 @@
 
     // Set primary image
     function editSetPrimaryImage(imageId) {
-        if (confirm('Bạn có chắc chắn muốn đặt hình ảnh này làm ảnh chính?')) {
-            fetch(`/Admin/Products/${editProductId}/Images/${imageId}/SetPrimary`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Đặt ảnh chính thành công!');
-                    loadEditCurrentImages();
-                    updatePreviewImages();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra');
-            });
-        }
+        showConfirmModal(
+            'Bạn có chắc chắn muốn đặt hình ảnh này làm ảnh chính?',
+            'Hình ảnh này sẽ được hiển thị làm ảnh đại diện của sản phẩm.',
+            function() {
+                fetch(`/Admin/Products/${editProductId}/Images/${imageId}/SetPrimary`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessModal('Đặt ảnh chính thành công!', 'Hình ảnh đã được đặt làm ảnh đại diện.');
+                        loadEditCurrentImages();
+                        updatePreviewImages();
+                    } else {
+                        showErrorModal('Lỗi: ' + data.message, 'Không thể đặt ảnh chính.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorModal('Có lỗi xảy ra', 'Vui lòng thử lại sau.');
+                });
+            }
+        );
     }
 
     // Remove image
     function editRemoveImage(imageId) {
-        if (confirm('Bạn có chắc chắn muốn xóa hình ảnh này?')) {
-            fetch(`/Admin/Products/Images/${imageId}/Remove`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Xóa hình ảnh thành công!');
-                    loadEditCurrentImages();
-                    updatePreviewImages();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra');
-            });
-        }
+        showConfirmModal(
+            'Bạn có chắc chắn muốn xóa hình ảnh này?',
+            'Hình ảnh sẽ bị xóa vĩnh viễn và không thể khôi phục.',
+            function() {
+                fetch(`/Admin/Products/Images/${imageId}/Remove`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessModal('Xóa hình ảnh thành công!', 'Hình ảnh đã được xóa khỏi sản phẩm.');
+                        loadEditCurrentImages();
+                        updatePreviewImages();
+                    } else {
+                        showErrorModal('Lỗi: ' + data.message, 'Không thể xóa hình ảnh.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorModal('Có lỗi xảy ra', 'Vui lòng thử lại sau.');
+                });
+            }
+        );
     }
 
     // Update preview images in the form

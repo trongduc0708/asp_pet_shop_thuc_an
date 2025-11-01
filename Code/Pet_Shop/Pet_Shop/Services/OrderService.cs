@@ -326,18 +326,40 @@ namespace Pet_Shop.Services
 
         private string FormatShippingAddress(CheckoutViewModel model)
         {
-            var addressParts = new List<string>();
+            // If AddressId is provided, fetch the address from database
+            if (model.AddressId.HasValue)
+            {
+                var address = _context.Addresses
+                    .FirstOrDefault(a => a.AddressID == model.AddressId.Value);
+                
+                if (address != null)
+                {
+                    var addressParts = new List<string>();
+                    if (!string.IsNullOrEmpty(address.AddressLine))
+                        addressParts.Add(address.AddressLine);
+                    if (!string.IsNullOrEmpty(address.Ward))
+                        addressParts.Add(address.Ward);
+                    if (!string.IsNullOrEmpty(address.District))
+                        addressParts.Add(address.District);
+                    if (!string.IsNullOrEmpty(address.City))
+                        addressParts.Add(address.City);
+                    
+                    return string.Join(", ", addressParts);
+                }
+            }
             
+            // Otherwise, format from form fields
+            var parts = new List<string>();
             if (!string.IsNullOrEmpty(model.Address))
-                addressParts.Add(model.Address);
+                parts.Add(model.Address);
             if (!string.IsNullOrEmpty(model.Ward))
-                addressParts.Add(model.Ward);
+                parts.Add(model.Ward);
             if (!string.IsNullOrEmpty(model.District))
-                addressParts.Add(model.District);
+                parts.Add(model.District);
             if (!string.IsNullOrEmpty(model.City))
-                addressParts.Add(model.City);
+                parts.Add(model.City);
 
-            return string.Join(", ", addressParts);
+            return string.Join(", ", parts);
         }
 
         private async Task UpdateInventoryAsync(IEnumerable<CartItemViewModel> cartItems)

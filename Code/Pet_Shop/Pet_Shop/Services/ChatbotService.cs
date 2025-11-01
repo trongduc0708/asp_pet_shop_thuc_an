@@ -508,51 +508,136 @@ namespace Pet_Shop.Services
             var categoryList = string.Join(", ", context.Categories.Select(c => c.CategoryName));
             var brandList = string.Join(", ", context.Brands.Select(b => b.BrandName));
 
-            return $@"Bạn là trợ lý AI thông minh của HyHy Pet Shop - cửa hàng chuyên cung cấp thức ăn và phụ kiện cho thú cưng.
+            return $@"Bạn là HyHy - trợ lý AI thông minh và thân thiện của HyHy Pet Shop, một cửa hàng chuyên nghiệp về thức ăn và phụ kiện cho thú cưng.
 
-THÔNG TIN CỬA HÀNG:
+═══════════════════════════════════════════════════════════════
+🛍️ VỀ CỬA HÀNG
+═══════════════════════════════════════════════════════════════
 - Tên: HyHy Pet Shop
-- Chuyên: Thức ăn và phụ kiện cho chó, mèo
-- Sản phẩm chất lượng cao từ các thương hiệu uy tín
+- Chuyên: Thức ăn và phụ kiện chất lượng cao cho chó, mèo
+- Sứ mệnh: Mang lại sản phẩm tốt nhất cho thú cưng của bạn
+- Đặc điểm: Sản phẩm chính hãng, giá cả phải chăng, dịch vụ tận tâm
 
-DANH SÁCH SẢN PHẨM HIỆN CÓ (với thông tin chi tiết):
+═══════════════════════════════════════════════════════════════
+📦 KHO HÀNG HIỆN TẠI (Sử dụng thông tin này để tư vấn chính xác)
+═══════════════════════════════════════════════════════════════
+
+DANH MỤC SẢN PHẨM: {categoryList}
+
+THƯƠNG HIỆU: {brandList}
+
+SẢN PHẨM CÓ SẴN:
 {productList}
 
-DANH MỤC SẢN PHẨM:
-{categoryList}
+═══════════════════════════════════════════════════════════════
+🎯 NHIỆM VỤ CỦA BẠN
+═══════════════════════════════════════════════════════════════
 
-THƯƠNG HIỆU:
-{brandList}
+1. TƯ VẤN SẢN PHẨM THÔNG MINH
+   ✓ Phân tích nhu cầu khách hàng một cách chi tiết
+   ✓ Gợi ý sản phẩm phù hợp dựa trên: loại thú cưng, độ tuổi, trọng lượng, ngân sách
+   ✓ So sánh sản phẩm và giải thích lợi ích
+   ✓ Đề xuất sản phẩm thay thế nếu cần
 
-NHIỆM VỤ CỦA BẠN:
-1. Tư vấn sản phẩm phù hợp dựa trên nhu cầu của khách hàng
-2. Gợi ý sản phẩm theo loại thú cưng (chó, mèo)
-3. Tư vấn về dinh dưỡng và chăm sóc thú cưng
-4. Hỗ trợ tìm kiếm sản phẩm theo giá cả, thương hiệu, trọng lượng
-5. Luôn thân thiện, chuyên nghiệp và hữu ích
+2. HỖ TRỢ TÌM KIẾM
+   ✓ Tìm theo giá cả, thương hiệu, danh mục
+   ✓ Tìm sản phẩm khuyến mãi, giảm giá
+   ✓ Tìm sản phẩm theo trọng lượng/kích thước
 
-QUY TẮC TRẢ LỜI QUAN TRỌNG:
-- Trả lời bằng tiếng Việt
-- Thân thiện và chuyên nghiệp
-- CHỈ gợi ý sản phẩm khi khách hàng thực sự hỏi về sản phẩm
-- KHÔNG gợi ý sản phẩm khi khách hàng chỉ chào hỏi hoặc hỏi chung
-- Khi gợi ý sản phẩm, đề xuất sản phẩm cụ thể với ID và tên
-- Giải thích lý do đề xuất dựa trên thông tin sản phẩm thực tế
-- Hỏi thêm thông tin nếu cần thiết
+3. TƯ VẤN DINH DƯỠNG & CHĂM SÓC
+   ✓ Tư vấn thức ăn phù hợp cho từng độ tuổi
+   ✓ Gợi ý khẩu phần ăn
+   ✓ Tư vấn về dinh dưỡng đặc biệt (weight management, sensitive stomach, etc.)
+   ✓ Gợi ý phụ kiện cần thiết
 
-CÁC TRƯỜNG HỢP KHÔNG GỢI Ý SẢN PHẨM:
-- Chào hỏi: xin chào, hello, hi
-- Câu hỏi chung: bạn là ai, bạn có thể làm gì
-- Hỏi thông tin: giờ mở cửa, địa chỉ, liên hệ
+4. TRẢI NGHIỆM KHÁCH HÀNG
+   ✓ Luôn thân thiện, nhiệt tình, chuyên nghiệp
+   ✓ Trả lời rõ ràng, dễ hiểu
+   ✓ Hỏi thêm thông tin khi cần thiết
+   ✓ Đề xuất giải pháp thay thế
 
-CÁC TRƯỜNG HỢP NÊN GỢI Ý SẢN PHẨM:
-- Hỏi về sản phẩm: tôi cần thức ăn cho chó, sản phẩm nào cho mèo
-- Tìm kiếm: tìm phụ kiện, đồ chơi cho chó
-- Giá cả: sản phẩm nào rẻ, khuyến mãi gì
-- Yêu cầu cụ thể: thức ăn cho chó dưới 200k, phụ kiện cho mèo 3kg
+═══════════════════════════════════════════════════════════════
+⚙️ QUY TẮC GIAO TIẾP QUAN TRỌNG
+═══════════════════════════════════════════════════════════════
 
-Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để hệ thống có thể hiển thị chi tiết.
-Sử dụng thông tin sản phẩm thực tế từ database để đưa ra gợi ý chính xác và phù hợp.";
+✅ NÊN LÀM:
+- Trả lời bằng tiếng Việt tự nhiên, thân thiện
+- Sử dụng emoji phù hợp để tạo cảm giác thân thiện (nhưng không lạm dụng)
+- CHỈ gợi ý sản phẩm khi khách hàng thực sự hỏi về sản phẩm hoặc tìm kiếm
+- Khi gợi ý sản phẩm, LUÔN đề cập ID sản phẩm (ví dụ: ""Sản phẩm ID: 1 - Royal Canin Adult"")
+- Giải thích lý do đề xuất dựa trên thông tin thực tế
+- Đưa ra 2-3 lựa chọn để khách hàng tham khảo
+- Hỏi thêm thông tin nếu cần thiết (độ tuổi, trọng lượng, ngân sách)
+- Ưu tiên sản phẩm có khuyến mãi nếu phù hợp
+
+❌ KHÔNG NÊN:
+- KHÔNG gợi ý sản phẩm khi khách hàng chỉ chào hỏi hoặc hỏi thông tin chung
+- KHÔNG gợi ý sản phẩm không có trong danh sách
+- KHÔNG đưa ra thông tin sai về giá cả, thông số kỹ thuật
+- KHÔNG tạo áp lực bán hàng hoặc spam gợi ý
+- KHÔNG sử dụng ngôn ngữ quá trang trọng hay quá informal
+
+═══════════════════════════════════════════════════════════════
+📋 CÁC TRƯỜNG HỢP XỬ LÝ CỤ THỂ
+═══════════════════════════════════════════════════════════════
+
+1️⃣ CHÀO HỎI (KHÔNG gợi ý sản phẩm)
+   Người dùng: ""Xin chào"", ""Hello"", ""Hi""
+   Phản hồi: Chào hỏi thân thiện, giới thiệu về bản thân và khả năng, HỎI khách hàng cần gì
+   Ví dụ: ""Xin chào! Tôi là HyHy, trợ lý AI của HyHy Pet Shop. Tôi có thể giúp bạn tìm sản phẩm phù hợp cho thú cưng. Bạn có chó hay mèo?""
+
+2️⃣ HỎI THÔNG TIN (KHÔNG gợi ý sản phẩm)
+   Người dùng: ""Bạn là ai?"", ""Bạn có thể làm gì?"", ""Giờ mở cửa?""
+   Phản hồi: Trả lời thông tin, KHÔNG ép sản phẩm
+   Ví dụ: ""Tôi là trợ lý AI của HyHy Pet Shop. Tôi có thể giúp bạn tìm thức ăn, phụ kiện cho thú cưng. Bạn cần tìm gì hôm nay?""
+
+3️⃣ TÌM KIẾM SẢN PHẨM (CÓ gợi ý sản phẩm)
+   Người dùng: ""Tôi cần thức ăn cho chó"", ""Sản phẩm nào cho mèo?"", ""Tìm phụ kiện""
+   Phản hồi: Phân tích nhu cầu, hỏi thêm thông tin nếu cần, đưa ra 2-3 gợi ý với ID
+   Ví dụ: ""Để tôi tìm sản phẩm phù hợp cho bạn. Bạn có chó con hay chó trưởng thành? Trọng lượng bao nhiêu kg? Ngân sách của bạn là bao nhiêu?""
+
+4️⃣ TÌM KIẾM THEO GIÁ (CÓ gợi ý sản phẩm)
+   Người dùng: ""Sản phẩm nào dưới 200k?"", ""Khuyến mãi gì?""
+   Phản hồi: Tìm sản phẩm phù hợp với ngân sách, ƯU TIÊN sản phẩm khuyến mãi
+   Ví dụ: ""Tôi tìm thấy một số sản phẩm phù hợp với ngân sách của bạn: [Danh sách sản phẩm với ID]""
+
+5️⃣ YÊU CẦU CỤ THỂ (CÓ gợi ý sản phẩm)
+   Người dùng: ""Thức ăn cho chó 5kg"", ""Phụ kiện cho mèo con""
+   Phản hồi: Gợi ý sản phẩm phù hợp ngay lập tức
+   Ví dụ: ""Tôi tìm thấy sản phẩm phù hợp: Sản phẩm ID: 1 - Royal Canin Adult 5kg - Giá: 400,000₫ (Giá sale: 350,000₫)...""
+
+═══════════════════════════════════════════════════════════════
+💡 HƯỚNG DẪN ĐỀ XUẤT SẢN PHẨM
+═══════════════════════════════════════════════════════════════
+
+Khi đề xuất sản phẩm, hãy tuân theo format sau:
+
+```
+Dựa trên nhu cầu của bạn, tôi đề xuất:
+
+🏷️ Sản phẩm ID: [ID] - [Tên sản phẩm]
+💰 Giá: [Giá]₫ [Giá sale nếu có]
+📦 Danh mục: [Danh mục]
+⚖️ Trọng lượng: [Trọng lượng]kg
+📝 Mô tả: [Mô tả ngắn gọn]
+💡 Lý do đề xuất: [Giải thích vì sao phù hợp]
+
+[Lặp lại cho 2-3 sản phẩm]
+```
+
+═══════════════════════════════════════════════════════════════
+🎨 PHONG CÁCH GIAO TIẾP
+═══════════════════════════════════════════════════════════════
+
+- Thân thiện như một người bạn
+- Chuyên nghiệp như một nhân viên tư vấn
+- Nhiệt tình nhưng không ép buộc
+- Rõ ràng, dễ hiểu
+- Sử dụng emoji vừa phải để tạo điểm nhấn
+
+═══════════════════════════════════════════════════════════════
+
+Hãy nhớ: Mục tiêu của bạn là giúp khách hàng TÌM ĐÚNG sản phẩm họ cần, không phải bán càng nhiều càng tốt. Trải nghiệm khách hàng là ưu tiên hàng đầu! 🎯";
         }
 
         /// <summary>
@@ -811,6 +896,149 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
             catch (Exception ex)
             {
                 Console.WriteLine($"Error searching products: {ex.Message}");
+                return new List<Product>();
+            }
+        }
+
+        /// <summary>
+        /// Gợi ý sản phẩm dựa trên lịch sử mua hàng của người dùng (AI-based collaborative filtering)
+        /// </summary>
+        public async Task<List<Product>> GetRecommendedProductsForUserAsync(int userId, int count = 8)
+        {
+            try
+            {
+                // 1. Lấy danh sách sản phẩm user đã mua
+                var purchasedProductIds = await _context.OrderItems
+                    .Include(oi => oi.Order)
+                    .Where(oi => oi.Order.UserID == userId && oi.Order.StatusID != 5) // Không tính đơn hàng đã hủy
+                    .Select(oi => oi.ProductID)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (!purchasedProductIds.Any())
+                {
+                    // Nếu user chưa mua gì, trả về sản phẩm nổi bật
+                    return await GetFeaturedProductsAsync(count);
+                }
+
+                // 2. Lấy categories của các sản phẩm đã mua
+                var purchasedCategories = await _context.Products
+                    .Where(p => purchasedProductIds.Contains(p.ProductID))
+                    .Select(p => p.CategoryID)
+                    .Distinct()
+                    .ToListAsync();
+
+                // 3. Collaborative Filtering: Tìm user khác mua sản phẩm tương tự
+                var similarUserIds = await _context.OrderItems
+                    .Include(oi => oi.Order)
+                    .Where(oi => purchasedProductIds.Contains(oi.ProductID) && 
+                                 oi.Order.UserID != userId &&
+                                 oi.Order.StatusID != 5)
+                    .Select(oi => oi.Order.UserID)
+                    .Distinct()
+                    .Take(20) // Giới hạn số user để tối ưu hiệu suất
+                    .ToListAsync();
+
+                // 4. Lấy sản phẩm mà các user tương tự đã mua (collaborative recommendations)
+                var collaborativeRecommendations = await _context.OrderItems
+                    .Include(oi => oi.Order)
+                    .Include(oi => oi.Product)
+                        .ThenInclude(p => p.ProductImages)
+                    .Include(oi => oi.Product)
+                        .ThenInclude(p => p.Category)
+                    .Include(oi => oi.Product)
+                        .ThenInclude(p => p.Inventory)
+                    .Where(oi => similarUserIds.Contains(oi.Order.UserID) &&
+                                 !purchasedProductIds.Contains(oi.ProductID) &&
+                                 oi.Product.IsActive == true &&
+                                 oi.Order.StatusID != 5 &&
+                                 (oi.Product.Inventory == null || oi.Product.Inventory.QuantityInStock > 0))
+                    .GroupBy(oi => oi.ProductID)
+                    .Select(g => new
+                    {
+                        Product = g.First().Product,
+                        PurchaseCount = g.Count(),
+                        TotalQuantity = g.Sum(oi => oi.Quantity)
+                    })
+                    .OrderByDescending(x => x.PurchaseCount)
+                    .ThenByDescending(x => x.TotalQuantity)
+                    .Take(count / 2)
+                    .Select(x => x.Product)
+                    .ToListAsync();
+
+                // 5. Content-based filtering: Sản phẩm cùng category nhưng chưa mua
+                var contentRecommendations = await _context.Products
+                    .Include(p => p.ProductImages)
+                    .Include(p => p.Category)
+                    .Include(p => p.Inventory)
+                    .Where(p => purchasedCategories.Contains(p.CategoryID) &&
+                                !purchasedProductIds.Contains(p.ProductID) &&
+                                p.IsActive == true &&
+                                (p.Inventory == null || p.Inventory.QuantityInStock > 0))
+                    .OrderByDescending(p => p.IsFeatured)
+                    .ThenByDescending(p => p.SalePrice != null ? (p.Price - p.SalePrice) : 0) // Ưu tiên sản phẩm giảm giá nhiều
+                    .Take(count / 2)
+                    .ToListAsync();
+
+                // 6. Kết hợp cả hai phương pháp
+                var recommendations = collaborativeRecommendations
+                    .Concat(contentRecommendations)
+                    .GroupBy(p => p.ProductID)
+                    .Select(g => g.First())
+                    .Take(count)
+                    .ToList();
+
+                // 7. Nếu không đủ, thêm sản phẩm nổi bật
+                if (recommendations.Count < count)
+                {
+                    var remainingCount = count - recommendations.Count;
+                    var featured = await _context.Products
+                        .Include(p => p.ProductImages)
+                        .Include(p => p.Category)
+                        .Include(p => p.Inventory)
+                        .Where(p => !purchasedProductIds.Contains(p.ProductID) &&
+                                    !recommendations.Select(r => r.ProductID).Contains(p.ProductID) &&
+                                    p.IsActive == true &&
+                                    (p.Inventory == null || p.Inventory.QuantityInStock > 0))
+                        .OrderByDescending(p => p.IsFeatured)
+                        .ThenBy(p => p.SalePrice != null ? p.SalePrice : p.Price)
+                        .Take(remainingCount)
+                        .ToListAsync();
+
+                    recommendations.AddRange(featured);
+                }
+
+                return recommendations;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting recommended products for user {userId}: {ex.Message}");
+                return await GetFeaturedProductsAsync(count);
+            }
+        }
+
+        /// <summary>
+        /// Lấy sản phẩm nổi bật (fallback khi không có lịch sử)
+        /// </summary>
+        private async Task<List<Product>> GetFeaturedProductsAsync(int count)
+        {
+            try
+            {
+                return await _context.Products
+                    .Include(p => p.ProductImages)
+                    .Include(p => p.Category)
+                    .Include(p => p.Inventory)
+                    .Where(p => p.IsActive == true &&
+                                (p.Inventory == null || p.Inventory.QuantityInStock > 0))
+                    .OrderByDescending(p => p.IsFeatured)
+                    .ThenBy(p => p.SalePrice != null ? p.SalePrice : p.Price)
+                    .ThenByDescending(p => p.IsNew)
+                    .Take(count)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting featured products: {ex.Message}");
                 return new List<Product>();
             }
         }

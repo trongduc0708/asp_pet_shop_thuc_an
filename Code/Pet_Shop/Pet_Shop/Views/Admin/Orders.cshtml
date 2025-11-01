@@ -227,7 +227,7 @@ function updateOrderStatus() {
     const notes = document.getElementById('statusNotes').value;
     
     if (!newStatusId) {
-        alert('Vui lòng chọn trạng thái mới');
+        showWarningModal('Vui lòng chọn trạng thái mới', 'Bạn cần chọn trạng thái mới trước khi cập nhật.');
         return;
     }
     
@@ -242,15 +242,15 @@ function updateOrderStatus() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
-            location.reload(); // Reload page to show updated status
+            showSuccessModal(data.message, 'Trạng thái đơn hàng đã được cập nhật thành công.');
+            setTimeout(() => location.reload(), 1500);
         } else {
-            alert('Lỗi: ' + data.message);
+            showErrorModal('Lỗi: ' + data.message, 'Không thể cập nhật trạng thái đơn hàng.');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra khi cập nhật trạng thái');
+        showErrorModal('Có lỗi xảy ra khi cập nhật trạng thái', 'Vui lòng thử lại sau.');
     });
 }
 </script>

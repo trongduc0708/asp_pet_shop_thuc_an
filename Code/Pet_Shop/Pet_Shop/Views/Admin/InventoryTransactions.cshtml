@@ -1,0 +1,282 @@
+@model IEnumerable<Pet_Shop.Models.ViewModels.InventoryTransactionViewModel>
+@{
+    ViewData["Title"] = "Lịch sử giao dịch xuất nhập kho";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var products = ViewBag.Products as IEnumerable<Pet_Shop.Models.Entities.Product>;
+    var selectedProductId = ViewBag.SelectedProductId as int?;
+    var selectedTransactionType = ViewBag.SelectedTransactionType as string;
+    var fromDate = ViewBag.FromDate as DateTime?;
+    var toDate = ViewBag.ToDate as DateTime?;
+}
+
+<div class="row">
+    <div class="col-12">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-history me-2"></i>Lịch sử giao dịch xuất nhập kho
+        </h2>
+        <div>
+            <a href="@Url.Action("Inventory", "Admin")" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-warehouse me-2"></i>Quản lý tồn kho
+            </a>
+            <a href="@Url.Action("CreateInventoryTransaction", "Admin")" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Tạo mới
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Bộ lọc</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" action="@Url.Action("InventoryTransactions", "Admin")">
+                <div class="row">
+                                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="productId">Sản phẩm:</label>
+                            <select name="productId" id="productId" class="form-control">
+                                <option value="">Tất cả sản phẩm</option>
+                                @if (products != null)
+                                {
+                                    @foreach (var product in products)
+                                    {
+                                        @if (selectedProductId == product.ProductID)
+                                        {
+                                            <option value="@product.ProductID" selected>@product.ProductName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@product.ProductID">@product.ProductName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="transactionType">Loại giao dịch:</label>
+                            <select name="transactionType" id="transactionType" class="form-control">
+                                <option value="">Tất cả</option>
+                                @if (selectedTransactionType == "Import")
+                                {
+                                    <option value="Import" selected>Nhập kho</option>
+                                    <option value="Export">Xuất kho</option>
+                                    <option value="Adjustment">Điều chỉnh</option>
+                                }
+                                else if (selectedTransactionType == "Export")
+                                {
+                                    <option value="Import">Nhập kho</option>
+                                    <option value="Export" selected>Xuất kho</option>
+                                    <option value="Adjustment">Điều chỉnh</option>
+                                }
+                                else if (selectedTransactionType == "Adjustment")
+                                {
+                                    <option value="Import">Nhập kho</option>
+                                    <option value="Export">Xuất kho</option>
+                                    <option value="Adjustment" selected>Điều chỉnh</option>
+                                }
+                                else
+                                {
+                                    <option value="Import">Nhập kho</option>
+                                    <option value="Export">Xuất kho</option>
+                                    <option value="Adjustment">Điều chỉnh</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="fromDate">Từ ngày:</label>
+                            <input type="date" name="fromDate" id="fromDate" class="form-control" value="@(fromDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="toDate">Đến ngày:</label>
+                            <input type="date" name="toDate" id="toDate" class="form-control" value="@(toDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-1"></i>Tìm kiếm
+                                </button>
+                                <a href="@Url.Action("InventoryTransactions", "Admin")" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-1"></i>Reset
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Danh sách giao dịch
+                <span class="badge bg-primary ms-2">@Model.Count() giao dịch</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Mã giao dịch</th>
+                                <th>Sản phẩm</th>
+                                <th>Loại giao dịch</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Tổng giá trị</th>
+                                <th>Số phiếu</th>
+                                <th>Người tạo</th>
+                                <th>Ngày tạo</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var transaction in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">#@transaction.TransactionID</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                                                    <i class="fas fa-box text-muted"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">@transaction.ProductName</h6>
+                                                <small class="text-muted">@transaction.CategoryName</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (transaction.TransactionType == "Import")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-arrow-down me-1"></i>@transaction.TransactionTypeName
+                                            </span>
+                                        }
+                                        else if (transaction.TransactionType == "Export")
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-arrow-up me-1"></i>@transaction.TransactionTypeName
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-exchange-alt me-1"></i>@transaction.TransactionTypeName
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold @(transaction.TransactionType == "Import" ? "text-success" : "text-danger")">
+                                            @(transaction.TransactionType == "Import" ? "+" : "-")@transaction.Quantity
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (transaction.UnitPrice.HasValue)
+                                        {
+                                            <span class="text-success">@transaction.UnitPrice.Value.ToString("N0") VNĐ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (transaction.TotalValue.HasValue)
+                                        {
+                                            <span class="fw-bold text-primary">@transaction.TotalValue.Value.ToString("N0") VNĐ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(transaction.ReferenceNumber))
+                                        {
+                                            <span class="badge bg-info">@transaction.ReferenceNumber</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                <i class="fas fa-user text-white" style="font-size: 12px;"></i>
+                                            </div>
+                                            <div>
+                                                <small class="fw-bold">@transaction.CreatedByName</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@transaction.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(transaction.Notes))
+                                        {
+                                            <span class="text-truncate d-inline-block" style="max-width: 150px;" title="@transaction.Notes">
+                                                @transaction.Notes
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Không có giao dịch nào</h5>
+                    <p class="text-muted">Chưa có giao dịch xuất nhập kho nào được thực hiện.</p>
+                    <a href="@Url.Action("CreateInventoryTransaction", "Admin")" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Tạo giao dịch đầu tiên
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Set default date range to last 30 days if no dates are selected
+    if (!$('#fromDate').val() && !$('#toDate').val()) {
+        var today = new Date();
+        var thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+        
+        $('#fromDate').val(thirtyDaysAgo.toISOString().split('T')[0]);
+        $('#toDate').val(today.toISOString().split('T')[0]);
+    }
+});
+</script>
+    </div>
+</div>

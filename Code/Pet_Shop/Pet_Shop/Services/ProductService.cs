@@ -173,6 +173,20 @@ namespace Pet_Shop.Services
                 
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
+
+                // Tự động tạo inventory cho sản phẩm mới
+                var inventory = new Inventory
+                {
+                    ProductID = product.ProductID,
+                    QuantityInStock = 0,
+                    MinStockLevel = 10,
+                    MaxStockLevel = 1000,
+                    LastUpdated = DateTime.Now
+                };
+                
+                _context.Inventory.Add(inventory);
+                await _context.SaveChangesAsync();
+                
                 return true;
             }
             catch

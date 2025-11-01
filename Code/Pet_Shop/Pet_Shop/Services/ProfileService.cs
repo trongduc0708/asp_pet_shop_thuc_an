@@ -44,7 +44,7 @@ namespace Pet_Shop.Services
                     DateOfBirth = user.CustomerProfile?.DateOfBirth,
                     Gender = user.CustomerProfile?.Gender,
                     TotalOrders = user.CustomerProfile?.TotalOrders ?? 0,
-                    TotalSpent = user.CustomerProfile?.TotalSpent ?? 0,
+                    TotalSpent = user.CustomerProfile?.TotalSpent ?? 0m,
                     MembershipLevel = user.CustomerProfile?.MembershipLevel ?? "Bronze",
                     Points = user.CustomerProfile?.Points ?? 0
                 };

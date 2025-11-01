@@ -84,10 +84,6 @@
                                 <option value="">-- Chọn loại thú cưng --</option>
                                 <option value="Dog">Chó</option>
                                 <option value="Cat">Mèo</option>
-                                <option value="Both">Cả hai</option>
-                                <option value="Bird">Chim</option>
-                                <option value="Fish">Cá</option>
-                                <option value="Other">Khác</option>
                             </select>
                             <span asp-validation-for="PetType" class="text-danger"></span>
                         </div>
@@ -258,7 +254,7 @@
         document.getElementById('uploadImages').addEventListener('click', function() {
             const files = document.getElementById('productImages').files;
             if (files.length === 0) {
-                alert('Vui lòng chọn hình ảnh để upload');
+                showWarningModal('Vui lòng chọn hình ảnh để upload', 'Bạn cần chọn ít nhất một hình ảnh trước khi upload.');
                 return;
             }
 
@@ -292,14 +288,14 @@
                     document.getElementById('productImages').value = '';
                     document.getElementById('imagePreview').innerHTML = '';
                     
-                    alert(`Upload thành công ${data.files.length} hình ảnh!`);
+                    showSuccessModal(`Upload thành công ${data.files.length} hình ảnh!`, 'Tất cả hình ảnh đã được thêm vào sản phẩm.');
                 } else {
-                    alert('Upload thất bại: ' + data.message);
+                    showErrorModal('Upload thất bại: ' + data.message, 'Không thể upload hình ảnh.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra khi upload hình ảnh');
+                showErrorModal('Có lỗi xảy ra khi upload hình ảnh', 'Vui lòng thử lại sau.');
             })
             .finally(() => {
                 uploadBtn.innerHTML = originalText;

@@ -54,12 +54,26 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="#">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Customers" || ViewContext.RouteData.Values["Action"]?.ToString() == "CustomerDetails" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditCustomer" ? "active" : "")" 
+                               href="@Url.Action("Customers", "Admin")">
                                 <i class="fas fa-users me-2"></i>Khách hàng
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="#">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Promotions" || ViewContext.RouteData.Values["Action"]?.ToString() == "CreatePromotion" || ViewContext.RouteData.Values["Action"]?.ToString() == "EditPromotion" ? "active" : "")" 
+                               href="@Url.Action("Promotions", "Admin")">
+                                <i class="fas fa-tags me-2"></i>Mã khuyến mãi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "Inventory" || ViewContext.RouteData.Values["Action"]?.ToString() == "InventoryTransactions" || ViewContext.RouteData.Values["Action"]?.ToString() == "CreateInventoryTransaction" ? "active" : "")" 
+                               href="@Url.Action("Inventory", "Admin")">
+                                <i class="fas fa-warehouse me-2"></i>Tồn kho
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["Action"]?.ToString() == "InventoryReports" ? "active" : "")" 
+                               href="@Url.Action("InventoryReports", "Admin")">
                                 <i class="fas fa-chart-bar me-2"></i>Báo cáo
                             </a>
                         </li>
@@ -74,9 +88,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="@Url.Action("Logout", "Account")">
-                                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                            </a>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="nav-link text-white border-0 bg-transparent w-100 text-start">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -109,10 +125,10 @@
                     </div>
                 </div>
 
-                <!-- Alert Messages -->
+                <!-- Alert Messages (will be converted to modals) -->
                 @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
                         <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
@@ -120,7 +136,7 @@
 
                 @if (TempData["ErrorMessage"] != null)
                 {
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
                         <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
@@ -128,7 +144,7 @@
 
                 @if (TempData["InfoMessage"] != null)
                 {
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert" style="display: none;">
                         <i class="fas fa-info-circle me-2"></i>@TempData["InfoMessage"]
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
@@ -144,6 +160,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Admin Modals -->
+    @await Html.PartialAsync("_AdminModal")
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

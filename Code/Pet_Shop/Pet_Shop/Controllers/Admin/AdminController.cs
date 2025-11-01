@@ -14,14 +14,22 @@ namespace Pet_Shop.Controllers.Admin
         private readonly ProductService _productService;
         private readonly BannerService _bannerService;
         private readonly OrderService _orderService;
+        private readonly CustomerService _customerService;
+        private readonly PromotionService _promotionService;
+        private readonly InventoryService _inventoryService;
+        private readonly VNPayService _vnpayService;
 
-        public AdminController(ILogger<AdminController> logger, CategoryService categoryService, ProductService productService, BannerService bannerService, OrderService orderService)
+        public AdminController(ILogger<AdminController> logger, CategoryService categoryService, ProductService productService, BannerService bannerService, OrderService orderService, CustomerService customerService, PromotionService promotionService, InventoryService inventoryService, VNPayService vnpayService)
         {
             _logger = logger;
             _categoryService = categoryService;
             _productService = productService;
             _bannerService = bannerService;
             _orderService = orderService;
+            _customerService = customerService;
+            _promotionService = promotionService;
+            _inventoryService = inventoryService;
+            _vnpayService = vnpayService;
         }
 
         [HttpGet]
@@ -951,5 +959,830 @@ namespace Pet_Shop.Controllers.Admin
                 return RedirectToAction("Orders");
             }
         }
+
+        // Customer Management
+        [HttpGet]
+        [Route("Customers")]
+        public async Task<IActionResult> Customers()
+        {
+            try
+            {
+                var customers = await _customerService.GetAllCustomersAsync();
+                var membershipLevels = _customerService.GetMembershipLevels();
+                
+                ViewBag.MembershipLevels = membershipLevels;
+                return View(customers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading customers: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải danh sách khách hàng.";
+                return View(new List<Pet_Shop.Models.Entities.User>());
+            }
+        }
+
+        [HttpGet]
+        [Route("Customers/Details/{id}")]
+        public async Task<IActionResult> CustomerDetails(int id)
+        {
+            try
+            {
+                var customer = await _customerService.GetCustomerByIdAsync(id);
+                if (customer == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy khách hàng.";
+                    return RedirectToAction("Customers");
+                }
+
+                var orderHistory = await _customerService.GetCustomerOrderHistoryAsync(id);
+                
+                var viewModel = new Pet_Shop.Models.ViewModels.CustomerDetailsViewModel
+                {
+                    Customer = customer,
+                    CustomerProfile = customer.CustomerProfile,
+                    Addresses = customer.Addresses.ToList(),
+                    RecentOrders = orderHistory.Take(10).ToList(),
+                    Statistics = new Pet_Shop.Models.ViewModels.CustomerStatistics
+                    {
+                        TotalOrders = customer.CustomerProfile?.TotalOrders ?? 0,
+                        TotalSpent = customer.CustomerProfile?.TotalSpent ?? 0m,
+                        AverageOrderValue = customer.CustomerProfile?.TotalOrders > 0 
+                            ? (customer.CustomerProfile?.TotalSpent ?? 0m) / (customer.CustomerProfile?.TotalOrders ?? 1) 
+                            : 0m,
+                        Points = customer.CustomerProfile?.Points ?? 0,
+                        MembershipLevel = customer.CustomerProfile?.MembershipLevel ?? "Bronze",
+                        LastOrderDate = orderHistory.FirstOrDefault()?.OrderDate,
+                        DaysSinceLastOrder = orderHistory.FirstOrDefault()?.OrderDate != null 
+                            ? (DateTime.Now - orderHistory.First().OrderDate).Days 
+                            : 0
+                    }
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading customer details for ID {id}: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải chi tiết khách hàng.";
+                return RedirectToAction("Customers");
+            }
+        }
+
+        [HttpGet]
+        [Route("Customers/Edit/{id}")]
+        public async Task<IActionResult> EditCustomer(int id)
+        {
+            try
+            {
+                var customer = await _customerService.GetCustomerByIdAsync(id);
+                if (customer == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy khách hàng.";
+                    return RedirectToAction("Customers");
+                }
+
+                var membershipLevels = _customerService.GetMembershipLevels();
+                var genders = new List<string> { "Nam", "Nữ", "Khác" };
+
+                var viewModel = new Pet_Shop.Models.ViewModels.CustomerEditViewModel
+                {
+                    UserID = customer.UserID,
+                    Username = customer.Username,
+                    Email = customer.Email,
+                    FullName = customer.FullName,
+                    Phone = customer.Phone,
+                    Address = customer.Address,
+                    IsActive = customer.IsActive,
+                    DateOfBirth = customer.CustomerProfile?.DateOfBirth,
+                    Gender = customer.CustomerProfile?.Gender,
+                    MembershipLevel = customer.CustomerProfile?.MembershipLevel ?? "Bronze",
+                    AvailableMembershipLevels = membershipLevels,
+                    AvailableGenders = genders
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading edit customer form for ID {id}: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải form chỉnh sửa khách hàng.";
+                return RedirectToAction("Customers");
+            }
+        }
+
+        [HttpPost]
+        [Route("Customers/Edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCustomer(Pet_Shop.Models.ViewModels.CustomerEditViewModel viewModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var membershipLevels = _customerService.GetMembershipLevels();
+                    var genders = new List<string> { "Nam", "Nữ", "Khác" };
+                    
+                    viewModel.AvailableMembershipLevels = membershipLevels;
+                    viewModel.AvailableGenders = genders;
+                    return View(viewModel);
+                }
+
+                // Kiểm tra email đã tồn tại chưa
+                var emailExists = await _customerService.EmailExistsAsync(viewModel.Email, viewModel.UserID);
+                if (emailExists)
+                {
+                    ModelState.AddModelError("Email", "Email đã tồn tại.");
+                    var membershipLevels = _customerService.GetMembershipLevels();
+                    var genders = new List<string> { "Nam", "Nữ", "Khác" };
+                    
+                    viewModel.AvailableMembershipLevels = membershipLevels;
+                    viewModel.AvailableGenders = genders;
+                    return View(viewModel);
+                }
+
+                // Kiểm tra username đã tồn tại chưa
+                var usernameExists = await _customerService.UsernameExistsAsync(viewModel.Username, viewModel.UserID);
+                if (usernameExists)
+                {
+                    ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại.");
+                    var membershipLevels = _customerService.GetMembershipLevels();
+                    var genders = new List<string> { "Nam", "Nữ", "Khác" };
+                    
+                    viewModel.AvailableMembershipLevels = membershipLevels;
+                    viewModel.AvailableGenders = genders;
+                    return View(viewModel);
+                }
+
+                // Cập nhật thông tin khách hàng
+                var customer = new Pet_Shop.Models.Entities.User
+                {
+                    UserID = viewModel.UserID,
+                    Username = viewModel.Username,
+                    Email = viewModel.Email,
+                    FullName = viewModel.FullName,
+                    Phone = viewModel.Phone,
+                    Address = viewModel.Address,
+                    IsActive = viewModel.IsActive
+                };
+
+                var success = await _customerService.UpdateCustomerAsync(customer);
+                if (!success)
+                {
+                    ModelState.AddModelError(string.Empty, "Cập nhật thông tin khách hàng thất bại.");
+                    var membershipLevels = _customerService.GetMembershipLevels();
+                    var genders = new List<string> { "Nam", "Nữ", "Khác" };
+                    
+                    viewModel.AvailableMembershipLevels = membershipLevels;
+                    viewModel.AvailableGenders = genders;
+                    return View(viewModel);
+                }
+
+                // Cập nhật CustomerProfile
+                var profile = new Pet_Shop.Models.Entities.CustomerProfile
+                {
+                    DateOfBirth = viewModel.DateOfBirth,
+                    Gender = viewModel.Gender,
+                    MembershipLevel = viewModel.MembershipLevel
+                };
+
+                await _customerService.UpdateCustomerProfileAsync(viewModel.UserID, profile);
+
+                TempData["SuccessMessage"] = "Cập nhật thông tin khách hàng thành công!";
+                return RedirectToAction("CustomerDetails", new { id = viewModel.UserID });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating customer {viewModel.UserID}: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi cập nhật khách hàng.");
+            }
+
+            var membershipLevelsForError = _customerService.GetMembershipLevels();
+            var gendersForError = new List<string> { "Nam", "Nữ", "Khác" };
+            
+            viewModel.AvailableMembershipLevels = membershipLevelsForError;
+            viewModel.AvailableGenders = gendersForError;
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        [Route("Customers/Search")]
+        public async Task<IActionResult> SearchCustomers(string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    return RedirectToAction("Customers");
+                }
+
+                var customers = await _customerService.SearchCustomersAsync(searchTerm);
+                var membershipLevels = _customerService.GetMembershipLevels();
+                
+                ViewBag.SearchTerm = searchTerm;
+                ViewBag.MembershipLevels = membershipLevels;
+                return View("Customers", customers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error searching customers with term '{searchTerm}': {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tìm kiếm khách hàng.";
+                return RedirectToAction("Customers");
+            }
+        }
+
+        [HttpGet]
+        [Route("Customers/Filter")]
+        public async Task<IActionResult> FilterCustomers(bool? isActive, string? membershipLevel)
+        {
+            try
+            {
+                IEnumerable<Pet_Shop.Models.Entities.User> customers;
+                
+                if (isActive.HasValue)
+                {
+                    customers = await _customerService.GetCustomersByStatusAsync(isActive.Value);
+                }
+                else if (!string.IsNullOrEmpty(membershipLevel))
+                {
+                    customers = await _customerService.GetCustomersByMembershipLevelAsync(membershipLevel);
+                }
+                else
+                {
+                    customers = await _customerService.GetAllCustomersAsync();
+                }
+
+                var membershipLevels = _customerService.GetMembershipLevels();
+                
+                ViewBag.SelectedIsActive = isActive;
+                ViewBag.SelectedMembershipLevel = membershipLevel;
+                ViewBag.MembershipLevels = membershipLevels;
+                return View("Customers", customers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error filtering customers: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi lọc khách hàng.";
+                return RedirectToAction("Customers");
+            }
+        }
+
+        [HttpPost]
+        [Route("Customers/{id}/ToggleStatus")]
+        public async Task<IActionResult> ToggleCustomerStatus(int id)
+        {
+            try
+            {
+                var customer = await _customerService.GetCustomerByIdAsync(id);
+                if (customer == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy khách hàng." });
+                }
+
+                customer.IsActive = !customer.IsActive;
+                var success = await _customerService.UpdateCustomerAsync(customer);
+                
+                if (success)
+                {
+                    var message = customer.IsActive ? "Kích hoạt khách hàng thành công!" : "Vô hiệu hóa khách hàng thành công!";
+                    return Json(new { success = true, message = message, isActive = customer.IsActive });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Cập nhật trạng thái khách hàng thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error toggling customer status for ID {id}: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật trạng thái khách hàng." });
+            }
+        }
+
+        [HttpGet]
+        [Route("Customers/Statistics")]
+        public async Task<IActionResult> CustomerStatistics()
+        {
+            try
+            {
+                var statistics = await _customerService.GetCustomerStatisticsAsync();
+                return Json(new { success = true, statistics = statistics });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting customer statistics: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi tải thống kê khách hàng." });
+            }
+        }
+
+        // ========== PROMOTION MANAGEMENT ==========
+
+        [HttpGet]
+        [Route("Promotions")]
+        public async Task<IActionResult> Promotions()
+        {
+            try
+            {
+                var promotions = await _promotionService.GetAllPromotionsForAdminAsync();
+                return View(promotions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading promotions: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải danh sách mã khuyến mãi.";
+                return View(new List<Pet_Shop.Models.Entities.Promotion>());
+            }
+        }
+
+        [HttpGet]
+        [Route("Promotions/Create")]
+        public IActionResult CreatePromotion()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("Promotions/Create")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePromotion(Pet_Shop.Models.Entities.Promotion promotion)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(promotion);
+                }
+
+                // Check if promotion code already exists
+                var exists = await _promotionService.PromotionCodeExistsAsync(promotion.PromotionCode);
+                if (exists)
+                {
+                    ModelState.AddModelError("PromotionCode", "Mã khuyến mãi đã tồn tại.");
+                    return View(promotion);
+                }
+
+                // Validate dates
+                if (promotion.StartDate >= promotion.EndDate)
+                {
+                    ModelState.AddModelError("EndDate", "Ngày kết thúc phải sau ngày bắt đầu.");
+                    return View(promotion);
+                }
+
+                promotion.IsActive = true;
+                promotion.CreatedDate = DateTime.Now;
+
+                var success = await _promotionService.CreatePromotionAsync(promotion);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Tạo mã khuyến mãi thành công!";
+                    return RedirectToAction("Promotions");
+                }
+
+                ModelState.AddModelError(string.Empty, "Tạo mã khuyến mãi thất bại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error creating promotion: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi tạo mã khuyến mãi.");
+            }
+
+            return View(promotion);
+        }
+
+        [HttpGet]
+        [Route("Promotions/Edit/{id}")]
+        public async Task<IActionResult> EditPromotion(int id)
+        {
+            try
+            {
+                var promotion = await _promotionService.GetPromotionByIdAsync(id);
+                if (promotion == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy mã khuyến mãi.";
+                    return RedirectToAction("Promotions");
+                }
+
+                return View(promotion);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading edit promotion form: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải form chỉnh sửa mã khuyến mãi.";
+                return RedirectToAction("Promotions");
+            }
+        }
+
+        [HttpPost]
+        [Route("Promotions/Edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPromotion(Pet_Shop.Models.Entities.Promotion promotion)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(promotion);
+                }
+
+                // Check if promotion code already exists (excluding current promotion)
+                var exists = await _promotionService.PromotionCodeExistsAsync(promotion.PromotionCode, promotion.PromotionID);
+                if (exists)
+                {
+                    ModelState.AddModelError("PromotionCode", "Mã khuyến mãi đã tồn tại.");
+                    return View(promotion);
+                }
+
+                // Validate dates
+                if (promotion.StartDate >= promotion.EndDate)
+                {
+                    ModelState.AddModelError("EndDate", "Ngày kết thúc phải sau ngày bắt đầu.");
+                    return View(promotion);
+                }
+
+                var success = await _promotionService.UpdatePromotionAsync(promotion);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Cập nhật mã khuyến mãi thành công!";
+                    return RedirectToAction("Promotions");
+                }
+
+                ModelState.AddModelError(string.Empty, "Cập nhật mã khuyến mãi thất bại.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating promotion: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi cập nhật mã khuyến mãi.");
+            }
+
+            return View(promotion);
+        }
+
+        [HttpPost]
+        [Route("Promotions/Delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePromotion(int id)
+        {
+            try
+            {
+                var success = await _promotionService.DeletePromotionAsync(id);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Xóa mã khuyến mãi thành công!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa mã khuyến mãi.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting promotion: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa mã khuyến mãi.";
+            }
+
+            return RedirectToAction("Promotions");
+        }
+
+        [HttpGet]
+        [Route("Promotions/Search")]
+        public async Task<IActionResult> SearchPromotions(string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    return RedirectToAction("Promotions");
+                }
+
+                var promotions = await _promotionService.SearchPromotionsAsync(searchTerm);
+                ViewBag.SearchTerm = searchTerm;
+                return View("Promotions", promotions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error searching promotions: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tìm kiếm mã khuyến mãi.";
+                return RedirectToAction("Promotions");
+            }
+        }
+
+        [HttpGet]
+        [Route("Promotions/Filter")]
+        public async Task<IActionResult> FilterPromotions(bool? isActive)
+        {
+            try
+            {
+                IEnumerable<Pet_Shop.Models.Entities.Promotion> promotions;
+                
+                if (isActive.HasValue)
+                {
+                    promotions = await _promotionService.GetPromotionsByStatusAsync(isActive.Value);
+                }
+                else
+                {
+                    promotions = await _promotionService.GetAllPromotionsForAdminAsync();
+                }
+
+                ViewBag.SelectedIsActive = isActive;
+                return View("Promotions", promotions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error filtering promotions: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi lọc mã khuyến mãi.";
+                return RedirectToAction("Promotions");
+            }
+        }
+
+        [HttpPost]
+        [Route("Promotions/{id}/ToggleStatus")]
+        public async Task<IActionResult> TogglePromotionStatus(int id)
+        {
+            try
+            {
+                var promotion = await _promotionService.GetPromotionByIdAsync(id);
+                if (promotion == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy mã khuyến mãi." });
+                }
+
+                promotion.IsActive = !promotion.IsActive;
+                var success = await _promotionService.UpdatePromotionAsync(promotion);
+                
+                if (success)
+                {
+                    var message = promotion.IsActive ? "Kích hoạt mã khuyến mãi thành công!" : "Vô hiệu hóa mã khuyến mãi thành công!";
+                    return Json(new { success = true, message = message, isActive = promotion.IsActive });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Cập nhật trạng thái mã khuyến mãi thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error toggling promotion status for ID {id}: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật trạng thái mã khuyến mãi." });
+            }
+        }
+
+        [HttpGet]
+        [Route("Promotions/Statistics")]
+        public async Task<IActionResult> PromotionStatistics()
+        {
+            try
+            {
+                var statistics = await _promotionService.GetPromotionStatisticsAsync();
+                return Json(new { success = true, statistics = statistics });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting promotion statistics: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi tải thống kê mã khuyến mãi." });
+            }
+        }
+
+        #region Inventory Management
+
+        [HttpGet]
+        [Route("Inventory")]
+        public async Task<IActionResult> Inventory()
+        {
+            try
+            {
+                var inventory = await _inventoryService.GetAllInventoryAsync();
+                var statistics = await _inventoryService.GetInventoryStatisticsAsync();
+                
+                ViewBag.Statistics = statistics;
+                return View(inventory);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading inventory: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải danh sách tồn kho.";
+                return View(new List<Pet_Shop.Models.ViewModels.InventoryViewModel>());
+            }
+        }
+
+        [HttpGet]
+        [Route("InventoryTransactions")]
+        public async Task<IActionResult> InventoryTransactions(int? productId, string? transactionType, DateTime? fromDate, DateTime? toDate)
+        {
+            try
+            {
+                var transactions = await _inventoryService.GetInventoryTransactionsAsync(productId, transactionType, fromDate, toDate);
+                var products = await _productService.GetAllProductsAsync();
+                
+                ViewBag.Products = products;
+                ViewBag.SelectedProductId = productId;
+                ViewBag.SelectedTransactionType = transactionType;
+                ViewBag.FromDate = fromDate;
+                ViewBag.ToDate = toDate;
+                
+                return View(transactions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading inventory transactions: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải lịch sử giao dịch.";
+                return View(new List<Pet_Shop.Models.ViewModels.InventoryTransactionViewModel>());
+            }
+        }
+
+        [HttpGet]
+        [Route("CreateInventoryTransaction")]
+        public async Task<IActionResult> CreateInventoryTransaction()
+        {
+            try
+            {
+                var products = await _productService.GetAllProductsAsync();
+                ViewBag.Products = products;
+                
+                var model = new Pet_Shop.Models.ViewModels.InventoryTransactionFormViewModel();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading create inventory transaction form: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải form tạo giao dịch.";
+                return RedirectToAction("Inventory");
+            }
+        }
+
+        [HttpPost]
+        [Route("CreateInventoryTransaction")]
+        public async Task<IActionResult> CreateInventoryTransaction(Pet_Shop.Models.ViewModels.InventoryTransactionFormViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var products = await _productService.GetAllProductsAsync();
+                    ViewBag.Products = products;
+                    return View(model);
+                }
+
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                
+                // Tạo mã phiếu tự động nếu không có
+                if (string.IsNullOrEmpty(model.ReferenceNumber))
+                {
+                    model.ReferenceNumber = _inventoryService.GenerateReferenceNumber(model.TransactionType);
+                }
+
+                var success = await _inventoryService.UpdateInventoryAsync(
+                    model.ProductID, 
+                    model.Quantity, 
+                    model.TransactionType, 
+                    userId, 
+                    model.ReferenceNumber, 
+                    model.Notes, 
+                    model.UnitPrice
+                );
+
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Tạo giao dịch xuất nhập kho thành công!";
+                    return RedirectToAction("InventoryTransactions");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Tạo giao dịch thất bại. Vui lòng kiểm tra lại thông tin.";
+                    var products = await _productService.GetAllProductsAsync();
+                    ViewBag.Products = products;
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error creating inventory transaction: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tạo giao dịch.";
+                var products = await _productService.GetAllProductsAsync();
+                ViewBag.Products = products;
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        [Route("InventoryReports")]
+        public async Task<IActionResult> InventoryReports()
+        {
+            try
+            {
+                var statistics = await _inventoryService.GetInventoryStatisticsAsync();
+                var lowStockProducts = await _inventoryService.GetLowStockProductsAsync();
+                
+                ViewBag.LowStockProducts = lowStockProducts;
+                return View(statistics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading inventory reports: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi tải báo cáo tồn kho.";
+                return View(new Pet_Shop.Models.ViewModels.InventoryStatisticsViewModel());
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProductInventory")]
+        public async Task<IActionResult> GetProductInventory(int productId)
+        {
+            try
+            {
+                var inventory = await _inventoryService.GetInventoryByProductIdAsync(productId);
+                if (inventory == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy thông tin tồn kho." });
+                }
+
+                return Json(new { 
+                    success = true, 
+                    data = new {
+                        productId = inventory.ProductID,
+                        productName = inventory.ProductName,
+                        currentStock = inventory.QuantityInStock,
+                        minStockLevel = inventory.MinStockLevel,
+                        maxStockLevel = inventory.MaxStockLevel,
+                        isLowStock = inventory.IsLowStock,
+                        isOutOfStock = inventory.IsOutOfStock
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting product inventory: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi lấy thông tin tồn kho." });
+            }
+        }
+
+        [HttpPost]
+        [Route("UpdateStockLevels")]
+        public async Task<IActionResult> UpdateStockLevels(int productId, int minStockLevel, int maxStockLevel)
+        {
+            try
+            {
+                if (minStockLevel < 0 || maxStockLevel < 0 || minStockLevel > maxStockLevel)
+                {
+                    return Json(new { success = false, message = "Mức tồn kho không hợp lệ." });
+                }
+
+                var success = await _inventoryService.UpdateStockLevelsAsync(productId, minStockLevel, maxStockLevel);
+                
+                if (success)
+                {
+                    return Json(new { success = true, message = "Cập nhật mức tồn kho thành công!" });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật mức tồn kho." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating stock levels: {ex.Message}");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi cập nhật mức tồn kho." });
+            }
+        }
+
+        [HttpGet]
+        [Route("ExportInventoryReport")]
+        public async Task<IActionResult> ExportInventoryReport()
+        {
+            try
+            {
+                var reportData = await _inventoryService.ExportInventoryReportAsync();
+                var fileName = $"BaoCaoTonKho_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                
+                return File(reportData, "text/csv", fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error exporting inventory report: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xuất báo cáo.";
+                return RedirectToAction("InventoryReports");
+            }
+        }
+
+        [HttpGet]
+        [Route("TestVNPaySignature")]
+        public IActionResult TestVNPaySignature()
+        {
+            try
+            {
+                var testOrderId = "TEST_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                var testAmount = 100000m; // 100,000 VND
+                var testReturnUrl = Url.Action("PaymentReturn", "Checkout", new { orderNumber = testOrderId }, Request.Scheme) ?? "";
+                
+                var debugInfo = _vnpayService.DebugSignatureGeneration(testOrderId, testAmount, testReturnUrl);
+                
+                return Content(debugInfo, "text/plain");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error testing VNPay signature: {ex.Message}");
+                return Content($"Error: {ex.Message}", "text/plain");
+            }
+        }
+
+        #endregion
     }
 }

@@ -1,0 +1,268 @@
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white border-0">
+                <h5 class="modal-title" id="successModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>Thành công
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                </div>
+                <h6 class="mb-3" id="successMessage">Thao tác đã được thực hiện thành công!</h6>
+                <p class="text-muted mb-0" id="successDetails"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-check me-2"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title" id="errorModalLabel">
+                    <i class="fas fa-exclamation-circle me-2"></i>Lỗi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-circle fa-3x text-danger"></i>
+                </div>
+                <h6 class="mb-3" id="errorMessage">Đã xảy ra lỗi!</h6>
+                <p class="text-muted mb-0" id="errorDetails"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Warning Modal -->
+<div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-warning text-dark border-0">
+                <h5 class="modal-title" id="warningModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                </div>
+                <h6 class="mb-3" id="warningMessage">Cảnh báo!</h6>
+                <p class="text-muted mb-0" id="warningDetails"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-warning px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-check me-2"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-info text-white border-0">
+                <h5 class="modal-title" id="infoModalLabel">
+                    <i class="fas fa-info-circle me-2"></i>Thông tin
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-info-circle fa-3x text-info"></i>
+                </div>
+                <h6 class="mb-3" id="infoMessage">Thông tin</h6>
+                <p class="text-muted mb-0" id="infoDetails"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-info px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-check me-2"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white border-0">
+                <h5 class="modal-title" id="confirmModalLabel">
+                    <i class="fas fa-question-circle me-2"></i>Xác nhận
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-question-circle fa-3x text-primary"></i>
+                </div>
+                <h6 class="mb-3" id="confirmMessage">Bạn có chắc chắn?</h6>
+                <p class="text-muted mb-0" id="confirmDetails"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4 me-2" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary px-4" id="confirmButton">
+                    <i class="fas fa-check me-2"></i>Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body text-center py-5">
+                <div class="mb-3">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <h6 class="mb-0" id="loadingMessage">Đang xử lý...</h6>
+                <p class="text-muted mb-0 mt-2" id="loadingDetails">Vui lòng chờ trong giây lát</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Modal utility functions
+function showSuccessModal(message, details = '') {
+    document.getElementById('successMessage').textContent = message;
+    document.getElementById('successDetails').textContent = details;
+    new bootstrap.Modal(document.getElementById('successModal')).show();
+}
+
+function showErrorModal(message, details = '') {
+    document.getElementById('errorMessage').textContent = message;
+    document.getElementById('errorDetails').textContent = details;
+    new bootstrap.Modal(document.getElementById('errorModal')).show();
+}
+
+function showWarningModal(message, details = '') {
+    document.getElementById('warningMessage').textContent = message;
+    document.getElementById('warningDetails').textContent = details;
+    new bootstrap.Modal(document.getElementById('warningModal')).show();
+}
+
+function showInfoModal(message, details = '') {
+    document.getElementById('infoMessage').textContent = message;
+    document.getElementById('infoDetails').textContent = details;
+    new bootstrap.Modal(document.getElementById('infoModal')).show();
+}
+
+function showConfirmModal(message, details = '', onConfirm = null) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmDetails').textContent = details;
+    
+    const confirmButton = document.getElementById('confirmButton');
+    confirmButton.onclick = function() {
+        if (onConfirm) {
+            onConfirm();
+        }
+        bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+    };
+    
+    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+}
+
+function showLoadingModal(message = 'Đang xử lý...', details = 'Vui lòng chờ trong giây lát') {
+    document.getElementById('loadingMessage').textContent = message;
+    document.getElementById('loadingDetails').textContent = details;
+    new bootstrap.Modal(document.getElementById('loadingModal')).show();
+}
+
+function hideLoadingModal() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+    if (modal) {
+        modal.hide();
+    }
+}
+
+// Auto-hide alerts and show modals instead
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for TempData messages and show appropriate modals
+    const successAlert = document.querySelector('.alert-success');
+    if (successAlert) {
+        const message = successAlert.textContent.trim();
+        showSuccessModal(message);
+        successAlert.remove();
+    }
+    
+    const errorAlert = document.querySelector('.alert-danger');
+    if (errorAlert) {
+        const message = errorAlert.textContent.trim();
+        showErrorModal(message);
+        errorAlert.remove();
+    }
+    
+    const warningAlert = document.querySelector('.alert-warning');
+    if (warningAlert) {
+        const message = warningAlert.textContent.trim();
+        showWarningModal(message);
+        warningAlert.remove();
+    }
+    
+    const infoAlert = document.querySelector('.alert-info');
+    if (infoAlert) {
+        const message = infoAlert.textContent.trim();
+        showInfoModal(message);
+        infoAlert.remove();
+    }
+});
+
+// Enhanced AJAX error handling
+$(document).ajaxError(function(event, xhr, settings, thrownError) {
+    hideLoadingModal();
+    
+    let message = 'Đã xảy ra lỗi khi xử lý yêu cầu';
+    let details = '';
+    
+    if (xhr.responseJSON && xhr.responseJSON.message) {
+        message = xhr.responseJSON.message;
+        details = xhr.responseJSON.details || '';
+    } else if (xhr.status === 404) {
+        message = 'Không tìm thấy tài nguyên';
+        details = 'Trang hoặc dữ liệu bạn tìm kiếm không tồn tại';
+    } else if (xhr.status === 500) {
+        message = 'Lỗi máy chủ';
+        details = 'Có lỗi xảy ra trên máy chủ, vui lòng thử lại sau';
+    }
+    
+    showErrorModal(message, details);
+});
+
+// Enhanced AJAX success handling
+function handleAjaxSuccess(response, successMessage = 'Thao tác thành công!') {
+    hideLoadingModal();
+    
+    if (response && response.success) {
+        showSuccessModal(successMessage, response.message || '');
+    } else {
+        showErrorModal('Thao tác thất bại', response.message || '');
+    }
+}
+</script>

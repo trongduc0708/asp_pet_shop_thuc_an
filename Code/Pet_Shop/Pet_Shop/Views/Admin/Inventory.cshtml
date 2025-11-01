@@ -1,0 +1,389 @@
+@model IEnumerable<Pet_Shop.Models.ViewModels.InventoryViewModel>
+@{
+    ViewData["Title"] = "Quản lý tồn kho";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var statistics = ViewBag.Statistics as Pet_Shop.Models.ViewModels.InventoryStatisticsViewModel;
+}
+
+<div class="row">
+    <div class="col-12">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-warehouse me-2"></i>Quản lý tồn kho
+        </h2>
+        <div>
+            <a href="@Url.Action("CreateInventoryTransaction", "Admin")" class="btn btn-primary me-2">
+                <i class="fas fa-plus me-2"></i>Tạo giao dịch
+            </a>
+            <a href="@Url.Action("InventoryTransactions", "Admin")" class="btn btn-outline-primary me-2">
+                <i class="fas fa-history me-2"></i>Lịch sử
+            </a>
+            <a href="@Url.Action("InventoryReports", "Admin")" class="btn btn-outline-info">
+                <i class="fas fa-chart-bar me-2"></i>Báo cáo
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    @if (statistics != null)
+    {
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="mb-0">@statistics.TotalProducts</h4>
+                                <p class="mb-0">Tổng sản phẩm</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-boxes fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="mb-0">@statistics.TotalStockValue.ToString("N0") VNĐ</h4>
+                                <p class="mb-0">Tổng giá trị tồn kho</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-dollar-sign fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="mb-0">@statistics.LowStockProducts</h4>
+                                <p class="mb-0">Tồn kho thấp</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="mb-0">@statistics.OutOfStockProducts</h4>
+                                <p class="mb-0">Hết hàng</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-times-circle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="searchProduct">Tìm kiếm sản phẩm:</label>
+                        <input type="text" id="searchProduct" class="form-control" placeholder="Nhập tên sản phẩm...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="filterStatus">Trạng thái:</label>
+                        <select id="filterStatus" class="form-control">
+                            <option value="">Tất cả</option>
+                            <option value="normal">Bình thường</option>
+                            <option value="low">Tồn kho thấp</option>
+                            <option value="out">Hết hàng</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="filterCategory">Danh mục:</label>
+                        <select id="filterCategory" class="form-control">
+                            <option value="">Tất cả danh mục</option>
+                            @foreach (var item in Model.GroupBy(x => x.CategoryName).Select(g => g.Key))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="button" id="resetFilters" class="btn btn-outline-secondary form-control">
+                            <i class="fas fa-undo me-1"></i>Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Danh sách tồn kho</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="inventoryTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Tồn kho hiện tại</th>
+                            <th>Tồn kho tối thiểu</th>
+                            <th>Tồn kho tối đa</th>
+                            <th>Trạng thái</th>
+                            <th>Cập nhật cuối</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-product-id="@item.ProductID" data-category="@item.CategoryName" data-status="@(item.IsOutOfStock ? "out" : (item.IsLowStock ? "low" : "normal"))">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-box text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">@item.ProductName</h6>
+                                            <small class="text-muted">ID: @item.ProductID</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@item.CategoryName</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold @(item.IsOutOfStock ? "text-danger" : (item.IsLowStock ? "text-warning" : "text-success"))">
+                                        @item.QuantityInStock
+                                    </span>
+                                </td>
+                                <td>@item.MinStockLevel</td>
+                                <td>@item.MaxStockLevel</td>
+                                <td>
+                                    @if (item.IsOutOfStock)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times-circle me-1"></i>Hết hàng
+                                        </span>
+                                    }
+                                    else if (item.IsLowStock)
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Tồn kho thấp
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Bình thường
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-muted">@item.LastUpdated.ToString("dd/MM/yyyy HH:mm")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewProductInventory(@item.ProductID)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="editStockLevels(@item.ProductID, @item.MinStockLevel, @item.MaxStockLevel)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="createTransaction(@item.ProductID, 'Import')">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="createTransaction(@item.ProductID, 'Export')">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Search functionality
+    $('#searchProduct').on('keyup', function() {
+        var searchTerm = $(this).val().toLowerCase();
+        $('#inventoryTable tbody tr').each(function() {
+            var productName = $(this).find('td:first h6').text().toLowerCase();
+            if (productName.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Filter by status
+    $('#filterStatus').on('change', function() {
+        var selectedStatus = $(this).val();
+        $('#inventoryTable tbody tr').each(function() {
+            var status = $(this).data('status');
+            if (selectedStatus === '' || status === selectedStatus) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Filter by category
+    $('#filterCategory').on('change', function() {
+        var selectedCategory = $(this).val();
+        $('#inventoryTable tbody tr').each(function() {
+            var category = $(this).data('category');
+            if (selectedCategory === '' || category === selectedCategory) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Reset filters
+    $('#resetFilters').on('click', function() {
+        $('#searchProduct').val('');
+        $('#filterStatus').val('');
+        $('#filterCategory').val('');
+        $('#inventoryTable tbody tr').show();
+    });
+});
+
+function viewProductInventory(productId) {
+    $.get('@Url.Action("GetProductInventory", "Admin")', { productId: productId })
+        .done(function(response) {
+            if (response.success) {
+                var data = response.data;
+                showInfoModal(
+                    `Thông tin tồn kho: ${data.productName}`,
+                    `Tồn kho hiện tại: ${data.currentStock}<br>
+                     Tồn kho tối thiểu: ${data.minStockLevel}<br>
+                     Tồn kho tối đa: ${data.maxStockLevel}<br>
+                     Trạng thái: ${data.isOutOfStock ? 'Hết hàng' : (data.isLowStock ? 'Tồn kho thấp' : 'Bình thường')}`
+                );
+            } else {
+                showErrorModal('Lỗi', response.message);
+            }
+        })
+        .fail(function() {
+            showErrorModal('Lỗi', 'Có lỗi xảy ra khi lấy thông tin tồn kho.');
+        });
+}
+
+function createTransaction(productId, transactionType) {
+    var action = transactionType === 'Import' ? 'nhập kho' : 'xuất kho';
+    showConfirmModal(
+        `Tạo giao dịch ${action}`,
+        `Bạn có muốn tạo giao dịch ${action} cho sản phẩm này không?`,
+        function() {
+            window.location.href = '@Url.Action("CreateInventoryTransaction", "Admin")?productId=' + productId + '&transactionType=' + transactionType;
+        }
+    );
+}
+
+function editStockLevels(productId, currentMin, currentMax) {
+    var modalHtml = `
+        <div class="modal fade" id="editStockLevelsModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cập nhật mức tồn kho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="stockLevelsForm">
+                            <div class="mb-3">
+                                <label for="minStockLevel" class="form-label">Tồn kho tối thiểu:</label>
+                                <input type="number" class="form-control" id="minStockLevel" value="${currentMin}" min="0" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="maxStockLevel" class="form-label">Tồn kho tối đa:</label>
+                                <input type="number" class="form-control" id="maxStockLevel" value="${currentMax}" min="0" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" onclick="updateStockLevels(${productId})">Cập nhật</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    $('#editStockLevelsModal').remove();
+    
+    // Add modal to body
+    $('body').append(modalHtml);
+    
+    // Show modal
+    $('#editStockLevelsModal').modal('show');
+}
+
+function updateStockLevels(productId) {
+    var minStockLevel = parseInt($('#minStockLevel').val());
+    var maxStockLevel = parseInt($('#maxStockLevel').val());
+    
+    if (minStockLevel < 0 || maxStockLevel < 0 || minStockLevel > maxStockLevel) {
+        showErrorModal('Lỗi', 'Mức tồn kho không hợp lệ. Tồn kho tối thiểu phải nhỏ hơn hoặc bằng tồn kho tối đa.');
+        return;
+    }
+    
+    $.post('@Url.Action("UpdateStockLevels", "Admin")', {
+        productId: productId,
+        minStockLevel: minStockLevel,
+        maxStockLevel: maxStockLevel
+    })
+    .done(function(response) {
+        if (response.success) {
+            $('#editStockLevelsModal').modal('hide');
+            showSuccessModal('Thành công', response.message);
+            // Reload page to show updated data
+            setTimeout(function() {
+                location.reload();
+            }, 1500);
+        } else {
+            showErrorModal('Lỗi', response.message);
+        }
+    })
+    .fail(function() {
+            showErrorModal('Lỗi', 'Có lỗi xảy ra khi cập nhật mức tồn kho.');
+    });
+}
+</script>
+    </div>
+</div>

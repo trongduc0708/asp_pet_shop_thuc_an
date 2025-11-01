@@ -32,9 +32,14 @@
                                 {
                                     @foreach (var category in categories)
                                     {
-                                        <option value="@category.CategoryID" selected="@(selectedCategoryId == category.CategoryID)">
-                                            @category.CategoryName
-                                        </option>
+                                        @if (selectedCategoryId == category.CategoryID)
+                                        {
+                                            <option value="@category.CategoryID" selected>@category.CategoryName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.CategoryID">@category.CategoryName</option>
+                                        }
                                     }
                                 }
                             </select>
@@ -49,9 +54,14 @@
                                 {
                                     @foreach (var brand in brands)
                                     {
-                                        <option value="@brand.BrandID" selected="@(selectedBrandId == brand.BrandID)">
-                                            @brand.BrandName
-                                        </option>
+                                        @if (selectedBrandId == brand.BrandID)
+                                        {
+                                            <option value="@brand.BrandID" selected>@brand.BrandName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@brand.BrandID">@brand.BrandName</option>
+                                        }
                                     }
                                 }
                             </select>
@@ -75,11 +85,54 @@
                             <label class="form-label">Sắp xếp</label>
                             <select name="sortBy" class="form-select">
                                 <option value="">Mặc định</option>
-                                <option value="name_asc" selected="@(sortBy == "name_asc")">Tên A-Z</option>
-                                <option value="name_desc" selected="@(sortBy == "name_desc")">Tên Z-A</option>
-                                <option value="price_asc" selected="@(sortBy == "price_asc")">Giá thấp đến cao</option>
-                                <option value="price_desc" selected="@(sortBy == "price_desc")">Giá cao đến thấp</option>
-                                <option value="newest" selected="@(sortBy == "newest")">Mới nhất</option>
+                                @if (sortBy == "name_asc")
+                                {
+                                    <option value="name_asc" selected>Tên A-Z</option>
+                                    <option value="name_desc">Tên Z-A</option>
+                                    <option value="price_asc">Giá thấp đến cao</option>
+                                    <option value="price_desc">Giá cao đến thấp</option>
+                                    <option value="newest">Mới nhất</option>
+                                }
+                                else if (sortBy == "name_desc")
+                                {
+                                    <option value="name_asc">Tên A-Z</option>
+                                    <option value="name_desc" selected>Tên Z-A</option>
+                                    <option value="price_asc">Giá thấp đến cao</option>
+                                    <option value="price_desc">Giá cao đến thấp</option>
+                                    <option value="newest">Mới nhất</option>
+                                }
+                                else if (sortBy == "price_asc")
+                                {
+                                    <option value="name_asc">Tên A-Z</option>
+                                    <option value="name_desc">Tên Z-A</option>
+                                    <option value="price_asc" selected>Giá thấp đến cao</option>
+                                    <option value="price_desc">Giá cao đến thấp</option>
+                                    <option value="newest">Mới nhất</option>
+                                }
+                                else if (sortBy == "price_desc")
+                                {
+                                    <option value="name_asc">Tên A-Z</option>
+                                    <option value="name_desc">Tên Z-A</option>
+                                    <option value="price_asc">Giá thấp đến cao</option>
+                                    <option value="price_desc" selected>Giá cao đến thấp</option>
+                                    <option value="newest">Mới nhất</option>
+                                }
+                                else if (sortBy == "newest")
+                                {
+                                    <option value="name_asc">Tên A-Z</option>
+                                    <option value="name_desc">Tên Z-A</option>
+                                    <option value="price_asc">Giá thấp đến cao</option>
+                                    <option value="price_desc">Giá cao đến thấp</option>
+                                    <option value="newest" selected>Mới nhất</option>
+                                }
+                                else
+                                {
+                                    <option value="name_asc">Tên A-Z</option>
+                                    <option value="name_desc">Tên Z-A</option>
+                                    <option value="price_asc">Giá thấp đến cao</option>
+                                    <option value="price_desc">Giá cao đến thấp</option>
+                                    <option value="newest">Mới nhất</option>
+                                }
                             </select>
                         </div>
 

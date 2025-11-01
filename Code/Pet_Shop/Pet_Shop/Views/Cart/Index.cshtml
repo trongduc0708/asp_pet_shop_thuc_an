@@ -293,20 +293,20 @@
 
         function removeItem(productId) {
             if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-                // TODO: Call API to remove item
-                $.ajax({
-                    url: '@Url.Action("RemoveItem", "Cart")',
-                    type: 'POST',
-                    data: { productId: productId },
-                    success: function(response) {
-                        if (response.success) {
-                            $('.cart-item[data-product-id="' + productId + '"]').fadeOut();
-                            updateCartSummary();
-                            showToast('Đã xóa sản phẩm', 'success');
-                        } else {
-                            showToast(response.message, 'error');
-                        }
-                    },
+                    // TODO: Call API to remove item
+                    $.ajax({
+                        url: '@Url.Action("RemoveItem", "Cart")',
+                        type: 'POST',
+                        data: { productId: productId },
+                        success: function(response) {
+                            if (response.success) {
+                                $('.cart-item[data-product-id="' + productId + '"]').fadeOut();
+                                updateCartSummary();
+                                showToast('Đã xóa sản phẩm', 'success');
+                            } else {
+                                showToast(response.message, 'error');
+                            }
+                        },
                     error: function() {
                         showToast('Có lỗi xảy ra', 'error');
                     }
@@ -315,23 +315,27 @@
         }
 
         function clearCart() {
-            if (confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?')) {
-                // TODO: Call API to clear cart
-                $.ajax({
-                    url: '@Url.Action("ClearCart", "Cart")',
-                    type: 'POST',
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            showToast(response.message, 'error');
+            showConfirmModal(
+                'Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?',
+                'Tất cả sản phẩm trong giỏ hàng sẽ bị xóa và không thể khôi phục.',
+                function() {
+                    // TODO: Call API to clear cart
+                    $.ajax({
+                        url: '@Url.Action("ClearCart", "Cart")',
+                        type: 'POST',
+                        success: function(response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                showToast(response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            showToast('Có lỗi xảy ra', 'error');
                         }
-                    },
-                    error: function() {
-                        showToast('Có lỗi xảy ra', 'error');
-                    }
-                });
-            }
+                    });
+                }
+            );
         }
 
         function applyPromoCode() {

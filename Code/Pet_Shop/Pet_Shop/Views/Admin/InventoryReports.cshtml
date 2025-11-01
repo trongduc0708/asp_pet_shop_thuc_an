@@ -1,0 +1,324 @@
+@model Pet_Shop.Models.ViewModels.InventoryStatisticsViewModel
+@{
+    ViewData["Title"] = "Báo cáo tồn kho";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var lowStockProducts = ViewBag.LowStockProducts as IEnumerable<Pet_Shop.Models.ViewModels.InventoryViewModel>;
+}
+
+<div class="row">
+    <div class="col-12">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>Báo cáo tồn kho
+        </h2>
+        <div>
+            <a href="@Url.Action("Inventory", "Admin")" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-warehouse me-2"></i>Quản lý tồn kho
+            </a>
+            <a href="@Url.Action("InventoryTransactions", "Admin")" class="btn btn-outline-primary">
+                <i class="fas fa-history me-2"></i>Lịch sử
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.TotalProducts</h4>
+                            <p class="mb-0">Tổng sản phẩm</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-boxes fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.TotalStockValue.ToString("N0") VNĐ</h4>
+                            <p class="mb-0">Tổng giá trị tồn kho</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.LowStockProducts</h4>
+                            <p class="mb-0">Tồn kho thấp</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.OutOfStockProducts</h4>
+                            <p class="mb-0">Hết hàng</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-times-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.OverStockProducts</h4>
+                            <p class="mb-0">Tồn kho cao</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-up fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.TotalImports30Days</h4>
+                            <p class="mb-0">Nhập kho (30 ngày)</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-down fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.TotalExports30Days</h4>
+                            <p class="mb-0">Xuất kho (30 ngày)</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-up fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    @if (lowStockProducts != null && lowStockProducts.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo tồn kho thấp
+                    <span class="badge bg-dark ms-2">@lowStockProducts.Count() sản phẩm</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Danh mục</th>
+                                <th>Tồn kho hiện tại</th>
+                                <th>Tồn kho tối thiểu</th>
+                                <th>Chênh lệch</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in lowStockProducts)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                    <i class="fas fa-box text-muted"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">@product.ProductName</h6>
+                                                <small class="text-muted">ID: @product.ProductID</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@product.CategoryName</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold @(product.IsOutOfStock ? "text-danger" : "text-warning")">
+                                            @product.QuantityInStock
+                                        </span>
+                                    </td>
+                                    <td>@product.MinStockLevel</td>
+                                    <td>
+                                        @{
+                                            var difference = product.QuantityInStock - product.MinStockLevel;
+                                        }
+                                        <span class="fw-bold @(difference < 0 ? "text-danger" : "text-warning")">
+                                            @(difference < 0 ? difference.ToString() : "+" + difference)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (product.IsOutOfStock)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>Hết hàng
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>Tồn kho thấp
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-success" onclick="createTransaction(@product.ProductID, 'Import')">
+                                                <i class="fas fa-plus"></i> Nhập kho
+                                            </button>
+                                            <a href="@Url.Action("EditProduct", "Admin", new { id = product.ProductID })" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Stock Analysis -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Phân tích tồn kho</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-success">@Model.TotalProducts</h4>
+                                <small class="text-muted">Tổng sản phẩm</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-warning">@Model.LowStockProducts</h4>
+                            <small class="text-muted">Tồn kho thấp</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-danger">@Model.OutOfStockProducts</h4>
+                                <small class="text-muted">Hết hàng</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-info">@Model.OverStockProducts</h4>
+                            <small class="text-muted">Tồn kho cao</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Hoạt động 30 ngày qua</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-success">@Model.TotalImports30Days</h4>
+                                <small class="text-muted">Tổng nhập kho</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-danger">@Model.TotalExports30Days</h4>
+                            <small class="text-muted">Tổng xuất kho</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        @{
+                            var netMovement = Model.TotalImports30Days - Model.TotalExports30Days;
+                        }
+                        <h4 class="@(netMovement >= 0 ? "text-success" : "text-danger")">
+                            @(netMovement >= 0 ? "+" : "")@netMovement
+                        </h4>
+                        <small class="text-muted">Chênh lệch tổng</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Last Updated Info -->
+    @if (Model.LastUpdated.HasValue)
+    {
+        <div class="card mt-4">
+            <div class="card-body text-center">
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    Cập nhật lần cuối: @Model.LastUpdated.Value.ToString("dd/MM/yyyy HH:mm")
+                </small>
+            </div>
+        </div>
+    }
+    </div>
+</div>
+
+<script>
+function createTransaction(productId, transactionType) {
+    var action = transactionType === 'Import' ? 'nhập kho' : 'xuất kho';
+    showConfirmModal(
+        `Tạo giao dịch ${action}`,
+        `Bạn có muốn tạo giao dịch ${action} cho sản phẩm này không?`,
+        function() {
+            window.location.href = '@Url.Action("CreateInventoryTransaction", "Admin")?productId=' + productId + '&transactionType=' + transactionType;
+        }
+    );
+}
+</script>

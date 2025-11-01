@@ -34,7 +34,14 @@
                                 {
                                     @foreach (var parent in ViewBag.ParentCategories)
                                     {
-                                        <option value="@parent.CategoryID" selected="@(parent.CategoryID == Model.ParentCategoryID)">@parent.CategoryName</option>
+                                        @if (parent.CategoryID == Model.ParentCategoryID)
+                                        {
+                                            <option value="@parent.CategoryID" selected>@parent.CategoryName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@parent.CategoryID">@parent.CategoryName</option>
+                                        }
                                     }
                                 }
                             </select>

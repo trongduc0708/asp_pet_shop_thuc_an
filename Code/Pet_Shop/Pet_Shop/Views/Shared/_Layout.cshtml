@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/all.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ai-recommendations.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
@@ -236,6 +237,82 @@
         $(document).ready(function() {
             loadWishlistCount();
         });
+
+        // Modal utility functions for frontend
+        function showSuccessModal(message, details = '') {
+            showModal('success', message, details);
+        }
+
+        function showErrorModal(message, details = '') {
+            showModal('error', message, details);
+        }
+
+        function showWarningModal(message, details = '') {
+            showModal('warning', message, details);
+        }
+
+        function showInfoModal(message, details = '') {
+            showModal('info', message, details);
+        }
+
+        function showConfirmModal(message, details = '', onConfirm = null) {
+            showModal('confirm', message, details, onConfirm);
+        }
+
+        function showModal(type, message, details = '', onConfirm = null) {
+            const modalId = 'frontendModal';
+            let existingModal = document.getElementById(modalId);
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modalHtml = `
+                <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : type === 'info' ? 'info' : 'primary'} text-white border-0">
+                                <h5 class="modal-title" id="${modalId}Label">
+                                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'info' ? 'info-circle' : 'question-circle'} me-2"></i>
+                                    ${type === 'success' ? 'Thành công' : type === 'error' ? 'Lỗi' : type === 'warning' ? 'Cảnh báo' : type === 'info' ? 'Thông tin' : 'Xác nhận'}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center py-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'info' ? 'info-circle' : 'question-circle'} fa-3x text-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : type === 'info' ? 'info' : 'primary'}"></i>
+                                </div>
+                                <h6 class="mb-3">${message}</h6>
+                                ${details ? `<p class="text-muted mb-0">${details}</p>` : ''}
+                            </div>
+                            <div class="modal-footer border-0 justify-content-center">
+                                ${type === 'confirm' ? 
+                                    `<button type="button" class="btn btn-secondary px-4 me-2" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-2"></i>Hủy
+                                    </button>
+                                    <button type="button" class="btn btn-primary px-4" id="confirmButton">
+                                        <i class="fas fa-check me-2"></i>Xác nhận
+                                    </button>` :
+                                    `<button type="button" class="btn btn-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : type === 'info' ? 'info' : 'primary'} px-4" data-bs-dismiss="modal">
+                                        <i class="fas fa-check me-2"></i>Đóng
+                                    </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            if (type === 'confirm' && onConfirm) {
+                document.getElementById('confirmButton').onclick = function() {
+                    onConfirm();
+                    bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
+                };
+            }
+
+            new bootstrap.Modal(document.getElementById(modalId)).show();
+        }
     </script>
     
     <!-- Chatbot Widget -->

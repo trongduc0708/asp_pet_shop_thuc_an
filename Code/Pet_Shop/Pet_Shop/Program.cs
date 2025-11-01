@@ -15,6 +15,9 @@ builder.Services.AddDbContext<PetShopDbContext>(options =>
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Add HttpContextAccessor for VNPay service
+builder.Services.AddHttpContextAccessor();
+
 // Add Services
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<ProductService>();
@@ -29,6 +32,8 @@ builder.Services.AddScoped<AddressService>();
 builder.Services.AddScoped<WishlistService>();
 builder.Services.AddScoped<VNPayService>();
 builder.Services.AddScoped<PromotionService>();
+builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ChatbotService>();
 builder.Services.AddHttpClient<ChatbotService>();
 

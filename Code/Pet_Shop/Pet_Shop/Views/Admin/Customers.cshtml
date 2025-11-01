@@ -1,0 +1,295 @@
+@model IEnumerable<Pet_Shop.Models.Entities.User>
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-users me-2"></i>Quản lý khách hàng
+            </h2>
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary" onclick="loadCustomerStatistics()">
+                    <i class="fas fa-chart-bar me-2"></i>Thống kê
+                </button>
+                <button type="button" class="btn btn-outline-success" onclick="exportCustomers()">
+                    <i class="fas fa-download me-2"></i>Xuất Excel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form method="get" action="@Url.Action("SearchCustomers", "Admin")" class="d-flex">
+            <input type="text" name="searchTerm" class="form-control me-2" placeholder="Tìm kiếm theo tên, email, số điện thoại..." value="@ViewBag.SearchTerm">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="fas fa-search me-1"></i>Tìm kiếm
+            </button>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("Customers", "Admin")" class="btn btn-outline-secondary @(ViewBag.SelectedIsActive == null ? "active" : "")">
+                Tất cả
+            </a>
+            <a href="@Url.Action("FilterCustomers", "Admin", new { isActive = true })" class="btn btn-outline-success @(ViewBag.SelectedIsActive == true ? "active" : "")">
+                Đang hoạt động
+            </a>
+            <a href="@Url.Action("FilterCustomers", "Admin", new { isActive = false })" class="btn btn-outline-warning @(ViewBag.SelectedIsActive == false ? "active" : "")">
+                Không hoạt động
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Tổng khách hàng</h6>
+                        <h4 class="mb-0" id="totalCustomers">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Đang hoạt động</h6>
+                        <h4 class="mb-0" id="activeCustomers">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">VIP</h6>
+                        <h4 class="mb-0" id="vipCustomers">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-crown fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Mới tháng này</h6>
+                        <h4 class="mb-0" id="newCustomers">0</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-plus fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customers Table -->
+<div class="card shadow">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Thông tin</th>
+                            <th>Liên hệ</th>
+                            <th>Hạng thành viên</th>
+                            <th>Thống kê</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model)
+                        {
+                            var membershipLevel = customer.CustomerProfile?.MembershipLevel ?? "Bronze";
+                            var membershipClass = membershipLevel switch
+                            {
+                                "Bronze" => "secondary",
+                                "Silver" => "light",
+                                "Gold" => "warning",
+                                "Platinum" => "info",
+                                _ => "secondary"
+                            };
+                            
+                            <tr class="@(customer.IsActive ? "" : "text-muted")">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                            @customer.FullName?.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div>
+                                            <strong>@customer.FullName</strong>
+                                            <br>
+                                            <small class="text-muted">@customer.Username</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <i class="fas fa-envelope me-1"></i>@customer.Email
+                                        @if (!string.IsNullOrEmpty(customer.Phone))
+                                        {
+                                            <br>
+                                            <i class="fas fa-phone me-1"></i>@customer.Phone
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@membershipClass">
+                                        @membershipLevel
+                                    </span>
+                                    @if (customer.CustomerProfile?.Points > 0)
+                                    {
+                                        <br>
+                                        <small class="text-muted">@customer.CustomerProfile.Points điểm</small>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <strong>@(customer.CustomerProfile?.TotalOrders ?? 0)</strong> đơn hàng
+                                        <br>
+                                        <strong>@((customer.CustomerProfile?.TotalSpent ?? 0m).ToString("N0")) ₫</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (customer.IsActive)
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                    }
+                                    <br>
+                                    <small class="text-muted">@customer.CreatedDate.ToString("dd/MM/yyyy")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="@Url.Action("CustomerDetails", "Admin", new { id = customer.UserID })" 
+                                           class="btn btn-outline-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("EditCustomer", "Admin", new { id = customer.UserID })" 
+                                           class="btn btn-outline-warning" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-@(customer.IsActive ? "danger" : "success") toggle-status" 
+                                                data-customer-id="@customer.UserID" 
+                                                data-current-status="@customer.IsActive.ToString().ToLower()"
+                                                title="@(customer.IsActive ? "Vô hiệu hóa" : "Kích hoạt")">
+                                            <i class="fas fa-@(customer.IsActive ? "ban" : "check")"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có khách hàng nào</h5>
+                <p class="text-muted">Danh sách khách hàng sẽ hiển thị ở đây khi có dữ liệu.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+}
+</style>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    // Load statistics
+    loadCustomerStatistics();
+    
+    // Toggle status
+    $('.toggle-status').click(function() {
+        var customerId = $(this).data('customer-id');
+        var currentStatus = $(this).data('current-status');
+        var action = currentStatus === 'true' ? 'vô hiệu hóa' : 'kích hoạt';
+        
+        showConfirmModal(
+            `Bạn có chắc chắn muốn ${action} khách hàng này?`,
+            'Thao tác này sẽ thay đổi trạng thái hoạt động của khách hàng.',
+            function() {
+                showLoadingModal('Đang cập nhật trạng thái...');
+                
+                $.post('@Url.Action("ToggleCustomerStatus", "Admin")/' + customerId)
+                    .done(function(response) {
+                        hideLoadingModal();
+                        if (response.success) {
+                            showSuccessModal(response.message, 'Trạng thái khách hàng đã được cập nhật thành công.');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showErrorModal(response.message);
+                        }
+                    })
+                    .fail(function() {
+                        hideLoadingModal();
+                        showErrorModal('Có lỗi xảy ra khi cập nhật trạng thái.');
+                    });
+            }
+        );
+    });
+});
+
+function loadCustomerStatistics() {
+    $.get('@Url.Action("CustomerStatistics", "Admin")')
+        .done(function(response) {
+            if (response.success) {
+                $('#totalCustomers').text(response.statistics.totalCustomers || 0);
+                $('#activeCustomers').text(response.statistics.activeCustomers || 0);
+                $('#vipCustomers').text(response.statistics.vipCustomers || 0);
+                $('#newCustomers').text(response.statistics.newCustomersThisMonth || 0);
+            }
+        });
+}
+
+function exportCustomers() {
+    showInfoModal('Tính năng xuất Excel', 'Tính năng này sẽ được phát triển trong phiên bản tiếp theo.');
+}
+</script>
+}

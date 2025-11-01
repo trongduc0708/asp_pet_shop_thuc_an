@@ -1,0 +1,315 @@
+@model Pet_Shop.Models.Entities.Promotion
+@{
+    ViewData["Title"] = "Chỉnh sửa mã khuyến mãi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">
+                <i class="fas fa-edit me-2"></i>Chỉnh sửa mã khuyến mãi
+            </h2>
+            <a href="@Url.Action("Promotions", "Admin")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Thông tin mã khuyến mãi
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditPromotion" method="post">
+                    <input asp-for="PromotionID" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PromotionCode" class="form-label">Mã khuyến mãi <span class="text-danger">*</span></label>
+                            <input asp-for="PromotionCode" class="form-control" placeholder="VD: SALE20, WELCOME10" />
+                            <span asp-validation-for="PromotionCode" class="text-danger"></span>
+                            <div class="form-text">Mã khuyến mãi phải là duy nhất và không chứa khoảng trắng.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PromotionName" class="form-label">Tên mã khuyến mãi <span class="text-danger">*</span></label>
+                            <input asp-for="PromotionName" class="form-control" placeholder="VD: Giảm giá 20%" />
+                            <span asp-validation-for="PromotionName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Mô tả</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả chi tiết về mã khuyến mãi..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DiscountType" class="form-label">Loại giảm giá <span class="text-danger">*</span></label>
+                            <select asp-for="DiscountType" class="form-select" id="discountType">
+                                <option value="">-- Chọn loại giảm giá --</option>
+                                <option value="Percentage">Phần trăm (%)</option>
+                                <option value="FixedAmount">Số tiền cố định (₫)</option>
+                            </select>
+                            <span asp-validation-for="DiscountType" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DiscountValue" class="form-label">Giá trị giảm giá <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="DiscountValue" class="form-control" placeholder="0" />
+                                <span class="input-group-text" id="discountUnit">₫</span>
+                            </div>
+                            <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MinOrderAmount" class="form-label">Đơn hàng tối thiểu</label>
+                            <div class="input-group">
+                                <input asp-for="MinOrderAmount" class="form-control" placeholder="0" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="MinOrderAmount" class="text-danger"></span>
+                            <div class="form-text">Để trống hoặc 0 nếu không có yêu cầu.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MaxDiscountAmount" class="form-label">Giảm giá tối đa</label>
+                            <div class="input-group">
+                                <input asp-for="MaxDiscountAmount" class="form-control" placeholder="Không giới hạn" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="MaxDiscountAmount" class="text-danger"></span>
+                            <div class="form-text">Chỉ áp dụng cho giảm giá theo phần trăm.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="UsageLimit" class="form-label">Giới hạn sử dụng</label>
+                            <input asp-for="UsageLimit" class="form-control" placeholder="Không giới hạn" />
+                            <span asp-validation-for="UsageLimit" class="text-danger"></span>
+                            <div class="form-text">Để trống nếu không giới hạn số lần sử dụng.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Trạng thái</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="isActive" @(Model.IsActive ? "checked" : "")>
+                                <label class="form-check-label" for="isActive">
+                                    Kích hoạt mã khuyến mãi
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndDate" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Promotions", "Admin")" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Cập nhật mã khuyến mãi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Thống kê sử dụng
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">@Model.UsedCount</h4>
+                        <small class="text-muted">Đã sử dụng</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">@(Model.UsageLimit?.ToString() ?? "∞")</h4>
+                        <small class="text-muted">Giới hạn</small>
+                    </div>
+                </div>
+                
+                @if (Model.UsageLimit.HasValue)
+                {
+                    var usagePercentage = (double)Model.UsedCount / Model.UsageLimit.Value * 100;
+                    <div class="mt-3">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @usagePercentage%" 
+                                 aria-valuenow="@usagePercentage" aria-valuemin="0" aria-valuemax="100">
+                                @usagePercentage.ToString("F1")%
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                <hr>
+                
+                <div class="small">
+                    <strong>Ngày tạo:</strong> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")<br>
+                    <strong>Trạng thái:</strong> 
+                    @if (Model.IsActive)
+                    {
+                        if (Model.EndDate < DateTime.Now)
+                        {
+                            <span class="badge bg-warning">Hết hạn</span>
+                        }
+                        else if (Model.UsageLimit.HasValue && Model.UsedCount >= Model.UsageLimit.Value)
+                        {
+                            <span class="badge bg-danger">Hết lượt</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Hoạt động</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Không hoạt động</span>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calculator me-2"></i>Tính toán giảm giá
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Đơn hàng mẫu:</label>
+                    <input type="number" id="sampleOrderAmount" class="form-control" placeholder="Nhập số tiền đơn hàng" value="1000000">
+                </div>
+                <div id="discountCalculation" class="alert alert-info">
+                    <strong>Giảm giá:</strong> <span id="discountAmount">0 ₫</span><br>
+                    <strong>Sau giảm giá:</strong> <span id="finalAmount">1,000,000 ₫</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Lưu ý:</strong> Thay đổi mã khuyến mãi có thể ảnh hưởng đến các đơn hàng đang sử dụng mã này.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function() {
+    // Set discount type and unit based on current value
+    var discountType = '@Model.DiscountType';
+    $('#discountType').val(discountType);
+    
+    if (discountType === 'Percentage') {
+        $('#discountUnit').text('%');
+        $('#MaxDiscountAmount').closest('.mb-3').show();
+    } else if (discountType === 'FixedAmount') {
+        $('#discountUnit').text('₫');
+        $('#MaxDiscountAmount').closest('.mb-3').hide();
+    }
+    
+    // Handle discount type change
+    $('#discountType').change(function() {
+        var type = $(this).val();
+        var unit = $('#discountUnit');
+        
+        if (type === 'Percentage') {
+            unit.text('%');
+            $('#DiscountValue').attr('placeholder', '20');
+            $('#MaxDiscountAmount').closest('.mb-3').show();
+        } else if (type === 'FixedAmount') {
+            unit.text('₫');
+            $('#DiscountValue').attr('placeholder', '50000');
+            $('#MaxDiscountAmount').closest('.mb-3').hide();
+        } else {
+            unit.text('₫');
+            $('#DiscountValue').attr('placeholder', '0');
+        }
+        
+        calculateDiscount();
+    });
+    
+    // Calculate discount on input change
+    $('#DiscountValue, #MinOrderAmount, #MaxDiscountAmount, #sampleOrderAmount').on('input', calculateDiscount);
+    
+    // Initial calculation
+    calculateDiscount();
+    
+    // Handle form submission
+    $('form').submit(function(e) {
+        var isActive = $('#isActive').is(':checked');
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'IsActive',
+            value: isActive
+        }).appendTo(this);
+    });
+});
+
+function calculateDiscount() {
+    var discountType = $('#discountType').val();
+    var discountValue = parseFloat($('#DiscountValue').val()) || 0;
+    var minOrderAmount = parseFloat($('#MinOrderAmount').val()) || 0;
+    var maxDiscountAmount = parseFloat($('#MaxDiscountAmount').val()) || 0;
+    var sampleOrderAmount = parseFloat($('#sampleOrderAmount').val()) || 0;
+    
+    if (!discountType || sampleOrderAmount < minOrderAmount) {
+        $('#discountAmount').text('0 ₫');
+        $('#finalAmount').text(sampleOrderAmount.toLocaleString() + ' ₫');
+        return;
+    }
+    
+    var discountAmount = 0;
+    
+    if (discountType === 'Percentage') {
+        discountAmount = sampleOrderAmount * (discountValue / 100);
+        if (maxDiscountAmount > 0 && discountAmount > maxDiscountAmount) {
+            discountAmount = maxDiscountAmount;
+        }
+    } else if (discountType === 'FixedAmount') {
+        discountAmount = discountValue;
+    }
+    
+    var finalAmount = sampleOrderAmount - discountAmount;
+    
+    $('#discountAmount').text(discountAmount.toLocaleString() + ' ₫');
+    $('#finalAmount').text(finalAmount.toLocaleString() + ' ₫');
+}
+</script>
+}

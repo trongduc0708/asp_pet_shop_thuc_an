@@ -389,7 +389,7 @@ document.getElementById('newProductImages').addEventListener('change', function(
 document.getElementById('uploadNewImages').addEventListener('click', function() {
     const files = document.getElementById('newProductImages').files;
     if (files.length === 0) {
-        alert('Vui lòng chọn hình ảnh để upload');
+        showWarningModal('Vui lòng chọn hình ảnh để upload', 'Bạn cần chọn ít nhất một hình ảnh trước khi upload.');
         return;
     }
 
@@ -419,15 +419,15 @@ document.getElementById('uploadNewImages').addEventListener('click', function() 
             document.getElementById('newProductImages').value = '';
             document.getElementById('newImagePreview').innerHTML = '';
             
-            alert(`Upload thành công ${data.files.length} hình ảnh!`);
+            showSuccessModal(`Upload thành công ${data.files.length} hình ảnh!`, 'Tất cả hình ảnh đã được thêm vào sản phẩm.');
             loadCurrentImages(); // Reload current images
         } else {
-            alert('Upload thất bại: ' + data.message);
+            showErrorModal('Upload thất bại: ' + data.message, 'Không thể upload hình ảnh.');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra khi upload hình ảnh');
+        showErrorModal('Có lỗi xảy ra khi upload hình ảnh', 'Vui lòng thử lại sau.');
     })
     .finally(() => {
         uploadBtn.innerHTML = originalText;
@@ -509,45 +509,53 @@ function displayCurrentImages(images) {
 
 // Set primary image
 function setPrimaryImage(imageId) {
-    if (confirm('Bạn có chắc chắn muốn đặt hình ảnh này làm ảnh chính?')) {
-        fetch(`/Admin/Products/${productId}/Images/${imageId}/SetPrimary`, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Đặt ảnh chính thành công!');
-                loadCurrentImages();
-            } else {
-                alert('Lỗi: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra');
-        });
-    }
+    showConfirmModal(
+        'Bạn có chắc chắn muốn đặt hình ảnh này làm ảnh chính?',
+        'Hình ảnh này sẽ được hiển thị làm ảnh đại diện của sản phẩm.',
+        function() {
+            fetch(`/Admin/Products/${productId}/Images/${imageId}/SetPrimary`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessModal('Đặt ảnh chính thành công!', 'Hình ảnh đã được đặt làm ảnh đại diện.');
+                    loadCurrentImages();
+                } else {
+                    showErrorModal('Lỗi: ' + data.message, 'Không thể đặt ảnh chính.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorModal('Có lỗi xảy ra', 'Vui lòng thử lại sau.');
+            });
+        }
+    );
 }
 
 // Remove image
 function removeImage(imageId) {
-    if (confirm('Bạn có chắc chắn muốn xóa hình ảnh này?')) {
-        fetch(`/Admin/Products/Images/${imageId}/Remove`, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Xóa hình ảnh thành công!');
-                loadCurrentImages();
-            } else {
-                alert('Lỗi: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra');
-        });
-    }
+    showConfirmModal(
+        'Bạn có chắc chắn muốn xóa hình ảnh này?',
+        'Hình ảnh sẽ bị xóa vĩnh viễn và không thể khôi phục.',
+        function() {
+            fetch(`/Admin/Products/Images/${imageId}/Remove`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessModal('Xóa hình ảnh thành công!', 'Hình ảnh đã được xóa khỏi sản phẩm.');
+                    loadCurrentImages();
+                } else {
+                    showErrorModal('Lỗi: ' + data.message, 'Không thể xóa hình ảnh.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorModal('Có lỗi xảy ra', 'Vui lòng thử lại sau.');
+            });
+        }
+    );
 }
 </script>

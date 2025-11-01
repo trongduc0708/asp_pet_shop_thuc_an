@@ -1,0 +1,320 @@
+@model Pet_Shop.Models.ViewModels.InventoryTransactionFormViewModel
+@{
+    ViewData["Title"] = "Tạo giao dịch xuất nhập kho";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var products = ViewBag.Products as IEnumerable<Pet_Shop.Models.Entities.Product>;
+    var productId = Context.Request.Query["productId"].FirstOrDefault();
+    var transactionType = Context.Request.Query["transactionType"].FirstOrDefault();
+}
+
+<div class="row">
+    <div class="col-12">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-plus-circle me-2"></i>Tạo giao dịch xuất nhập kho
+        </h2>
+        <div>
+            <a href="@Url.Action("Inventory", "Admin")" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-warehouse me-2"></i>Quản lý tồn kho
+            </a>
+            <a href="@Url.Action("InventoryTransactions", "Admin")" class="btn btn-outline-primary">
+                <i class="fas fa-history me-2"></i>Lịch sử
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Transaction Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Thông tin giao dịch</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateInventoryTransaction" method="post" id="transactionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ProductID" class="form-label">Sản phẩm <span class="text-danger">*</span></label>
+                                    <select name="ProductID" class="form-control" id="productSelect" required>
+                                        <option value="">-- Chọn sản phẩm --</option>
+                                        @if (products != null)
+                                        {
+                                            @foreach (var product in products)
+                                            {
+                                                @if (productId == product.ProductID.ToString())
+                                                {
+                                                    <option value="@product.ProductID" selected>@product.ProductName</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@product.ProductID">@product.ProductName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProductID" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="TransactionType" class="form-label">Loại giao dịch <span class="text-danger">*</span></label>
+                                    <select name="TransactionType" class="form-control" id="transactionTypeSelect" required>
+                                        <option value="">-- Chọn loại giao dịch --</option>
+                                        @if (transactionType == "Import")
+                                        {
+                                            <option value="Import" selected>Nhập kho</option>
+                                            <option value="Export">Xuất kho</option>
+                                            <option value="Adjustment">Điều chỉnh</option>
+                                        }
+                                        else if (transactionType == "Export")
+                                        {
+                                            <option value="Import">Nhập kho</option>
+                                            <option value="Export" selected>Xuất kho</option>
+                                            <option value="Adjustment">Điều chỉnh</option>
+                                        }
+                                        else if (transactionType == "Adjustment")
+                                        {
+                                            <option value="Import">Nhập kho</option>
+                                            <option value="Export">Xuất kho</option>
+                                            <option value="Adjustment" selected>Điều chỉnh</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="Import">Nhập kho</option>
+                                            <option value="Export">Xuất kho</option>
+                                            <option value="Adjustment">Điều chỉnh</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="TransactionType" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                    <input asp-for="Quantity" type="number" class="form-control" min="1" required>
+                                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label asp-for="UnitPrice" class="form-label">Đơn giá (VNĐ)</label>
+                                    <input asp-for="UnitPrice" type="number" class="form-control" min="0" step="0.01">
+                                    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ReferenceNumber" class="form-label">Số phiếu</label>
+                                    <input asp-for="ReferenceNumber" type="text" class="form-control" placeholder="Tự động tạo nếu để trống">
+                                    <span asp-validation-for="ReferenceNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Notes" class="form-label">Ghi chú</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Nhập ghi chú cho giao dịch..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-save me-2"></i>Tạo giao dịch
+                            </button>
+                            <a href="@Url.Action("Inventory", "Admin")" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Product Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin sản phẩm</h5>
+                </div>
+                <div class="card-body" id="productInfo">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-box fa-2x mb-2"></i>
+                        <p>Chọn sản phẩm để xem thông tin tồn kho</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Summary -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Tóm tắt giao dịch</h5>
+                </div>
+                <div class="card-body" id="transactionSummary">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-calculator fa-2x mb-2"></i>
+                        <p>Nhập thông tin để xem tóm tắt</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Load product info when product is selected
+    $('#productSelect').on('change', function() {
+        var productId = $(this).val();
+        if (productId) {
+            loadProductInfo(productId);
+        } else {
+            $('#productInfo').html(`
+                <div class="text-center text-muted">
+                    <i class="fas fa-box fa-2x mb-2"></i>
+                    <p>Chọn sản phẩm để xem thông tin tồn kho</p>
+                </div>
+            `);
+        }
+    });
+
+    // Update transaction summary when form changes
+    $('#transactionTypeSelect, #productSelect, #Quantity, #UnitPrice').on('change input', function() {
+        updateTransactionSummary();
+    });
+
+    // Auto-generate reference number
+    $('#transactionTypeSelect').on('change', function() {
+        var transactionType = $(this).val();
+        if (transactionType && !$('#ReferenceNumber').val()) {
+            generateReferenceNumber(transactionType);
+        }
+    });
+
+    // Load product info if product is pre-selected
+    var selectedProductId = $('#productSelect').val();
+    if (selectedProductId) {
+        loadProductInfo(selectedProductId);
+    }
+});
+
+function loadProductInfo(productId) {
+    $.get('@Url.Action("GetProductInventory", "Admin")', { productId: productId })
+        .done(function(response) {
+            if (response.success) {
+                var data = response.data;
+                var statusBadge = data.isOutOfStock ? 
+                    '<span class="badge bg-danger">Hết hàng</span>' : 
+                    (data.isLowStock ? '<span class="badge bg-warning">Tồn kho thấp</span>' : '<span class="badge bg-success">Bình thường</span>');
+
+                $('#productInfo').html(`
+                    <div class="text-center">
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; margin: 0 auto;">
+                            <i class="fas fa-box fa-2x text-muted"></i>
+                        </div>
+                        <h6 class="mb-2">${data.productName}</h6>
+                        ${statusBadge}
+                    </div>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h6 class="text-primary">${data.currentStock}</h6>
+                            <small class="text-muted">Tồn kho hiện tại</small>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-warning">${data.minStockLevel}</h6>
+                            <small class="text-muted">Tồn kho tối thiểu</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <h6 class="text-info">${data.maxStockLevel}</h6>
+                        <small class="text-muted">Tồn kho tối đa</small>
+                    </div>
+                `);
+            } else {
+                $('#productInfo').html(`
+                    <div class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                        <p>Không thể tải thông tin sản phẩm</p>
+                    </div>
+                `);
+            }
+        })
+        .fail(function() {
+            $('#productInfo').html(`
+                <div class="text-center text-danger">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <p>Có lỗi xảy ra khi tải thông tin</p>
+                </div>
+            `);
+        });
+}
+
+function updateTransactionSummary() {
+    var transactionType = $('#transactionTypeSelect').val();
+    var quantity = parseInt($('#Quantity').val()) || 0;
+    var unitPrice = parseFloat($('#UnitPrice').val()) || 0;
+    var productId = $('#productSelect').val();
+
+    if (!transactionType || !quantity || !productId) {
+        $('#transactionSummary').html(`
+            <div class="text-center text-muted">
+                <i class="fas fa-calculator fa-2x mb-2"></i>
+                <p>Nhập thông tin để xem tóm tắt</p>
+            </div>
+        `);
+        return;
+    }
+
+    var totalValue = quantity * unitPrice;
+    var transactionTypeName = transactionType === 'Import' ? 'Nhập kho' : 
+                             transactionType === 'Export' ? 'Xuất kho' : 'Điều chỉnh';
+    var transactionIcon = transactionType === 'Import' ? 'arrow-down' : 
+                         transactionType === 'Export' ? 'arrow-up' : 'exchange-alt';
+    var transactionColor = transactionType === 'Import' ? 'success' : 
+                          transactionType === 'Export' ? 'danger' : 'warning';
+
+    $('#transactionSummary').html(`
+        <div class="text-center mb-3">
+            <span class="badge bg-${transactionColor} fs-6">
+                <i class="fas fa-${transactionIcon} me-1"></i>${transactionTypeName}
+            </span>
+        </div>
+        <div class="row text-center">
+            <div class="col-6">
+                <h6 class="text-primary">${quantity}</h6>
+                <small class="text-muted">Số lượng</small>
+            </div>
+            <div class="col-6">
+                <h6 class="text-success">${unitPrice.toLocaleString()} VNĐ</h6>
+                <small class="text-muted">Đơn giá</small>
+            </div>
+        </div>
+        <hr>
+        <div class="text-center">
+            <h5 class="text-primary">${totalValue.toLocaleString()} VNĐ</h5>
+            <small class="text-muted">Tổng giá trị</small>
+        </div>
+    `);
+}
+
+function generateReferenceNumber(transactionType) {
+    var now = new Date();
+    var prefix = transactionType === 'Import' ? 'NK' : 'XK';
+    var date = now.getFullYear().toString() + 
+               (now.getMonth() + 1).toString().padStart(2, '0') + 
+               now.getDate().toString().padStart(2, '0');
+    var time = now.getHours().toString().padStart(2, '0') + 
+               now.getMinutes().toString().padStart(2, '0') + 
+               now.getSeconds().toString().padStart(2, '0');
+    
+    $('#ReferenceNumber').val(prefix + date + time);
+}
+</script>
+    </div>
+</div>

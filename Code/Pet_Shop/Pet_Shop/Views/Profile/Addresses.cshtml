@@ -135,24 +135,28 @@
                 var addressId = $(this).data('address-id');
                 var $btn = $(this);
                 
-                if (confirm('Bạn có chắc chắn muốn đặt địa chỉ này làm mặc định?')) {
-                    $.ajax({
-                        url: '@Url.Action("SetDefaultAddress")',
-                        type: 'POST',
-                        data: { id: addressId },
-                        success: function(response) {
-                            if (response.success) {
-                                showToast('success', response.message);
-                                location.reload();
-                            } else {
-                                showToast('error', response.message);
+                showConfirmModal(
+                    'Bạn có chắc chắn muốn đặt địa chỉ này làm mặc định?',
+                    'Địa chỉ này sẽ được sử dụng làm địa chỉ giao hàng mặc định.',
+                    function() {
+                        $.ajax({
+                            url: '@Url.Action("SetDefaultAddress")',
+                            type: 'POST',
+                            data: { id: addressId },
+                            success: function(response) {
+                                if (response.success) {
+                                    showToast('success', response.message);
+                                    location.reload();
+                                } else {
+                                    showToast('error', response.message);
+                                }
+                            },
+                            error: function() {
+                                showToast('error', 'Có lỗi xảy ra khi đặt địa chỉ mặc định');
                             }
-                        },
-                        error: function() {
-                            showToast('error', 'Có lỗi xảy ra khi đặt địa chỉ mặc định');
-                        }
-                    });
-                }
+                        });
+                    }
+                );
             });
             
             // Delete address
@@ -160,24 +164,28 @@
                 e.preventDefault();
                 var addressId = $(this).data('address-id');
                 
-                if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
-                    $.ajax({
-                        url: '@Url.Action("DeleteAddress")',
-                        type: 'POST',
-                        data: { id: addressId },
-                        success: function(response) {
-                            if (response.success) {
-                                showToast('success', response.message);
-                                location.reload();
-                            } else {
-                                showToast('error', response.message);
+                showConfirmModal(
+                    'Bạn có chắc chắn muốn xóa địa chỉ này?',
+                    'Địa chỉ sẽ bị xóa vĩnh viễn và không thể khôi phục.',
+                    function() {
+                        $.ajax({
+                            url: '@Url.Action("DeleteAddress")',
+                            type: 'POST',
+                            data: { id: addressId },
+                            success: function(response) {
+                                if (response.success) {
+                                    showToast('success', response.message);
+                                    location.reload();
+                                } else {
+                                    showToast('error', response.message);
+                                }
+                            },
+                            error: function() {
+                                showToast('error', 'Có lỗi xảy ra khi xóa địa chỉ');
                             }
-                        },
-                        error: function() {
-                            showToast('error', 'Có lỗi xảy ra khi xóa địa chỉ');
-                        }
-                    });
-                }
+                        });
+                    }
+                );
             });
             
             function showToast(type, message) {

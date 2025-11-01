@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Pet_Shop.Models;
 using Pet_Shop.Services;
@@ -12,14 +13,22 @@ namespace Pet_Shop.Controllers
         private readonly BannerService _bannerService;
         private readonly ProductService _productService;
         private readonly PromotionService _promotionService;
+        private readonly ChatbotService _chatbotService;
 
-        public HomeController(ILogger<HomeController> logger, CategoryService categoryService, BannerService bannerService, ProductService productService, PromotionService promotionService)
+        public HomeController(
+            ILogger<HomeController> logger, 
+            CategoryService categoryService, 
+            BannerService bannerService, 
+            ProductService productService, 
+            PromotionService promotionService,
+            ChatbotService chatbotService)
         {
             _logger = logger;
             _categoryService = categoryService;
             _bannerService = bannerService;
             _productService = productService;
             _promotionService = promotionService;
+            _chatbotService = chatbotService;
         }
 
         public async Task<IActionResult> Index()
@@ -31,10 +40,20 @@ namespace Pet_Shop.Controllers
                 var featuredProducts = await _productService.GetFeaturedProductsAsync(); // Lấy sản phẩm nổi bật
                 var activePromotions = await _promotionService.GetActivePromotionsAsync(); // Lấy mã khuyến mãi đang hoạt động
                 
+                // Chatbot AI: Gợi ý sản phẩm dựa trên lịch sử mua hàng của khách hàng đã đăng nhập
+                List<Pet_Shop.Models.Entities.Product>? aiRecommendedProducts = null;
+                var userId = GetCurrentUserId();
+                if (userId > 0)
+                {
+                    aiRecommendedProducts = await _chatbotService.GetRecommendedProductsForUserAsync(userId, 8);
+                    _logger.LogInformation($"AI Chatbot loaded {aiRecommendedProducts.Count} recommendations for user {userId}");
+                }
+                
                 ViewBag.Categories = categories;
                 ViewBag.Banners = banners;
                 ViewBag.FeaturedProducts = featuredProducts;
                 ViewBag.ActivePromotions = activePromotions;
+                ViewBag.AIRecommendedProducts = aiRecommendedProducts;
                 return View();
             }
             catch (Exception ex)
@@ -44,8 +63,22 @@ namespace Pet_Shop.Controllers
                 ViewBag.Banners = new List<Pet_Shop.Models.Entities.Banner>();
                 ViewBag.FeaturedProducts = new List<Pet_Shop.Models.Entities.Product>();
                 ViewBag.ActivePromotions = new List<Pet_Shop.Models.Entities.Promotion>();
+                ViewBag.AIRecommendedProducts = null;
                 return View();
             }
+        }
+
+        private int GetCurrentUserId()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    return userId;
+                }
+            }
+            return 0;
         }
 
         public IActionResult Privacy()

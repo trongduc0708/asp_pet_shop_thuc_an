@@ -132,5 +132,158 @@ namespace Pet_Shop.Services
 
             return null; // Hợp lệ
         }
+
+        // ========== ADMIN METHODS ==========
+
+        /// <summary>
+        /// Lấy tất cả mã khuyến mãi cho admin
+        /// </summary>
+        /// <returns>Danh sách tất cả mã khuyến mãi</returns>
+        public async Task<List<Promotion>> GetAllPromotionsForAdminAsync()
+        {
+            return await _context.Promotions
+                .OrderByDescending(p => p.CreatedDate)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Lấy mã khuyến mãi theo ID
+        /// </summary>
+        /// <param name="id">ID mã khuyến mãi</param>
+        /// <returns>Mã khuyến mãi hoặc null</returns>
+        public async Task<Promotion?> GetPromotionByIdAsync(int id)
+        {
+            return await _context.Promotions.FindAsync(id);
+        }
+
+        /// <summary>
+        /// Tạo mã khuyến mãi mới
+        /// </summary>
+        /// <param name="promotion">Mã khuyến mãi</param>
+        /// <returns>True nếu tạo thành công</returns>
+        public async Task<bool> CreatePromotionAsync(Promotion promotion)
+        {
+            try
+            {
+                promotion.CreatedDate = DateTime.Now;
+                _context.Promotions.Add(promotion);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật mã khuyến mãi
+        /// </summary>
+        /// <param name="promotion">Mã khuyến mãi</param>
+        /// <returns>True nếu cập nhật thành công</returns>
+        public async Task<bool> UpdatePromotionAsync(Promotion promotion)
+        {
+            try
+            {
+                _context.Promotions.Update(promotion);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Xóa mã khuyến mãi
+        /// </summary>
+        /// <param name="id">ID mã khuyến mãi</param>
+        /// <returns>True nếu xóa thành công</returns>
+        public async Task<bool> DeletePromotionAsync(int id)
+        {
+            try
+            {
+                var promotion = await _context.Promotions.FindAsync(id);
+                if (promotion != null)
+                {
+                    _context.Promotions.Remove(promotion);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Kiểm tra mã khuyến mãi đã tồn tại chưa
+        /// </summary>
+        /// <param name="promotionCode">Mã khuyến mãi</param>
+        /// <param name="excludeId">ID mã khuyến mãi cần loại trừ (khi cập nhật)</param>
+        /// <returns>True nếu đã tồn tại</returns>
+        public async Task<bool> PromotionCodeExistsAsync(string promotionCode, int? excludeId = null)
+        {
+            var query = _context.Promotions.Where(p => p.PromotionCode == promotionCode);
+            
+            if (excludeId.HasValue)
+            {
+                query = query.Where(p => p.PromotionID != excludeId.Value);
+            }
+            
+            return await query.AnyAsync();
+        }
+
+        /// <summary>
+        /// Tìm kiếm mã khuyến mãi
+        /// </summary>
+        /// <param name="searchTerm">Từ khóa tìm kiếm</param>
+        /// <returns>Danh sách mã khuyến mãi</returns>
+        public async Task<List<Promotion>> SearchPromotionsAsync(string searchTerm)
+        {
+            return await _context.Promotions
+                .Where(p => p.PromotionCode.Contains(searchTerm) || 
+                           p.PromotionName.Contains(searchTerm) ||
+                           (p.Description != null && p.Description.Contains(searchTerm)))
+                .OrderByDescending(p => p.CreatedDate)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Lọc mã khuyến mãi theo trạng thái
+        /// </summary>
+        /// <param name="isActive">Trạng thái hoạt động</param>
+        /// <returns>Danh sách mã khuyến mãi</returns>
+        public async Task<List<Promotion>> GetPromotionsByStatusAsync(bool isActive)
+        {
+            return await _context.Promotions
+                .Where(p => p.IsActive == isActive)
+                .OrderByDescending(p => p.CreatedDate)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Lấy thống kê mã khuyến mãi
+        /// </summary>
+        /// <returns>Thống kê</returns>
+        public async Task<object> GetPromotionStatisticsAsync()
+        {
+            var total = await _context.Promotions.CountAsync();
+            var active = await _context.Promotions.CountAsync(p => p.IsActive);
+            var expired = await _context.Promotions.CountAsync(p => p.EndDate < DateTime.Now);
+            var usedUp = await _context.Promotions.CountAsync(p => p.UsageLimit.HasValue && p.UsedCount >= p.UsageLimit.Value);
+
+            return new
+            {
+                Total = total,
+                Active = active,
+                Expired = expired,
+                UsedUp = usedUp,
+                Inactive = total - active
+            };
+        }
     }
 }

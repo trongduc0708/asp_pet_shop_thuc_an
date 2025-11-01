@@ -142,13 +142,13 @@
             if (file) {
                 // Validate file type
                 if (!file.type.startsWith('image/')) {
-                    alert('Vui lòng chọn file hình ảnh!');
+                    showWarningModal('Vui lòng chọn file hình ảnh!', 'Chỉ chấp nhận các file hình ảnh (JPG, PNG, GIF, etc.).');
                     return;
                 }
                 
                 // Validate file size (5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Kích thước file không được vượt quá 5MB!');
+                    showWarningModal('Kích thước file không được vượt quá 5MB!', 'Vui lòng chọn file hình ảnh nhỏ hơn.');
                     return;
                 }
                 
@@ -180,13 +180,13 @@
                         // Set image URL
                         document.getElementById('imageUrlInput').value = result.fileUrl;
                         
-                        alert('Upload thành công!');
+                        showSuccessModal('Upload thành công!', 'Hình ảnh banner đã được upload thành công.');
                     } else {
-                        alert('Upload thất bại: ' + result.message);
+                        showErrorModal('Upload thất bại: ' + result.message, 'Không thể upload hình ảnh.');
                     }
                 } catch (error) {
                     console.error('Upload error:', error);
-                    alert('Có lỗi xảy ra khi upload file');
+                    showErrorModal('Có lỗi xảy ra khi upload file', 'Vui lòng thử lại sau.');
                 } finally {
                     // Restore button
                     uploadBtn.innerHTML = originalText;
@@ -229,7 +229,7 @@
                     };
                     handleImageUpload(event);
                 } else {
-                    alert('Vui lòng chọn file hình ảnh!');
+                    showWarningModal('Vui lòng chọn file hình ảnh!', 'Bạn cần chọn một file hình ảnh để upload.');
                 }
             }
         });
