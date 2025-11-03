@@ -18,6 +18,9 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Add HttpContextAccessor for VNPay service
 builder.Services.AddHttpContextAccessor();
 
+// Add Memory Cache for embeddings
+builder.Services.AddMemoryCache();
+
 // Add Services
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<ProductService>();

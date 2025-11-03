@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Pet_Shop.Data;
 using Pet_Shop.Models.Entities;
 using System.Text.Json;
 using System.Text;
+using System.Linq;
 
 namespace Pet_Shop.Services
 {
@@ -13,14 +15,16 @@ namespace Pet_Shop.Services
         private readonly ProductService _productService;
         private readonly CategoryService _categoryService;
         private readonly HttpClient _httpClient;
+        private readonly IMemoryCache _memoryCache;
 
-        public ChatbotService(PetShopDbContext context, IConfiguration configuration, ProductService productService, CategoryService categoryService, HttpClient httpClient)
+        public ChatbotService(PetShopDbContext context, IConfiguration configuration, ProductService productService, CategoryService categoryService, HttpClient httpClient, IMemoryCache memoryCache)
         {
             _context = context;
             _configuration = configuration;
             _productService = productService;
             _categoryService = categoryService;
             _httpClient = httpClient;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -901,7 +905,263 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
         }
 
         /// <summary>
-        /// Gợi ý sản phẩm dựa trên lịch sử mua hàng của người dùng (AI-based collaborative filtering)
+        /// Tạo embeddings cho sản phẩm sử dụng OpenAI API
+        /// </summary>
+        private async Task<float[]?> GetProductEmbeddingAsync(Product product)
+        {
+            try
+            {
+                // Kiểm tra cache trước
+                var cacheKey = $"product_embedding_{product.ProductID}";
+                if (_memoryCache.TryGetValue(cacheKey, out float[]? cachedEmbedding) && cachedEmbedding != null)
+                {
+                    return cachedEmbedding;
+                }
+
+                var apiKey = _configuration["OpenAISettings:ApiKey"];
+                var useEmbeddings = _configuration.GetValue<bool>("OpenAISettings:UseEmbeddings", false);
+                
+                // Nếu không có API key hoặc embeddings bị tắt, return null
+                if (string.IsNullOrEmpty(apiKey) || apiKey == "YOUR_OPENAI_API_KEY_HERE" || !useEmbeddings)
+                {
+                    return null;
+                }
+
+                // Tạo text để embedding: kết hợp tên, mô tả, category, brand, pet type
+                var embeddingText = BuildProductEmbeddingText(product);
+
+                // Gọi OpenAI Embeddings API
+                var embeddingModel = _configuration["OpenAISettings:EmbeddingModel"] ?? "text-embedding-3-small";
+                
+                var requestBody = new
+                {
+                    input = embeddingText,
+                    model = embeddingModel
+                };
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                
+                var jsonContent = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/embeddings", content);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    
+                    // Deserialize JSON với JsonDocument để xử lý embedding array
+                    using (var doc = JsonDocument.Parse(responseContent))
+                    {
+                        var root = doc.RootElement;
+                        if (root.TryGetProperty("data", out var dataArray) && dataArray.GetArrayLength() > 0)
+                        {
+                            var firstItem = dataArray[0];
+                            if (firstItem.TryGetProperty("embedding", out var embeddingArray))
+                            {
+                                var embedding = embeddingArray.EnumerateArray()
+                                    .Select(x => (float)x.GetDouble())
+                                    .ToArray();
+                                
+                                // Cache embedding trong 24 giờ
+                                var cacheOptions = new MemoryCacheEntryOptions
+                                {
+                                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+                                };
+                                _memoryCache.Set(cacheKey, embedding, cacheOptions);
+                                
+                                return embedding;
+                            }
+                        }
+                    }
+                }
+                
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting embedding for product {product.ProductID}: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Xây dựng text để tạo embedding cho sản phẩm
+        /// </summary>
+        private string BuildProductEmbeddingText(Product product)
+        {
+            var parts = new List<string>();
+            
+            parts.Add(product.ProductName);
+            
+            if (!string.IsNullOrEmpty(product.ShortDescription))
+            {
+                parts.Add(product.ShortDescription);
+            }
+            
+            if (!string.IsNullOrEmpty(product.Description))
+            {
+                // Chỉ lấy 500 ký tự đầu của description để tránh quá dài
+                var description = product.Description.Length > 500 
+                    ? product.Description.Substring(0, 500) 
+                    : product.Description;
+                parts.Add(description);
+            }
+            
+            if (product.Category != null)
+            {
+                parts.Add($"Danh mục: {product.Category.CategoryName}");
+            }
+            
+            if (product.Brand != null)
+            {
+                parts.Add($"Thương hiệu: {product.Brand.BrandName}");
+            }
+            
+            if (!string.IsNullOrEmpty(product.PetType))
+            {
+                parts.Add($"Cho thú cưng: {product.PetType}");
+            }
+            
+            if (!string.IsNullOrEmpty(product.ProductType))
+            {
+                parts.Add($"Loại sản phẩm: {product.ProductType}");
+            }
+            
+            if (product.Weight.HasValue)
+            {
+                parts.Add($"Trọng lượng: {product.Weight.Value}kg");
+            }
+            
+            return string.Join(". ", parts);
+        }
+
+        /// <summary>
+        /// Tính cosine similarity giữa hai vectors
+        /// </summary>
+        private double CalculateCosineSimilarity(float[] vector1, float[] vector2)
+        {
+            if (vector1.Length != vector2.Length)
+            {
+                return 0.0;
+            }
+
+            double dotProduct = 0.0;
+            double magnitude1 = 0.0;
+            double magnitude2 = 0.0;
+
+            for (int i = 0; i < vector1.Length; i++)
+            {
+                dotProduct += vector1[i] * vector2[i];
+                magnitude1 += vector1[i] * vector1[i];
+                magnitude2 += vector2[i] * vector2[i];
+            }
+
+            if (magnitude1 == 0.0 || magnitude2 == 0.0)
+            {
+                return 0.0;
+            }
+
+            return dotProduct / (Math.Sqrt(magnitude1) * Math.Sqrt(magnitude2));
+        }
+
+        /// <summary>
+        /// Lấy embeddings cho danh sách sản phẩm đã mua
+        /// </summary>
+        private async Task<List<(Product product, float[] embedding)>> GetPurchasedProductsEmbeddingsAsync(List<int> productIds)
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Where(p => productIds.Contains(p.ProductID))
+                .ToListAsync();
+
+            var productEmbeddings = new List<(Product product, float[] embedding)>();
+
+            foreach (var product in products)
+            {
+                var embedding = await GetProductEmbeddingAsync(product);
+                if (embedding != null)
+                {
+                    productEmbeddings.Add((product, embedding));
+                }
+            }
+
+            return productEmbeddings;
+        }
+
+        /// <summary>
+        /// Content-based filtering sử dụng embeddings và cosine similarity
+        /// </summary>
+        private async Task<List<Product>> GetContentBasedRecommendationsWithEmbeddingsAsync(
+            List<(Product product, float[] embedding)> purchasedProductEmbeddings,
+            List<int> purchasedProductIds,
+            int count)
+        {
+            if (!purchasedProductEmbeddings.Any())
+            {
+                return new List<Product>();
+            }
+
+            try
+            {
+                // Tính average embedding của các sản phẩm đã mua
+                var embeddingDimension = purchasedProductEmbeddings[0].embedding.Length;
+                var averageEmbedding = new float[embeddingDimension];
+                
+                foreach (var (_, embedding) in purchasedProductEmbeddings)
+                {
+                    for (int i = 0; i < embeddingDimension; i++)
+                    {
+                        averageEmbedding[i] += embedding[i];
+                    }
+                }
+                
+                for (int i = 0; i < embeddingDimension; i++)
+                {
+                    averageEmbedding[i] /= purchasedProductEmbeddings.Count;
+                }
+
+                // Lấy tất cả sản phẩm chưa mua
+                var candidateProducts = await _context.Products
+                    .Include(p => p.ProductImages)
+                    .Include(p => p.Category)
+                    .Include(p => p.Inventory)
+                    .Where(p => !purchasedProductIds.Contains(p.ProductID) &&
+                                p.IsActive == true &&
+                                (p.Inventory == null || p.Inventory.QuantityInStock > 0))
+                    .ToListAsync();
+
+                var productSimilarities = new List<(Product product, double similarity)>();
+
+                // Tính similarity cho mỗi sản phẩm candidate
+                foreach (var candidate in candidateProducts)
+                {
+                    var candidateEmbedding = await GetProductEmbeddingAsync(candidate);
+                    if (candidateEmbedding != null)
+                    {
+                        var similarity = CalculateCosineSimilarity(averageEmbedding, candidateEmbedding);
+                        productSimilarities.Add((candidate, similarity));
+                    }
+                }
+
+                // Sắp xếp theo similarity và lấy top products
+                return productSimilarities
+                    .OrderByDescending(x => x.similarity)
+                    .Take(count)
+                    .Select(x => x.product)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in content-based recommendations with embeddings: {ex.Message}");
+                return new List<Product>();
+            }
+        }
+
+        /// <summary>
+        /// Gợi ý sản phẩm dựa trên lịch sử mua hàng của người dùng (AI-based collaborative filtering + embeddings-based content filtering)
         /// </summary>
         public async Task<List<Product>> GetRecommendedProductsForUserAsync(int userId, int count = 8)
         {
@@ -966,19 +1226,41 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                     .Select(x => x.Product)
                     .ToListAsync();
 
-                // 5. Content-based filtering: Sản phẩm cùng category nhưng chưa mua
-                var contentRecommendations = await _context.Products
-                    .Include(p => p.ProductImages)
-                    .Include(p => p.Category)
-                    .Include(p => p.Inventory)
-                    .Where(p => purchasedCategories.Contains(p.CategoryID) &&
-                                !purchasedProductIds.Contains(p.ProductID) &&
-                                p.IsActive == true &&
-                                (p.Inventory == null || p.Inventory.QuantityInStock > 0))
-                    .OrderByDescending(p => p.IsFeatured)
-                    .ThenByDescending(p => p.SalePrice != null ? (p.Price - p.SalePrice) : 0) // Ưu tiên sản phẩm giảm giá nhiều
-                    .Take(count / 2)
-                    .ToListAsync();
+                // 5. Content-based filtering với embeddings (nếu có OpenAI API key)
+                List<Product> contentRecommendations;
+                var useEmbeddings = _configuration.GetValue<bool>("OpenAISettings:UseEmbeddings", false);
+                var apiKey = _configuration["OpenAISettings:ApiKey"];
+                
+                if (useEmbeddings && !string.IsNullOrEmpty(apiKey) && apiKey != "YOUR_OPENAI_API_KEY_HERE")
+                {
+                    // Sử dụng embeddings-based content filtering
+                    var purchasedProductEmbeddings = await GetPurchasedProductsEmbeddingsAsync(purchasedProductIds);
+                    
+                    if (purchasedProductEmbeddings.Any())
+                    {
+                        // Lấy recommendations dựa trên embeddings similarity
+                        contentRecommendations = await GetContentBasedRecommendationsWithEmbeddingsAsync(
+                            purchasedProductEmbeddings, 
+                            purchasedProductIds, 
+                            count / 2);
+                    }
+                    else
+                    {
+                        // Fallback về category-based nếu không thể lấy embeddings
+                        contentRecommendations = await GetCategoryBasedRecommendationsAsync(
+                            purchasedCategories, 
+                            purchasedProductIds, 
+                            count / 2);
+                    }
+                }
+                else
+                {
+                    // Sử dụng category-based filtering truyền thống
+                    contentRecommendations = await GetCategoryBasedRecommendationsAsync(
+                        purchasedCategories, 
+                        purchasedProductIds, 
+                        count / 2);
+                }
 
                 // 6. Kết hợp cả hai phương pháp
                 var recommendations = collaborativeRecommendations
@@ -1015,6 +1297,28 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                 Console.WriteLine($"Error getting recommended products for user {userId}: {ex.Message}");
                 return await GetFeaturedProductsAsync(count);
             }
+        }
+
+        /// <summary>
+        /// Content-based filtering truyền thống dựa trên category
+        /// </summary>
+        private async Task<List<Product>> GetCategoryBasedRecommendationsAsync(
+            List<int> purchasedCategories, 
+            List<int> purchasedProductIds, 
+            int count)
+        {
+            return await _context.Products
+                .Include(p => p.ProductImages)
+                .Include(p => p.Category)
+                .Include(p => p.Inventory)
+                .Where(p => purchasedCategories.Contains(p.CategoryID) &&
+                            !purchasedProductIds.Contains(p.ProductID) &&
+                            p.IsActive == true &&
+                            (p.Inventory == null || p.Inventory.QuantityInStock > 0))
+                .OrderByDescending(p => p.IsFeatured)
+                .ThenByDescending(p => p.SalePrice != null ? (p.Price - p.SalePrice) : 0)
+                .Take(count)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -1103,5 +1407,22 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
         public decimal? MaxPrice { get; set; } // giá tối đa
         public int? Weight { get; set; } // trọng lượng
         public bool OnSale { get; set; } // đang khuyến mãi
+    }
+
+    /// <summary>
+    /// Model cho OpenAI Embeddings API response
+    /// </summary>
+    public class OpenAIEmbeddingResponse
+    {
+        public string? @object { get; set; }
+        public List<OpenAIEmbeddingData>? data { get; set; }
+        public string? model { get; set; }
+    }
+
+    public class OpenAIEmbeddingData
+    {
+        public string? @object { get; set; }
+        public float[]? embedding { get; set; }
+        public int? index { get; set; }
     }
 }
