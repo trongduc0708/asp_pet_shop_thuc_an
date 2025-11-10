@@ -16,8 +16,16 @@ namespace Pet_Shop.Services
         private readonly CategoryService _categoryService;
         private readonly HttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
+        private readonly LocalRecommendationService? _localRecommendationService;
 
-        public ChatbotService(PetShopDbContext context, IConfiguration configuration, ProductService productService, CategoryService categoryService, HttpClient httpClient, IMemoryCache memoryCache)
+        public ChatbotService(
+            PetShopDbContext context, 
+            IConfiguration configuration, 
+            ProductService productService, 
+            CategoryService categoryService, 
+            HttpClient httpClient, 
+            IMemoryCache memoryCache,
+            LocalRecommendationService? localRecommendationService = null)
         {
             _context = context;
             _configuration = configuration;
@@ -25,6 +33,7 @@ namespace Pet_Shop.Services
             _categoryService = categoryService;
             _httpClient = httpClient;
             _memoryCache = memoryCache;
+            _localRecommendationService = localRecommendationService;
         }
 
         /// <summary>
@@ -39,6 +48,13 @@ namespace Pet_Shop.Services
             {
                 // Lấy thông tin database để cung cấp context cho AI
                 var databaseContext = await GetDatabaseContextAsync();
+
+                // Kiểm tra cấu hình: nếu tắt OpenAI thì dùng logic nội bộ + Local ML
+                var useOpenAI = _configuration.GetValue<bool>("ChatbotSettings:UseOpenAI", true);
+                if (!useOpenAI)
+                {
+                    return await ProcessMessageWithFallbackAsync(userMessage, databaseContext);
+                }
                 
                 // Tạo system prompt với thông tin về shop và database
                 var systemPrompt = CreateSystemPrompt(databaseContext);
@@ -59,8 +75,8 @@ namespace Pet_Shop.Services
                 var apiKey = _configuration["OpenAISettings:ApiKey"];
                 if (string.IsNullOrEmpty(apiKey) || apiKey == "YOUR_OPENAI_API_KEY_HERE")
                 {
-                    // Fallback: Sử dụng OpenAI với database context
-                    return await ProcessMessageWithOpenAIAndDatabaseAsync(userMessage, databaseContext, conversationHistory);
+                    // Fallback: Sử dụng logic nội bộ + Local ML
+                    return await ProcessMessageWithFallbackAsync(userMessage, databaseContext);
                 }
 
                 // Gọi OpenAI API
@@ -218,6 +234,42 @@ namespace Pet_Shop.Services
                 
                 // Tìm kiếm sản phẩm dựa trên tiêu chí
                 suggestedProducts = await SearchProductsWithCriteriaAsync(searchCriteria);
+                
+                // Nếu có LocalRecommendationService và đã tìm được sản phẩm, gợi ý thêm sản phẩm tương tự
+                if (suggestedProducts.Any() && _localRecommendationService != null)
+                {
+                    var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
+                    if (useLocalML)
+                    {
+                        try
+                        {
+                            var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
+                            if (localMLAvailable)
+                            {
+                                var productIds = suggestedProducts.Select(p => p.ProductID).ToList();
+                                var similarProducts = await _localRecommendationService.GetContentBasedRecommendationsAsync(
+                                    productIds, 
+                                    count: 3);
+                                
+                                // Thêm sản phẩm tương tự, loại bỏ trùng lặp
+                                foreach (var product in similarProducts)
+                                {
+                                    if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
+                                    {
+                                        suggestedProducts.Add(product);
+                                    }
+                                }
+                                
+                                suggestedProducts = suggestedProducts.Take(5).ToList();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log nhưng không fail
+                            Console.WriteLine($"Error getting recommendations from Local ML API: {ex.Message}");
+                        }
+                    }
+                }
                 
                 // Tạo phản hồi phù hợp
                 response = GenerateResponseForSearchCriteria(searchCriteria, suggestedProducts);
@@ -763,6 +815,7 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
 
         /// <summary>
         /// Phân tích phản hồi AI để tìm sản phẩm được đề xuất
+        /// Ưu tiên sử dụng LocalRecommendationService (API từ AI_chatbot_train)
         /// </summary>
         private async Task<List<Product>> ExtractSuggestedProductsAsync(string aiResponse, string userMessage)
         {
@@ -772,21 +825,63 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
             {
                 // Tìm ID sản phẩm trong phản hồi AI
                 var productIdMatches = System.Text.RegularExpressions.Regex.Matches(aiResponse, @"ID:\s*(\d+)");
+                var foundProductIds = new List<int>();
                 
                 foreach (System.Text.RegularExpressions.Match match in productIdMatches)
                 {
                     if (int.TryParse(match.Groups[1].Value, out int productId))
                     {
-                        var product = await _context.Products
-                            .Include(p => p.Category)
-                            .Include(p => p.ProductImages)
-                            .FirstOrDefaultAsync(p => p.ProductID == productId && p.IsActive);
-                        
-                        if (product != null && !suggestedProducts.Any(p => p.ProductID == productId))
+                        foundProductIds.Add(productId);
+                    }
+                }
+
+                // Nếu tìm thấy sản phẩm từ AI response, dùng LocalRecommendationService để gợi ý tương tự
+                if (foundProductIds.Any() && _localRecommendationService != null)
+                {
+                    var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
+                    if (useLocalML)
+                    {
+                        var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
+                        if (localMLAvailable)
                         {
-                            suggestedProducts.Add(product);
+                            // Lấy sản phẩm đã tìm được
+                            var foundProducts = await _context.Products
+                                .Include(p => p.Category)
+                                .Include(p => p.ProductImages)
+                                .Where(p => foundProductIds.Contains(p.ProductID) && p.IsActive)
+                                .ToListAsync();
+                            
+                            suggestedProducts.AddRange(foundProducts);
+                            
+                            // Dùng LocalRecommendationService để gợi ý sản phẩm tương tự (content-based)
+                            var similarProducts = await _localRecommendationService.GetContentBasedRecommendationsAsync(
+                                foundProductIds, 
+                                count: 5);
+                            
+                            // Thêm các sản phẩm tương tự, loại bỏ trùng lặp
+                            foreach (var product in similarProducts)
+                            {
+                                if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
+                                {
+                                    suggestedProducts.Add(product);
+                                }
+                            }
+                            
+                            return suggestedProducts.Take(5).ToList();
                         }
                     }
+                }
+
+                // Nếu không dùng được LocalRecommendationService, lấy sản phẩm trực tiếp
+                if (foundProductIds.Any())
+                {
+                    var products = await _context.Products
+                        .Include(p => p.Category)
+                        .Include(p => p.ProductImages)
+                        .Where(p => foundProductIds.Contains(p.ProductID) && p.IsActive)
+                        .ToListAsync();
+                    
+                    suggestedProducts.AddRange(products);
                 }
 
                 // Nếu không tìm thấy ID cụ thể, tìm kiếm theo từ khóa
@@ -806,6 +901,31 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                             .ToListAsync();
                         
                         suggestedProducts.AddRange(products);
+                        
+                        // Nếu tìm được sản phẩm và có LocalRecommendationService, gợi ý thêm sản phẩm tương tự
+                        if (suggestedProducts.Any() && _localRecommendationService != null)
+                        {
+                            var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
+                            if (useLocalML)
+                            {
+                                var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
+                                if (localMLAvailable)
+                                {
+                                    var productIds = suggestedProducts.Select(p => p.ProductID).ToList();
+                                    var similarProducts = await _localRecommendationService.GetContentBasedRecommendationsAsync(
+                                        productIds, 
+                                        count: 3);
+                                    
+                                    foreach (var product in similarProducts)
+                                    {
+                                        if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
+                                        {
+                                            suggestedProducts.Add(product);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -815,7 +935,7 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                 Console.WriteLine($"Error extracting suggested products: {ex.Message}");
             }
 
-            return suggestedProducts;
+            return suggestedProducts.Take(5).ToList();
         }
 
         /// <summary>
@@ -1226,27 +1346,38 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                     .Select(x => x.Product)
                     .ToListAsync();
 
-                // 5. Content-based filtering với embeddings (nếu có OpenAI API key)
+                // 5. Content-based filtering - Ưu tiên Local ML Models, sau đó OpenAI, cuối cùng là fallback
                 List<Product> contentRecommendations;
-                var useEmbeddings = _configuration.GetValue<bool>("OpenAISettings:UseEmbeddings", false);
-                var apiKey = _configuration["OpenAISettings:ApiKey"];
                 
-                if (useEmbeddings && !string.IsNullOrEmpty(apiKey) && apiKey != "YOUR_OPENAI_API_KEY_HERE")
+                // Kiểm tra xem có sử dụng Local ML Models không
+                var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
+                
+                if (useLocalML && _localRecommendationService != null)
                 {
-                    // Sử dụng embeddings-based content filtering
-                    var purchasedProductEmbeddings = await GetPurchasedProductsEmbeddingsAsync(purchasedProductIds);
+                    // Sử dụng Local ML Models (CVAE-CF + CVAE-CBF + Hybrid)
+                    var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
                     
-                    if (purchasedProductEmbeddings.Any())
+                    if (localMLAvailable)
                     {
-                        // Lấy recommendations dựa trên embeddings similarity
-                        contentRecommendations = await GetContentBasedRecommendationsWithEmbeddingsAsync(
-                            purchasedProductEmbeddings, 
+                        // Lấy recommendations từ Local ML API
+                        contentRecommendations = await _localRecommendationService.GetContentBasedRecommendationsAsync(
                             purchasedProductIds, 
                             count / 2);
+                        
+                        // Nếu Local ML không trả về đủ, dùng collaborative recommendations
+                        if (contentRecommendations.Count < count / 2)
+                        {
+                            var remaining = count / 2 - contentRecommendations.Count;
+                            var categoryBased = await GetCategoryBasedRecommendationsAsync(
+                                purchasedCategories, 
+                                purchasedProductIds, 
+                                remaining);
+                            contentRecommendations.AddRange(categoryBased);
+                        }
                     }
                     else
                     {
-                        // Fallback về category-based nếu không thể lấy embeddings
+                        // Fallback về category-based nếu Local ML API không available
                         contentRecommendations = await GetCategoryBasedRecommendationsAsync(
                             purchasedCategories, 
                             purchasedProductIds, 
@@ -1255,11 +1386,40 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                 }
                 else
                 {
-                    // Sử dụng category-based filtering truyền thống
-                    contentRecommendations = await GetCategoryBasedRecommendationsAsync(
-                        purchasedCategories, 
-                        purchasedProductIds, 
-                        count / 2);
+                    // Sử dụng OpenAI embeddings (nếu có API key)
+                    var useEmbeddings = _configuration.GetValue<bool>("OpenAISettings:UseEmbeddings", false);
+                    var apiKey = _configuration["OpenAISettings:ApiKey"];
+                    
+                    if (useEmbeddings && !string.IsNullOrEmpty(apiKey) && apiKey != "YOUR_OPENAI_API_KEY_HERE")
+                    {
+                        // Sử dụng embeddings-based content filtering
+                        var purchasedProductEmbeddings = await GetPurchasedProductsEmbeddingsAsync(purchasedProductIds);
+                        
+                        if (purchasedProductEmbeddings.Any())
+                        {
+                            // Lấy recommendations dựa trên embeddings similarity
+                            contentRecommendations = await GetContentBasedRecommendationsWithEmbeddingsAsync(
+                                purchasedProductEmbeddings, 
+                                purchasedProductIds, 
+                                count / 2);
+                        }
+                        else
+                        {
+                            // Fallback về category-based nếu không thể lấy embeddings
+                            contentRecommendations = await GetCategoryBasedRecommendationsAsync(
+                                purchasedCategories, 
+                                purchasedProductIds, 
+                                count / 2);
+                        }
+                    }
+                    else
+                    {
+                        // Sử dụng category-based filtering truyền thống
+                        contentRecommendations = await GetCategoryBasedRecommendationsAsync(
+                            purchasedCategories, 
+                            purchasedProductIds, 
+                            count / 2);
+                    }
                 }
 
                 // 6. Kết hợp cả hai phương pháp

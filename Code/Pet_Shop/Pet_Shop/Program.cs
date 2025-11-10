@@ -37,6 +37,11 @@ builder.Services.AddScoped<VNPayService>();
 builder.Services.AddScoped<PromotionService>();
 builder.Services.AddScoped<InventoryService>();
 builder.Services.AddScoped<CustomerService>();
+// Add Local Recommendation Service (Python ML Models)
+builder.Services.AddHttpClient<LocalRecommendationService>();
+builder.Services.AddScoped<LocalRecommendationService>();
+
+// Add Chatbot Service (depends on LocalRecommendationService)
 builder.Services.AddScoped<ChatbotService>();
 builder.Services.AddHttpClient<ChatbotService>();
 

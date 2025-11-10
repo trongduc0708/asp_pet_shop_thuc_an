@@ -1,0 +1,13 @@
+item_id,product_name,category,brand,pet_type,price,description
+RC-ADULT-001,Royal Canin Adult Cat Food,Cat Food,Royal Canin,Cat,210000,"Dry food for adult cats, supports digestion and coat health."
+PED-ADULT-001,Pedigree Adult Dog Food,Dog Food,Pedigree,Dog,180000,"Balanced nutrition for adult dogs, supports immunity and strong teeth."
+HILLS-ADULT-001,Hill's Science Diet Adult Dog Food,Dog Food,Hill's,Dog,250000,Premium dog food with antioxidants and omega-6 for healthy skin.
+WHISKAS-ADULT-001,Whiskas Tuna Cat Food,Cat Food,Whiskas,Cat,150000,"Crunchy kibbles with tuna flavor, helps maintain healthy fur."
+FELIX-WET-001,Felix Wet Cat Pouch,Cat Food,Felix,Cat,130000,"Wet food pouch with ocean fish flavor, high protein for cats."
+RC-KITTEN-001,Royal Canin Kitten Food,Cat Food,Royal Canin,Cat,200000,"Special formula for kittens, supports bone and immune development."
+DOG-LEASH-001,Dog Leash Nylon 1.5m,Accessory,Petmate,Dog,80000,"Durable nylon leash, 1.5 meters, suitable for medium dogs."
+DOG-CAGE-001,Foldable Dog Cage Size M,Accessory,PetHome,Dog,350000,"Foldable metal cage, easy to clean, with double lock."
+DOG-BOWL-001,Stainless Steel Dog Bowl,Accessory,PetCare,Dog,60000,"Anti-slip stainless steel bowl, easy to wash."
+CAT-LITTER-001,Cat Litter 10kg,Accessory,CatSand,Cat,120000,"High absorption clay litter, controls odor effectively."
+CAT-COLLAR-001,Cat Collar Adjustable,Accessory,MeowStyle,Cat,40000,Adjustable collar with bell and soft fabric for cats.
+CAT-SCRATCH-001,Cat Scratching Post,Accessory,PetFun,Cat,250000,Tall scratching post with sisal rope for healthy claws.
