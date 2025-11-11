@@ -103,15 +103,21 @@
                                             <td>
                                                 <div class="quantity-controls">
                                                     <div class="input-group input-group-sm">
-                                                        <button class="btn btn-outline-secondary" type="button" 
-                                                                onclick="updateQuantity(@item.ProductID, @(item.Quantity - 1))">
+                                                        <button class="btn btn-outline-secondary quantity-btn" type="button" 
+                                                                data-product-id="@item.ProductID"
+                                                                data-action="decrease"
+                                                                onclick="decreaseQuantity(@item.ProductID)">
                                                             <i class="fas fa-minus"></i>
                                                         </button>
-                                                        <input type="number" class="form-control text-center" 
+                                                        <input type="number" class="form-control text-center quantity-input" 
                                                                value="@item.Quantity" min="1" max="@item.StockQuantity"
-                                                               onchange="updateQuantity(@item.ProductID, this.value)">
-                                                        <button class="btn btn-outline-secondary" type="button" 
-                                                                onclick="updateQuantity(@item.ProductID, @(item.Quantity + 1))">
+                                                               data-product-id="@item.ProductID"
+                                                               onchange="updateQuantity(@item.ProductID, this.value)"
+                                                               onkeypress="return event.key === 'Enter' ? (updateQuantity(@item.ProductID, this.value), false) : true">
+                                                        <button class="btn btn-outline-secondary quantity-btn" type="button" 
+                                                                data-product-id="@item.ProductID"
+                                                                data-action="increase"
+                                                                onclick="increaseQuantity(@item.ProductID)">
                                                             <i class="fas fa-plus"></i>
                                                         </button>
                                                     </div>
@@ -263,12 +269,34 @@
         });
 
         function updateQuantity(productId, quantity) {
-            if (quantity < 1) {
-                removeItem(productId);
+            // Parse quantity to integer
+            quantity = parseInt(quantity);
+            
+            if (isNaN(quantity) || quantity < 1) {
+                if (quantity === 0) {
+                    removeItem(productId);
+                    return;
+                }
+                // Reset to 1 if invalid
+                quantity = 1;
+            }
+
+            // Get the cart item row
+            const $cartItem = $('.cart-item[data-product-id="' + productId + '"]');
+            const $quantityInput = $cartItem.find('input[type="number"]');
+            const maxQuantity = parseInt($quantityInput.attr('max')) || 999;
+            
+            // Validate max quantity
+            if (quantity > maxQuantity) {
+                showToast('Số lượng vượt quá số hàng có sẵn', 'warning');
+                $quantityInput.val($quantityInput.attr('value') || 1);
                 return;
             }
 
-            // TODO: Call API to update quantity
+            // Disable buttons during update
+            $cartItem.find('.quantity-controls button').prop('disabled', true);
+
+            // Call API to update quantity
             $.ajax({
                 url: '@Url.Action("UpdateQuantity", "Cart")',
                 type: 'POST',
@@ -278,64 +306,123 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Update UI
+                        // Update input value
+                        $quantityInput.val(quantity);
+                        
+                        // Update total price for this item
+                        updateItemTotal(productId, quantity);
+                        
+                        // Update cart summary
                         updateCartSummary();
+                        
                         showToast('Đã cập nhật số lượng', 'success');
                     } else {
-                        showToast(response.message, 'error');
+                        // Revert input value on error
+                        const currentValue = $quantityInput.attr('value') || $quantityInput.val();
+                        $quantityInput.val(currentValue);
+                        showToast(response.message || 'Không thể cập nhật số lượng', 'error');
                     }
                 },
-                error: function() {
-                    showToast('Có lỗi xảy ra', 'error');
+                error: function(xhr, status, error) {
+                    // Revert input value on error
+                    const currentValue = $quantityInput.attr('value') || $quantityInput.val();
+                    $quantityInput.val(currentValue);
+                    showToast('Có lỗi xảy ra khi cập nhật số lượng', 'error');
+                    console.error('Error updating quantity:', error);
+                },
+                complete: function() {
+                    // Re-enable buttons
+                    $cartItem.find('.quantity-controls button').prop('disabled', false);
                 }
             });
         }
 
+        function updateItemTotal(productId, quantity) {
+            const $cartItem = $('.cart-item[data-product-id="' + productId + '"]');
+            const $priceInfo = $cartItem.find('.price-info');
+            
+            // Get the price (sale price if available, otherwise regular price)
+            // Sale price is in .fw-bold, regular price might be in .text-decoration-line-through
+            let priceText = $priceInfo.find('.fw-bold').first().text();
+            let price = parseFloat(priceText.replace(/[^\d]/g, '')) || 0;
+            
+            // If price is 0, try to get from the strikethrough price
+            if (price === 0) {
+                priceText = $priceInfo.find('.text-decoration-line-through').text();
+                price = parseFloat(priceText.replace(/[^\d]/g, '')) || 0;
+            }
+            
+            // Calculate total
+            const total = quantity * price;
+            
+            // Update total price display (5th column - "Thành tiền")
+            const $totalCell = $cartItem.find('td').eq(4);
+            $totalCell.find('.fw-bold').text(total.toLocaleString('vi-VN') + ' ₫');
+        }
+
         function removeItem(productId) {
             if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-                    // TODO: Call API to remove item
-                    $.ajax({
-                        url: '@Url.Action("RemoveItem", "Cart")',
-                        type: 'POST',
-                        data: { productId: productId },
-                        success: function(response) {
-                            if (response.success) {
-                                $('.cart-item[data-product-id="' + productId + '"]').fadeOut();
+                const $cartItem = $('.cart-item[data-product-id="' + productId + '"]');
+                $cartItem.find('button').prop('disabled', true);
+                
+                // Call API to remove item
+                $.ajax({
+                    url: '@Url.Action("RemoveItem", "Cart")',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function(response) {
+                        if (response.success) {
+                            $cartItem.fadeOut(300, function() {
+                                $(this).remove();
                                 updateCartSummary();
-                                showToast('Đã xóa sản phẩm', 'success');
-                            } else {
-                                showToast(response.message, 'error');
-                            }
-                        },
+                                
+                                // Reload page if cart is empty
+                                if ($('.cart-item').length === 0) {
+                                    setTimeout(function() {
+                                        location.reload();
+                                    }, 500);
+                                }
+                            });
+                            showToast('Đã xóa sản phẩm', 'success');
+                        } else {
+                            $cartItem.find('button').prop('disabled', false);
+                            showToast(response.message || 'Không thể xóa sản phẩm', 'error');
+                        }
+                    },
                     error: function() {
-                        showToast('Có lỗi xảy ra', 'error');
+                        $cartItem.find('button').prop('disabled', false);
+                        showToast('Có lỗi xảy ra khi xóa sản phẩm', 'error');
                     }
                 });
             }
         }
 
         function clearCart() {
-            showConfirmModal(
-                'Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?',
-                'Tất cả sản phẩm trong giỏ hàng sẽ bị xóa và không thể khôi phục.',
-                function() {
-                    // TODO: Call API to clear cart
-                    $.ajax({
-                        url: '@Url.Action("ClearCart", "Cart")',
-                        type: 'POST',
-                        success: function(response) {
-                            if (response.success) {
+            if (confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?\nTất cả sản phẩm trong giỏ hàng sẽ bị xóa và không thể khôi phục.')) {
+                // Disable all buttons
+                $('.quantity-controls button, .btn-outline-danger').prop('disabled', true);
+                
+                // Call API to clear cart
+                $.ajax({
+                    url: '@Url.Action("ClearCart", "Cart")',
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('Đã xóa tất cả sản phẩm', 'success');
+                            setTimeout(function() {
                                 location.reload();
-                            } else {
-                                showToast(response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            showToast('Có lỗi xảy ra', 'error');
+                            }, 500);
+                        } else {
+                            $('.quantity-controls button, .btn-outline-danger').prop('disabled', false);
+                            showToast(response.message || 'Không thể xóa giỏ hàng', 'error');
                         }
-                    });
-                }
-            );
+                    },
+                    error: function() {
+                        $('.quantity-controls button, .btn-outline-danger').prop('disabled', false);
+                        showToast('Có lỗi xảy ra khi xóa giỏ hàng', 'error');
+                    }
+                });
+            }
         }
 
         function applyPromoCode() {
@@ -349,21 +436,51 @@
             showToast('Đang kiểm tra mã giảm giá...', 'info');
         }
 
+        function increaseQuantity(productId) {
+            const $cartItem = $('.cart-item[data-product-id="' + productId + '"]');
+            const $quantityInput = $cartItem.find('.quantity-input');
+            const currentQuantity = parseInt($quantityInput.val()) || 1;
+            const maxQuantity = parseInt($quantityInput.attr('max')) || 999;
+            
+            if (currentQuantity < maxQuantity) {
+                const newQuantity = currentQuantity + 1;
+                $quantityInput.val(newQuantity);
+                updateQuantity(productId, newQuantity);
+            } else {
+                showToast('Số lượng đã đạt tối đa', 'warning');
+            }
+        }
+
+        function decreaseQuantity(productId) {
+            const $cartItem = $('.cart-item[data-product-id="' + productId + '"]');
+            const $quantityInput = $cartItem.find('.quantity-input');
+            const currentQuantity = parseInt($quantityInput.val()) || 1;
+            
+            if (currentQuantity > 1) {
+                const newQuantity = currentQuantity - 1;
+                $quantityInput.val(newQuantity);
+                updateQuantity(productId, newQuantity);
+            } else {
+                removeItem(productId);
+            }
+        }
+
         function updateCartSummary() {
-            // TODO: Calculate from actual cart data
+            // Calculate from actual cart data
             let subtotal = 0;
             $('.cart-item').each(function() {
-                const quantity = parseInt($(this).find('input[type="number"]').val());
-                const price = parseFloat($(this).find('.price-info .fw-bold').text().replace(/[^\d]/g, ''));
+                const quantity = parseInt($(this).find('.quantity-input').val()) || 1;
+                const priceText = $(this).find('.price-info .fw-bold').text();
+                const price = parseFloat(priceText.replace(/[^\d]/g, '')) || 0;
                 subtotal += quantity * price;
             });
 
             const shippingFee = subtotal > 500000 ? 0 : 30000; // Free shipping over 500k
             const total = subtotal + shippingFee;
 
-            $('#subtotal').text(subtotal.toLocaleString() + ' ₫');
-            $('#shippingFee').text(shippingFee.toLocaleString() + ' ₫');
-            $('#totalAmount').text(total.toLocaleString() + ' ₫');
+            $('#subtotal').text(subtotal.toLocaleString('vi-VN') + ' ₫');
+            $('#shippingFee').text(shippingFee.toLocaleString('vi-VN') + ' ₫');
+            $('#totalAmount').text(total.toLocaleString('vi-VN') + ' ₫');
         }
 
         function showToast(message, type) {
