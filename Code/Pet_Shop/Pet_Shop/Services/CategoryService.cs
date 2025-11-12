@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Pet_Shop.Data;
 using Pet_Shop.Models.Entities;
 
@@ -15,10 +15,19 @@ namespace Pet_Shop.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<Category>> GetAllCategoriesAsyncBK()
         {
             try
             {
+
+                if (_context == null)
+                {
+                    throw new Exception("DbContext is null");
+                }
+                if (!_context.Database.CanConnect())
+                {
+                    throw new Exception("Cannot connect to database");
+                }
                 return await _context.Categories
                     .Where(c => c.IsActive)
                     .OrderBy(c => c.SortOrder)
@@ -29,6 +38,51 @@ namespace Pet_Shop.Services
             {
                 _logger.LogError($"Error getting all categories: {ex.Message}");
                 return new List<Category>();
+            }
+        }
+        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        {
+            try
+            {
+                // Debug: Kiểm tra DbContext
+                if (_context == null)
+                {
+                    throw new Exception("DbContext is null");
+                }
+
+                // Debug: Kiểm tra database connection
+                if (!_context.Database.CanConnect())
+                {
+                    throw new Exception("Cannot connect to database");
+                }
+
+                // Debug: Kiểm tra bảng Categories có tồn tại không
+                var tableExists = await _context.Database.ExecuteSqlRawAsync(
+                    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Categories'");
+
+                // Debug: Kiểm tra dữ liệu thô
+                var rawData = await _context.Database.ExecuteSqlRawAsync("SELECT COUNT(*) FROM Categories");
+
+                // Debug: Query đơn giản trước
+                var simpleQuery = await _context.Categories.ToListAsync();
+                if (simpleQuery == null)
+                {
+                    throw new Exception("Simple query returned null");
+                }
+
+                // Query gốc của bạn
+                var result = await _context.Categories
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.SortOrder)
+                    .ThenBy(c => c.CategoryName)
+                    .ToListAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi chi tiết
+                throw new Exception($"Error in GetAllCategoriesAsync: {ex.Message}");
             }
         }
 
