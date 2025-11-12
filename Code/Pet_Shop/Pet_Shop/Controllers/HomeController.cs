@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Pet_Shop.Models;
 using Pet_Shop.Services;
 
@@ -14,6 +16,8 @@ namespace Pet_Shop.Controllers
         private readonly ProductService _productService;
         private readonly PromotionService _promotionService;
         private readonly ChatbotService _chatbotService;
+        private readonly LocalRecommendationService? _localRecommendationService;
+        private readonly IConfiguration _configuration;
 
         public HomeController(
             ILogger<HomeController> logger, 
@@ -21,7 +25,9 @@ namespace Pet_Shop.Controllers
             BannerService bannerService, 
             ProductService productService, 
             PromotionService promotionService,
-            ChatbotService chatbotService)
+            ChatbotService chatbotService,
+            LocalRecommendationService? localRecommendationService,
+            IConfiguration configuration)
         {
             _logger = logger;
             _categoryService = categoryService;
@@ -29,6 +35,8 @@ namespace Pet_Shop.Controllers
             _productService = productService;
             _promotionService = promotionService;
             _chatbotService = chatbotService;
+            _localRecommendationService = localRecommendationService;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index()
@@ -37,8 +45,9 @@ namespace Pet_Shop.Controllers
             {
                 var categories = await _categoryService.GetAllCategoriesAsync();
                 var banners = await _bannerService.GetActiveBannersAsync();
-                var featuredProducts = await _productService.GetFeaturedProductsAsync(); // Lấy sản phẩm nổi bật
                 var activePromotions = await _promotionService.GetActivePromotionsAsync(); // Lấy mã khuyến mãi đang hoạt động
+                
+                var featuredProducts = await GetHomepageFeaturedProductsAsync(); // Lấy sản phẩm nổi bật/đề xuất từ Local ML
                 
                 // Chatbot AI: Gợi ý sản phẩm dựa trên lịch sử mua hàng của khách hàng đã đăng nhập
                 List<Pet_Shop.Models.Entities.Product>? aiRecommendedProducts = null;
@@ -66,6 +75,44 @@ namespace Pet_Shop.Controllers
                 ViewBag.AIRecommendedProducts = null;
                 return View();
             }
+        }
+
+        private async Task<List<Pet_Shop.Models.Entities.Product>> GetHomepageFeaturedProductsAsync()
+        {
+            var featuredProducts = new List<Pet_Shop.Models.Entities.Product>();
+            try
+            {
+                var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
+                if (useLocalML && _localRecommendationService != null)
+                {
+                    var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
+                    if (localMLAvailable)
+                    {
+                        var userId = GetCurrentUserId();
+
+                        if (userId > 0)
+                        {
+                            featuredProducts = await _localRecommendationService.GetRecommendedProductsAsync(userId, 8);
+                        }
+
+                        if (!featuredProducts.Any())
+                        {
+                            featuredProducts = await _localRecommendationService.GetRecommendedProductsAsync(0, 8);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error getting featured products from Local ML service");
+            }
+
+            if (!featuredProducts.Any())
+            {
+                featuredProducts = (await _productService.GetFeaturedProductsAsync()).ToList();
+            }
+
+            return featuredProducts;
         }
 
         private int GetCurrentUserId()

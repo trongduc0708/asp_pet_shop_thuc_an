@@ -235,42 +235,6 @@ namespace Pet_Shop.Services
                 // Tìm kiếm sản phẩm dựa trên tiêu chí
                 suggestedProducts = await SearchProductsWithCriteriaAsync(searchCriteria);
                 
-                // Nếu có LocalRecommendationService và đã tìm được sản phẩm, gợi ý thêm sản phẩm tương tự
-                if (suggestedProducts.Any() && _localRecommendationService != null)
-                {
-                    var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
-                    if (useLocalML)
-                    {
-                        try
-                        {
-                            var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
-                            if (localMLAvailable)
-                            {
-                                var productIds = suggestedProducts.Select(p => p.ProductID).ToList();
-                                var similarProducts = await _localRecommendationService.GetContentBasedRecommendationsAsync(
-                                    productIds, 
-                                    count: 3);
-                                
-                                // Thêm sản phẩm tương tự, loại bỏ trùng lặp
-                                foreach (var product in similarProducts)
-                                {
-                                    if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
-                                    {
-                                        suggestedProducts.Add(product);
-                                    }
-                                }
-                                
-                                suggestedProducts = suggestedProducts.Take(5).ToList();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Log nhưng không fail
-                            Console.WriteLine($"Error getting recommendations from Local ML API: {ex.Message}");
-                        }
-                    }
-                }
-                
                 // Tạo phản hồi phù hợp
                 response = GenerateResponseForSearchCriteria(searchCriteria, suggestedProducts);
             }
@@ -815,7 +779,6 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
 
         /// <summary>
         /// Phân tích phản hồi AI để tìm sản phẩm được đề xuất
-        /// Ưu tiên sử dụng LocalRecommendationService (API từ AI_chatbot_train)
         /// </summary>
         private async Task<List<Product>> ExtractSuggestedProductsAsync(string aiResponse, string userMessage)
         {
@@ -825,66 +788,24 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
             {
                 // Tìm ID sản phẩm trong phản hồi AI
                 var productIdMatches = System.Text.RegularExpressions.Regex.Matches(aiResponse, @"ID:\s*(\d+)");
-                var foundProductIds = new List<int>();
                 
                 foreach (System.Text.RegularExpressions.Match match in productIdMatches)
                 {
                     if (int.TryParse(match.Groups[1].Value, out int productId))
                     {
-                        foundProductIds.Add(productId);
-                    }
-                }
-
-                // Nếu tìm thấy sản phẩm từ AI response, dùng LocalRecommendationService để gợi ý tương tự
-                if (foundProductIds.Any() && _localRecommendationService != null)
-                {
-                    var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
-                    if (useLocalML)
-                    {
-                        var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
-                        if (localMLAvailable)
+                        var product = await _context.Products
+                            .Include(p => p.Category)
+                            .Include(p => p.ProductImages)
+                            .FirstOrDefaultAsync(p => p.ProductID == productId && p.IsActive);
+                        
+                        if (product != null && !suggestedProducts.Any(p => p.ProductID == productId))
                         {
-                            // Lấy sản phẩm đã tìm được
-                            var foundProducts = await _context.Products
-                                .Include(p => p.Category)
-                                .Include(p => p.ProductImages)
-                                .Where(p => foundProductIds.Contains(p.ProductID) && p.IsActive)
-                                .ToListAsync();
-                            
-                            suggestedProducts.AddRange(foundProducts);
-                            
-                            // Dùng LocalRecommendationService để gợi ý sản phẩm tương tự (content-based)
-                            var similarProducts = await _localRecommendationService.GetContentBasedRecommendationsAsync(
-                                foundProductIds, 
-                                count: 5);
-                            
-                            // Thêm các sản phẩm tương tự, loại bỏ trùng lặp
-                            foreach (var product in similarProducts)
-                            {
-                                if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
-                                {
-                                    suggestedProducts.Add(product);
-                                }
-                            }
-                            
-                            return suggestedProducts.Take(5).ToList();
+                            suggestedProducts.Add(product);
                         }
                     }
                 }
 
-                // Nếu không dùng được LocalRecommendationService, lấy sản phẩm trực tiếp
-                if (foundProductIds.Any())
-                {
-                    var products = await _context.Products
-                        .Include(p => p.Category)
-                        .Include(p => p.ProductImages)
-                        .Where(p => foundProductIds.Contains(p.ProductID) && p.IsActive)
-                        .ToListAsync();
-                    
-                    suggestedProducts.AddRange(products);
-                }
-
-                // Nếu không tìm thấy ID cụ thể, tìm kiếm theo từ khóa
+                // Nếu không tìm thấy ID cụ thể, tìm kiếm theo từ khóa trong tin nhắn người dùng
                 if (!suggestedProducts.Any())
                 {
                     var keywords = ExtractKeywords(userMessage);
@@ -893,37 +814,18 @@ Khi đề xuất sản phẩm, hãy đề cập đến ID sản phẩm để h�
                         var products = await _context.Products
                             .Include(p => p.Category)
                             .Include(p => p.ProductImages)
-                            .Where(p => p.IsActive && 
+                            .Where(p => p.IsActive &&
                                 (keywords.Any(k => p.ProductName.Contains(k)) ||
                                  keywords.Any(k => p.ShortDescription != null && p.ShortDescription.Contains(k)) ||
                                  keywords.Any(k => p.Category != null && p.Category.CategoryName.Contains(k))))
                             .Take(3)
                             .ToListAsync();
                         
-                        suggestedProducts.AddRange(products);
-                        
-                        // Nếu tìm được sản phẩm và có LocalRecommendationService, gợi ý thêm sản phẩm tương tự
-                        if (suggestedProducts.Any() && _localRecommendationService != null)
+                        foreach (var product in products)
                         {
-                            var useLocalML = _configuration.GetValue<bool>("LocalMLSettings:Enabled", false);
-                            if (useLocalML)
+                            if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
                             {
-                                var localMLAvailable = await _localRecommendationService.IsApiAvailableAsync();
-                                if (localMLAvailable)
-                                {
-                                    var productIds = suggestedProducts.Select(p => p.ProductID).ToList();
-                                    var similarProducts = await _localRecommendationService.GetContentBasedRecommendationsAsync(
-                                        productIds, 
-                                        count: 3);
-                                    
-                                    foreach (var product in similarProducts)
-                                    {
-                                        if (!suggestedProducts.Any(p => p.ProductID == product.ProductID))
-                                        {
-                                            suggestedProducts.Add(product);
-                                        }
-                                    }
-                                }
+                                suggestedProducts.Add(product);
                             }
                         }
                     }
