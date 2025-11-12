@@ -141,6 +141,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                 <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -151,7 +152,10 @@
 <script>
 function confirmDelete(bannerId, bannerName) {
     document.getElementById('bannerName').textContent = bannerName;
-    document.getElementById('deleteForm').action = '@Url.Action("DeleteBanner")/' + bannerId;
+
+    var deleteUrlTemplate = '@Url.Action("DeleteBanner", new { id = "__id__" })';
+    var deleteUrl = deleteUrlTemplate.replace('__id__', bannerId);
+    document.getElementById('deleteForm').action = deleteUrl;
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 </script>

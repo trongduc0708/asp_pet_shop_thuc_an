@@ -297,6 +297,14 @@ namespace Pet_Shop.Controllers.Admin
                     return View(banner);
                 }
 
+                banner.BannerName = (banner.BannerName ?? string.Empty).Trim();
+
+                if (string.IsNullOrWhiteSpace(banner.BannerName))
+                {
+                    ModelState.AddModelError("BannerName", "Tên banner không được để trống.");
+                    return View(banner);
+                }
+
                 // Check if banner name already exists
                 var exists = await _bannerService.BannerExistsAsync(banner.BannerName);
                 if (exists)
@@ -358,6 +366,14 @@ namespace Pet_Shop.Controllers.Admin
             {
                 if (!ModelState.IsValid)
                 {
+                    return View(banner);
+                }
+
+                banner.BannerName = (banner.BannerName ?? string.Empty).Trim();
+
+                if (string.IsNullOrWhiteSpace(banner.BannerName))
+                {
+                    ModelState.AddModelError("BannerName", "Tên banner không được để trống.");
                     return View(banner);
                 }
 

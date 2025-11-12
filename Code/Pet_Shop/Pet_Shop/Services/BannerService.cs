@@ -120,8 +120,17 @@ namespace Pet_Shop.Services
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(bannerName))
+                {
+                    return false;
+                }
+
+                var normalizedName = bannerName.Trim().ToLower();
+
                 var query = _context.Banners
-                    .Where(b => b.BannerName == bannerName && b.IsActive);
+                    .Where(b => b.IsActive &&
+                                b.BannerName != null &&
+                                b.BannerName.Trim().ToLower() == normalizedName);
 
                 if (excludeId.HasValue)
                 {
