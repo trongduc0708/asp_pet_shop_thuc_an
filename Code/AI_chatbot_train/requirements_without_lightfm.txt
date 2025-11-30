@@ -1,0 +1,13 @@
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+torch==2.6.0
+pandas==2.2.3
+numpy>=2.0.0
+scikit-learn==1.5.2
+pydantic==2.9.2
+python-multipart==0.0.12
+# Recommendation System Libraries
+# lightfm>=1.17  # Install separately - see install_lightfm_windows.bat
+sentence-transformers>=2.2.0
+scipy>=1.11.0
+
