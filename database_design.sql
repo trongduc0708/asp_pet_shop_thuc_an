@@ -12,7 +12,7 @@
  Target Server Version : 16001000 (16.00.1000)
  File Encoding         : 65001
 
- Date: 18/10/2025 22:51:51
+ Date: 18/11/2025 00:44:18
 */
 
 
@@ -89,7 +89,7 @@ GO
 SET IDENTITY_INSERT [dbo].[Banners] ON
 GO
 
-INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'1', N'Banner chính trang ch?', N'/images/banners/homepage-banner-1.jpg', N'/products', N'Khuy?n mãi th?c an thú cung', N'Homepage', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.430')
+INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'1', N'Banner chính trang chủ', N'/uploads/banners/f4c1e9f4-b707-4792-a548-999f2dfe6bb6.jpeg', N'/products', N'Khuyến mãi thức ăn thú cung', N'Homepage', N'1', N'2024-01-01 00:00:00.000', N'2025-10-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.000')
 GO
 
 INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'2', N'Banner s?n ph?m m?i', N'/images/banners/new-products-banner.jpg', N'/products?filter=new', N'S?n ph?m m?i cho thú cung', N'Homepage', N'2', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.430')
@@ -98,13 +98,13 @@ GO
 INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'3', N'Banner khuy?n mãi', N'/images/banners/promotion-banner.jpg', N'/promotions', N'Gi?m giá lên d?n 50%', N'Homepage', N'3', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.430')
 GO
 
-INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'4', N'Banner th?c an chó', N'/images/banners/dog-food-banner.jpg', N'/category/1', N'Th?c an cho chó', N'Category', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.430')
+INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'4', N'Banner thức an chó', N'/images/banners/dog-food-banner.jpg', N'/category/1', N'Thức ăn cho chó', N'Category', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.000')
 GO
 
 INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'5', N'Banner th?c an mèo', N'/images/banners/cat-food-banner.jpg', N'/category/2', N'Th?c an cho mèo', N'Category', N'2', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.430')
 GO
 
-INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'6', N'Banner chính trang ch?', N'/images/banners/homepage-banner-1.jpg', N'/products', N'Khuy?n mãi th?c an thú cung', N'Homepage', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:45.050')
+INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'6', N'Banner chính trang chủ chính', N'/images/banners/homepage-banner-1.jpg', N'/products', N'Khuyến mãi trang chủ', N'Homepage', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:45.000')
 GO
 
 INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'7', N'Banner s?n ph?m m?i', N'/images/banners/new-products-banner.jpg', N'/products?filter=new', N'S?n ph?m m?i cho thú cung', N'Homepage', N'2', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:45.050')
@@ -119,7 +119,7 @@ GO
 INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'10', N'Banner th?c an mèo', N'/images/banners/cat-food-banner.jpg', N'/category/2', N'Th?c an cho mèo', N'Category', N'2', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:45.050')
 GO
 
-INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'11', N'Banner chính trang ch?', N'/images/banners/homepage-banner-1.jpg', N'/products', N'Khuy?n mãi th?c an thú cung', N'Homepage', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:57.333')
+INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'11', N'Banner chính trang chủ', N'/uploads/banners/24b9d335-1071-431c-889a-59168e0bd569.jpeg', N'/products', N'Khuyến mãi thức an thú cung', N'Homepage', N'1', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:57.000')
 GO
 
 INSERT INTO [dbo].[Banners] ([BannerID], [BannerName], [ImageURL], [LinkURL], [AltText], [Position], [SortOrder], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'12', N'Banner s?n ph?m m?i', N'/images/banners/new-products-banner.jpg', N'/products?filter=new', N'S?n ph?m m?i cho thú cung', N'Homepage', N'2', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:57.333')
@@ -330,7 +330,16 @@ GO
 INSERT INTO [dbo].[Cart] ([CartID], [UserID], [ProductID], [Quantity], [AddedDate]) VALUES (N'22', N'2', N'64', N'5', N'2024-01-21 14:35:00.000')
 GO
 
-INSERT INTO [dbo].[Cart] ([CartID], [UserID], [ProductID], [Quantity], [AddedDate]) VALUES (N'29', N'1', N'62', N'1', N'2025-10-15 22:39:59.817')
+INSERT INTO [dbo].[Cart] ([CartID], [UserID], [ProductID], [Quantity], [AddedDate]) VALUES (N'37', N'1', N'64', N'1', N'2025-11-04 00:44:16.770')
+GO
+
+INSERT INTO [dbo].[Cart] ([CartID], [UserID], [ProductID], [Quantity], [AddedDate]) VALUES (N'38', N'1', N'60', N'1', N'2025-11-04 00:44:19.493')
+GO
+
+INSERT INTO [dbo].[Cart] ([CartID], [UserID], [ProductID], [Quantity], [AddedDate]) VALUES (N'39', N'1', N'68', N'1', N'2025-11-04 00:44:25.307')
+GO
+
+INSERT INTO [dbo].[Cart] ([CartID], [UserID], [ProductID], [Quantity], [AddedDate]) VALUES (N'40', N'1', N'62', N'1', N'2025-11-04 00:44:59.610')
 GO
 
 SET IDENTITY_INSERT [dbo].[Cart] OFF
@@ -371,7 +380,7 @@ GO
 INSERT INTO [dbo].[Categories] ([CategoryID], [CategoryName], [ParentCategoryID], [Description], [IsActive], [SortOrder], [CreatedDate]) VALUES (N'2', N'Thức ăn mèo', NULL, N'Các loại thức ăn dành cho mèo', N'0', N'0', N'2025-10-06 09:24:34.493')
 GO
 
-INSERT INTO [dbo].[Categories] ([CategoryID], [CategoryName], [ParentCategoryID], [Description], [IsActive], [SortOrder], [CreatedDate]) VALUES (N'3', N'Phụ kiện chó', NULL, N'Dây dắt, chuồng, đồ chơi cho chó', N'0', N'0', N'2025-10-06 09:24:34.493')
+INSERT INTO [dbo].[Categories] ([CategoryID], [CategoryName], [ParentCategoryID], [Description], [IsActive], [SortOrder], [CreatedDate]) VALUES (N'3', N'Phụ kiện chó', N'4', N'Dây dắt, chuồng, đồ chơi cho chó', N'0', N'0', N'2025-10-06 09:24:34.000')
 GO
 
 INSERT INTO [dbo].[Categories] ([CategoryID], [CategoryName], [ParentCategoryID], [Description], [IsActive], [SortOrder], [CreatedDate]) VALUES (N'4', N'Phụ kiện mèo', NULL, N'Khay cát, vòng cổ, đồ chơi cho mèo', N'0', N'0', N'2025-10-06 09:24:34.493')
@@ -597,19 +606,19 @@ GO
 SET IDENTITY_INSERT [dbo].[Inventory] ON
 GO
 
-INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'43', N'60', N'47', N'10', N'100', N'2025-10-15 22:36:05.050')
+INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'43', N'60', N'46', N'10', N'100', N'2025-10-27 10:01:00.313')
 GO
 
 INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'44', N'61', N'78', N'15', N'150', N'2025-10-15 21:39:57.660')
 GO
 
-INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'45', N'62', N'29', N'5', N'80', N'2025-10-15 21:39:57.660')
+INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'45', N'62', N'25', N'5', N'80', N'2025-10-29 23:02:39.740')
 GO
 
 INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'46', N'63', N'98', N'20', N'200', N'2025-10-15 21:39:57.660')
 GO
 
-INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'47', N'64', N'190', N'50', N'500', N'2025-10-15 21:39:57.660')
+INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'47', N'64', N'185', N'50', N'500', N'2025-11-01 22:10:54.987')
 GO
 
 INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'48', N'65', N'39', N'8', N'100', N'2025-10-15 21:39:57.660')
@@ -621,7 +630,7 @@ GO
 INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'50', N'67', N'9', N'2', N'20', N'2025-10-15 21:39:57.660')
 GO
 
-INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'51', N'68', N'59', N'10', N'100', N'2025-10-15 21:39:57.660')
+INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'51', N'68', N'157', N'10', N'100', N'2025-11-01 22:14:47.557')
 GO
 
 INSERT INTO [dbo].[Inventory] ([InventoryID], [ProductID], [QuantityInStock], [MinStockLevel], [MaxStockLevel], [LastUpdated]) VALUES (N'52', N'69', N'14', N'3', N'30', N'2025-10-15 21:39:57.660')
@@ -710,6 +719,33 @@ GO
 INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'56', N'60', N'Export', N'1', N'400000.00', N'400000.00', N'ORDER_20251015223605', N'Bán hàng', N'1', N'2025-10-15 22:36:05.050')
 GO
 
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'57', N'62', N'Export', N'1', N'350000.00', N'350000.00', N'ORDER_20251027100100', N'Bán hàng', N'1', N'2025-10-27 10:01:00.217')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'58', N'60', N'Export', N'1', N'400000.00', N'400000.00', N'ORDER_20251027100100', N'Bán hàng', N'1', N'2025-10-27 10:01:00.313')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'59', N'68', N'Export', N'1', N'60000.00', N'60000.00', N'ORDER_20251029215348', N'Bán hàng', N'1', N'2025-10-29 21:53:48.967')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'60', N'62', N'Export', N'1', N'350000.00', N'350000.00', N'ORDER_20251029215643', N'Bán hàng', N'1', N'2025-10-29 21:56:43.393')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'61', N'62', N'Export', N'1', N'350000.00', N'350000.00', N'ORDER_20251029220439', N'Bán hàng', N'1', N'2025-10-29 22:04:39.563')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'62', N'68', N'Export', N'1', N'60000.00', N'60000.00', N'ORDER_20251029220541', N'Bán hàng', N'1', N'2025-10-29 22:05:41.680')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'63', N'62', N'Export', N'1', N'350000.00', N'350000.00', N'ORDER_20251029230239', N'Bán hàng', N'1', N'2025-10-29 23:02:39.747')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'64', N'64', N'Export', N'5', N'20000.00', N'100000.00', N'ORDER_20251101221054', N'Bán hàng', N'1', N'2025-11-01 22:10:55.000')
+GO
+
+INSERT INTO [dbo].[InventoryTransactions] ([TransactionID], [ProductID], [TransactionType], [Quantity], [UnitPrice], [TotalValue], [ReferenceNumber], [Notes], [CreatedBy], [CreatedDate]) VALUES (N'65', N'68', N'Import', N'100', N'2000.00', N'200000.00', N'agdgakjd', NULL, N'3', N'2025-11-01 22:14:47.557')
+GO
+
 SET IDENTITY_INSERT [dbo].[InventoryTransactions] OFF
 GO
 
@@ -777,6 +813,30 @@ GO
 INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'48', N'14', N'60', N'1', N'400000.00', N'400000.00')
 GO
 
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'49', N'15', N'62', N'1', N'350000.00', N'350000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'50', N'15', N'60', N'1', N'400000.00', N'400000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'51', N'16', N'68', N'1', N'60000.00', N'60000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'52', N'17', N'62', N'1', N'350000.00', N'350000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'53', N'18', N'62', N'1', N'350000.00', N'350000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'54', N'19', N'68', N'1', N'60000.00', N'60000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'55', N'20', N'62', N'1', N'350000.00', N'350000.00')
+GO
+
+INSERT INTO [dbo].[OrderItems] ([OrderItemID], [OrderID], [ProductID], [Quantity], [UnitPrice], [TotalPrice]) VALUES (N'56', N'21', N'64', N'5', N'20000.00', N'100000.00')
+GO
+
 SET IDENTITY_INSERT [dbo].[OrderItems] OFF
 GO
 
@@ -834,6 +894,27 @@ INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [St
 GO
 
 INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'14', N'PS20251015223605', N'1', N'2025-10-15 22:36:05.017', N'1', N'2', N'400000.00', N'30000.00', N'0.00', N'430000.00', NULL, N'dsds, dsds, das, dsdsds', NULL, NULL, N'2025-10-15 22:36:05.017', N'2025-10-15 22:36:05.017')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'15', N'PS20251027100058', N'1', N'2025-10-27 10:00:58.543', N'1', N'2', N'750000.00', N'0.00', N'0.00', N'750000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-10-27 10:00:58.697', N'2025-10-27 10:00:58.700')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'16', N'PS20251029215348', N'1', N'2025-10-29 21:53:48.433', N'1', N'2', N'60000.00', N'30000.00', N'0.00', N'90000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-10-29 21:53:48.487', N'2025-10-29 21:53:48.487')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'17', N'PS20251029215643', N'1', N'2025-10-29 21:56:43.017', N'1', N'2', N'350000.00', N'30000.00', N'0.00', N'380000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-10-29 21:56:43.070', N'2025-10-29 21:56:43.070')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'18', N'PS20251029220439', N'1', N'2025-10-29 22:04:39.333', N'1', N'2', N'350000.00', N'30000.00', N'0.00', N'380000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-10-29 22:04:39.360', N'2025-10-29 22:04:39.360')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'19', N'PS20251029220541', N'1', N'2025-10-29 22:05:41.640', N'1', N'2', N'60000.00', N'30000.00', N'0.00', N'90000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-10-29 22:05:41.650', N'2025-10-29 22:05:41.650')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'20', N'PS20251029230238', N'1', N'2025-10-29 23:02:38.187', N'1', N'2', N'350000.00', N'30000.00', N'0.00', N'380000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-10-29 23:02:38.287', N'2025-10-29 23:02:38.287')
+GO
+
+INSERT INTO [dbo].[Orders] ([OrderID], [OrderNumber], [UserID], [OrderDate], [StatusID], [PaymentMethodID], [SubTotal], [ShippingFee], [DiscountAmount], [TotalAmount], [PromotionID], [ShippingAddress], [Notes], [AdminNotes], [CreatedDate], [UpdatedDate]) VALUES (N'21', N'PS20251101221053', N'1', N'2025-11-01 22:10:53.557', N'3', N'2', N'100000.00', N'30000.00', N'0.00', N'130000.00', NULL, N'123 Ðu?ng ABC, Phu?ng 1, Qu?n 1, TP. H? Chí Minh', NULL, NULL, N'2025-11-01 22:10:53.707', N'2025-11-01 22:14:08.903')
 GO
 
 SET IDENTITY_INSERT [dbo].[Orders] OFF
@@ -1218,6 +1299,30 @@ GO
 INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'102', N'14', NULL, N'1', N'1', N'2025-10-15 22:36:05.040', N'Đơn hàng được tạo')
 GO
 
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'103', N'15', NULL, N'1', N'1', N'2025-10-27 10:01:00.067', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'104', N'16', NULL, N'1', N'1', N'2025-10-29 21:53:48.907', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'105', N'17', NULL, N'1', N'1', N'2025-10-29 21:56:43.310', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'106', N'18', NULL, N'1', N'1', N'2025-10-29 22:04:39.507', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'107', N'19', NULL, N'1', N'1', N'2025-10-29 22:05:41.670', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'108', N'20', NULL, N'1', N'1', N'2025-10-29 23:02:39.647', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'109', N'21', NULL, N'1', N'1', N'2025-11-01 22:10:54.597', N'Đơn hàng được tạo')
+GO
+
+INSERT INTO [dbo].[OrderStatusHistory] ([HistoryID], [OrderID], [OldStatusID], [NewStatusID], [ChangedBy], [ChangedDate], [Notes]) VALUES (N'110', N'21', N'1', N'3', N'3', N'2025-11-01 22:14:08.903', NULL)
+GO
+
 SET IDENTITY_INSERT [dbo].[OrderStatusHistory] OFF
 GO
 
@@ -1285,34 +1390,10 @@ GO
 SET IDENTITY_INSERT [dbo].[ProductImages] ON
 GO
 
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'70', N'60', N'/images/products/royal-canin-adult-1.jpg', N'Royal Canin Adult - Hình chính', N'0', N'1', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'71', N'60', N'/images/products/royal-canin-adult-2.jpg', N'Royal Canin Adult - Hình ph?', N'0', N'2', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'72', N'60', N'/images/products/royal-canin-adult-3.jpg', N'Royal Canin Adult - Hình ph?', N'0', N'3', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'73', N'61', N'/images/products/pedigree-adult-1.jpg', N'Pedigree Adult - Hình chính', N'0', N'1', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'74', N'61', N'/images/products/pedigree-adult-2.jpg', N'Pedigree Adult - Hình ph?', N'0', N'2', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'75', N'62', N'/images/products/hills-science-1.jpg', N'Hill''s Science Diet - Hình chính', N'0', N'1', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'76', N'62', N'/images/products/hills-science-2.jpg', N'Hill''s Science Diet - Hình ph?', N'0', N'2', N'2025-10-15 21:39:57.660')
-GO
-
 INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'77', N'63', N'/images/products/whiskas-adult-1.jpg', N'Whiskas Adult - Hình chính', N'0', N'1', N'2025-10-15 21:39:57.660')
 GO
 
 INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'78', N'63', N'/images/products/whiskas-adult-2.jpg', N'Whiskas Adult - Hình ph?', N'0', N'2', N'2025-10-15 21:39:57.660')
-GO
-
-INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'79', N'64', N'/images/products/felix-wet-1.jpg', N'Felix Wet Food - Hình chính', N'0', N'1', N'2025-10-15 21:39:57.660')
 GO
 
 INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'80', N'65', N'/images/products/royal-canin-kitten-1.jpg', N'Royal Canin Kitten - Hình chính', N'0', N'1', N'2025-10-15 21:39:57.660')
@@ -1346,6 +1427,27 @@ INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText]
 GO
 
 INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'90', N'71', N'/images/products/cat-scratch-2.jpg', N'C?t mài vu?t mèo - Hình ph?', N'0', N'2', N'2025-10-15 21:39:57.660')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'91', N'60', N'/uploads/products/380c22a6-1f88-4c38-82e1-ba14bcd93229.jpeg', NULL, N'0', N'0', N'2025-10-22 16:50:38.910')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'92', N'61', N'/uploads/products/e75f730b-c1f1-4861-92c8-9604009d6ee4.jpg', NULL, N'0', N'0', N'2025-11-01 22:16:39.607')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'93', N'61', N'/uploads/products/655f0d7e-a4b6-44ea-aee0-7c5b0b10c6c4.jpg', NULL, N'0', N'0', N'2025-11-01 22:16:39.610')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'94', N'61', N'/uploads/products/b6892663-85cb-42fd-af59-cba9a0be8988.jpg', NULL, N'0', N'0', N'2025-11-01 22:16:39.607')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'95', N'62', N'/uploads/products/3b2b5840-31de-4cf8-af4c-ee2a52fa30ef.jpg', NULL, N'0', N'0', N'2025-11-01 22:17:11.717')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'96', N'62', N'/uploads/products/52ada6a2-472d-4018-a154-6a184ad6ac88.jpg', NULL, N'0', N'0', N'2025-11-01 22:17:11.717')
+GO
+
+INSERT INTO [dbo].[ProductImages] ([ImageID], [ProductID], [ImageURL], [AltText], [IsPrimary], [SortOrder], [CreatedDate]) VALUES (N'97', N'64', N'/uploads/products/92850fb5-50fd-46ef-b135-be0152fdaff3.jpg', NULL, N'0', N'0', N'2025-11-01 22:18:15.037')
 GO
 
 SET IDENTITY_INSERT [dbo].[ProductImages] OFF
@@ -1434,7 +1536,8 @@ CREATE TABLE [dbo].[Products] (
   [IsActive] bit DEFAULT 1 NULL,
   [IsFeatured] bit DEFAULT 0 NULL,
   [CreatedDate] datetime DEFAULT getdate() NULL,
-  [UpdatedDate] datetime DEFAULT getdate() NULL
+  [UpdatedDate] datetime DEFAULT getdate() NULL,
+  [AgeInMonths] int  NULL
 )
 GO
 
@@ -1448,40 +1551,40 @@ GO
 SET IDENTITY_INSERT [dbo].[Products] ON
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'60', N'Royal Canin Adult', N'RC-ADULT-001', N'1', N'46', N'Food', N'Dog', N'3.00', N'30x20x10 cm', N'2025-12-31', N'Th?c an khô cao c?p cho chó tru?ng thành, giàu protein và vitamin', N'Th?c an khô cho chó tru?ng thành', N'450000.00', N'400000.00', N'300000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'60', N'Royal Canin Adult', N'RC-ADULT-001', N'1', N'46', N'Food', N'Dog', N'3.00', N'30x20x10 cm', N'2025-12-31', N'Th?c an khô cao c?p cho chó tru?ng thành, giàu protein và vitamin', N'Th?c an khô cho chó tru?ng thành', N'450000.00', N'400000.00', N'300000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'61', N'Pedigree Adult', N'PED-ADULT-001', N'1', N'48', N'Food', N'Dog', N'2.50', N'25x18x8 cm', N'2025-11-30', N'Th?c an khô cho chó tru?ng thành, giá c? h?p lý', N'Th?c an khô cho chó tru?ng thành', N'180000.00', N'150000.00', N'120000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'61', N'Pedigree Adult', N'PED-ADULT-001', N'1', N'48', N'Food', N'Dog', N'2.50', N'25x18x8 cm', N'2025-11-30', N'Th?c an khô cho chó tru?ng thành, giá c? h?p lý', N'Th?c an khô cho chó tru?ng thành', N'180000.00', N'150000.00', N'120000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'62', N'Hill''s Science Diet', N'HILLS-ADULT-001', N'1', N'50', N'Food', N'Dog', N'4.00', N'35x25x12 cm', N'2025-10-31', N'Th?c an dinh du?ng khoa h?c cho chó', N'Th?c an dinh du?ng cho chó', N'380000.00', N'350000.00', N'250000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'62', N'Hill''s Science Diet', N'HILLS-ADULT-001', N'1', N'50', N'Food', N'Dog', N'4.00', N'35x25x12 cm', N'2025-10-31', N'Th?c an dinh du?ng khoa h?c cho chó', N'Th?c an dinh du?ng cho chó', N'380000.00', N'350000.00', N'250000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'63', N'Whiskas Adult', N'WHISKAS-ADULT-001', N'2', N'47', N'Food', N'Cat', N'1.50', N'20x15x6 cm', N'2025-12-31', N'Th?c an khô cho mèo tru?ng thành', N'Th?c an khô cho mèo', N'120000.00', N'100000.00', N'80000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'63', N'Whiskas Adult', N'WHISKAS-ADULT-001', N'2', N'47', N'Food', N'Cat', N'1.50', N'20x15x6 cm', N'2025-12-31', N'Th?c an khô cho mèo tru?ng thành', N'Th?c an khô cho mèo', N'120000.00', N'100000.00', N'80000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'64', N'Felix Wet Food', N'FELIX-WET-001', N'2', N'49', N'Food', N'Cat', N'0.40', N'10x8x3 cm', N'2025-09-30', N'Th?c an u?t cho mèo, huong cá', N'Th?c an u?t cho mèo', N'25000.00', N'20000.00', N'15000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'64', N'Felix Wet Food', N'FELIX-WET-001', N'2', N'49', N'Food', N'Cat', N'0.40', N'10x8x3 cm', N'2025-09-30', N'Th?c an u?t cho mèo, huong cá', N'Th?c an u?t cho mèo', N'25000.00', N'20000.00', N'15000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'65', N'Royal Canin Kitten', N'RC-KITTEN-001', N'2', N'46', N'Food', N'Cat', N'2.00', N'25x18x8 cm', N'2025-11-30', N'Th?c an cho mèo con', N'Th?c an cho mèo con', N'320000.00', N'280000.00', N'200000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'65', N'Royal Canin Kitten', N'RC-KITTEN-001', N'2', N'46', N'Food', N'Cat', N'2.00', N'25x18x8 cm', N'2025-11-30', N'Th?c an cho mèo con', N'Th?c an cho mèo con', N'320000.00', N'280000.00', N'200000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'66', N'Dây d?t chó', N'DOG-LEASH-001', N'3', N'53', N'Accessory', N'Dog', N'0.30', N'120x2 cm', NULL, N'Dây d?t chó ch?t lu?ng cao, ch?ng r?', N'Dây d?t chó cao c?p', N'150000.00', N'120000.00', N'80000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'66', N'Dây d?t chó', N'DOG-LEASH-001', N'3', N'53', N'Accessory', N'Dog', N'0.30', N'120x2 cm', NULL, N'Dây d?t chó ch?t lu?ng cao, ch?ng r?', N'Dây d?t chó cao c?p', N'150000.00', N'120000.00', N'80000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'67', N'Chu?ng chó', N'DOG-CAGE-001', N'3', N'53', N'Accessory', N'Dog', N'5.00', N'80x60x70 cm', NULL, N'Chu?ng chó b?ng thép, có th? g?p l?i', N'Chu?ng chó di d?ng', N'800000.00', N'700000.00', N'500000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'67', N'Chu?ng chó', N'DOG-CAGE-001', N'3', N'53', N'Accessory', N'Dog', N'5.00', N'80x60x70 cm', NULL, N'Chu?ng chó b?ng thép, có th? g?p l?i', N'Chu?ng chó di d?ng', N'800000.00', N'700000.00', N'500000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'68', N'Bát an chó', N'DOG-BOWL-001', N'3', N'53', N'Accessory', N'Dog', N'0.50', N'20x20x8 cm', NULL, N'Bát an chó b?ng inox, ch?ng tru?t', N'Bát an chó inox', N'80000.00', N'60000.00', N'40000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'68', N'Bát an chó', N'DOG-BOWL-001', N'3', N'53', N'Accessory', N'Dog', N'0.50', N'20x20x8 cm', NULL, N'Bát an chó b?ng inox, ch?ng tru?t', N'Bát an chó inox', N'80000.00', N'60000.00', N'40000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'69', N'Khay cát mèo', N'CAT-LITTER-001', N'4', N'53', N'Accessory', N'Cat', N'2.00', N'50x40x15 cm', NULL, N'Khay cát mèo có n?p, ch?ng tràn', N'Khay cát mèo cao c?p', N'200000.00', N'180000.00', N'120000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'69', N'Khay cát mèo', N'CAT-LITTER-001', N'4', N'53', N'Accessory', N'Cat', N'2.00', N'50x40x15 cm', NULL, N'Khay cát mèo có n?p, ch?ng tràn', N'Khay cát mèo cao c?p', N'200000.00', N'180000.00', N'120000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'70', N'Vòng c? mèo', N'CAT-COLLAR-001', N'4', N'53', N'Accessory', N'Cat', N'0.10', N'25x2 cm', NULL, N'Vòng c? mèo có chuông', N'Vòng c? mèo', N'50000.00', N'40000.00', N'25000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'70', N'Vòng c? mèo', N'CAT-COLLAR-001', N'4', N'53', N'Accessory', N'Cat', N'0.10', N'25x2 cm', NULL, N'Vòng c? mèo có chuông', N'Vòng c? mèo', N'50000.00', N'40000.00', N'25000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
-INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate]) VALUES (N'71', N'C?t mài vu?t', N'CAT-SCRATCH-001', N'4', N'53', N'Accessory', N'Cat', N'1.00', N'60x15x15 cm', NULL, N'C?t mài vu?t cho mèo, có d? choi', N'C?t mài vu?t mèo', N'180000.00', N'150000.00', N'100000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657')
+INSERT INTO [dbo].[Products] ([ProductID], [ProductName], [ProductCode], [CategoryID], [BrandID], [ProductType], [PetType], [Weight], [Dimensions], [ExpiryDate], [Description], [ShortDescription], [Price], [SalePrice], [Cost], [IsNew], [IsActive], [IsFeatured], [CreatedDate], [UpdatedDate], [AgeInMonths]) VALUES (N'71', N'C?t mài vu?t', N'CAT-SCRATCH-001', N'4', N'53', N'Accessory', N'Cat', N'1.00', N'60x15x15 cm', NULL, N'C?t mài vu?t cho mèo, có d? choi', N'C?t mài vu?t mèo', N'180000.00', N'150000.00', N'100000.00', N'0', N'0', N'0', N'2025-10-15 21:39:57.657', N'2025-10-15 21:39:57.657', NULL)
 GO
 
 SET IDENTITY_INSERT [dbo].[Products] OFF
@@ -1523,10 +1626,10 @@ GO
 SET IDENTITY_INSERT [dbo].[Promotions] ON
 GO
 
-INSERT INTO [dbo].[Promotions] ([PromotionID], [PromotionCode], [PromotionName], [Description], [DiscountType], [DiscountValue], [MinOrderAmount], [MaxDiscountAmount], [UsageLimit], [UsedCount], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'1', N'WELCOME10', N'Chào m?ng khách hàng m?i', N'Gi?m 10% cho don hàng d?u tiên', N'Percentage', N'10.00', N'500000.00', N'100000.00', N'100', N'0', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.427')
+INSERT INTO [dbo].[Promotions] ([PromotionID], [PromotionCode], [PromotionName], [Description], [DiscountType], [DiscountValue], [MinOrderAmount], [MaxDiscountAmount], [UsageLimit], [UsedCount], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'1', N'WELCOME10', N'Chào mừng khách hàng mới', N'Gi?m 10% cho don hàng d?u tiên', N'Percentage', N'10.00', N'500000.00', N'100000.00', N'100', N'0', N'2024-01-01 00:00:00.000', N'2025-10-26 00:00:00.000', N'0', N'2025-10-26 14:57:55.147')
 GO
 
-INSERT INTO [dbo].[Promotions] ([PromotionID], [PromotionCode], [PromotionName], [Description], [DiscountType], [DiscountValue], [MinOrderAmount], [MaxDiscountAmount], [UsageLimit], [UsedCount], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'2', N'SAVE50K', N'Ti?t ki?m 50k', N'Gi?m 50k cho don hàng t? 500k', N'FixedAmount', N'50000.00', N'500000.00', N'50000.00', N'200', N'0', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.427')
+INSERT INTO [dbo].[Promotions] ([PromotionID], [PromotionCode], [PromotionName], [Description], [DiscountType], [DiscountValue], [MinOrderAmount], [MaxDiscountAmount], [UsageLimit], [UsedCount], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'2', N'SAVE50K', N'Tiết kiệm 50k', N'Gi?m 50k cho don hàng từ 500k', N'FixedAmount', N'50000.00', N'500000.00', N'50000.00', N'200', N'0', N'2024-01-01 00:00:00.000', N'2025-10-26 00:00:00.000', N'0', N'2025-10-26 14:59:04.413')
 GO
 
 INSERT INTO [dbo].[Promotions] ([PromotionID], [PromotionCode], [PromotionName], [Description], [DiscountType], [DiscountValue], [MinOrderAmount], [MaxDiscountAmount], [UsageLimit], [UsedCount], [StartDate], [EndDate], [IsActive], [CreatedDate]) VALUES (N'3', N'VIP20', N'Khách hàng VIP', N'Gi?m 20% cho khách hàng VIP', N'Percentage', N'20.00', N'1000000.00', N'200000.00', N'50', N'0', N'2024-01-01 00:00:00.000', N'2024-12-31 00:00:00.000', N'0', N'2025-10-15 21:30:37.427')
@@ -1606,10 +1709,13 @@ GO
 SET IDENTITY_INSERT [dbo].[Users] ON
 GO
 
-INSERT INTO [dbo].[Users] ([UserID], [Username], [Email], [PasswordHash], [FullName], [Phone], [Address], [RoleID], [IsActive], [CreatedDate], [LastLoginDate]) VALUES (N'1', N'trongduc03', N'trongduc03@gmail.com', N'p0wHXbldRKh6kK7RooW2EqZWgtP0t2Wb4xhqLI1pRtU=', N'Nguyễn Trọng', N'0386693354', N'hà Tĩnh', N'3', N'0', N'2025-10-09 23:07:49.137', N'2025-10-15 22:58:07.240')
+INSERT INTO [dbo].[Users] ([UserID], [Username], [Email], [PasswordHash], [FullName], [Phone], [Address], [RoleID], [IsActive], [CreatedDate], [LastLoginDate]) VALUES (N'1', N'trongduc03', N'trongduc03@gmail.com', N'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', N'Nguyễn Trọng', N'0386693354', N'hà Tĩnh', N'3', N'0', N'2025-10-09 23:07:49.137', N'2025-11-04 00:34:27.500')
 GO
 
 INSERT INTO [dbo].[Users] ([UserID], [Username], [Email], [PasswordHash], [FullName], [Phone], [Address], [RoleID], [IsActive], [CreatedDate], [LastLoginDate]) VALUES (N'2', N'hotro', N'hotro123@gmail.com', N'bHuOhVvOPBhvPN+6WJ2Gr/q5/FLVcrAMnMtK3bnpXMk=', N'hotro', N'0386693355', N'dxsdsds', N'3', N'0', N'2025-10-09 23:14:37.397', N'2025-10-09 23:28:19.523')
+GO
+
+INSERT INTO [dbo].[Users] ([UserID], [Username], [Email], [PasswordHash], [FullName], [Phone], [Address], [RoleID], [IsActive], [CreatedDate], [LastLoginDate]) VALUES (N'3', N'admin', N'admin@hyhy.com', N'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', N'Administrator', N'0123456789', N'Hà N?i', N'1', N'0', N'2025-10-21 10:44:41.993', N'2025-11-12 20:50:52.650')
 GO
 
 SET IDENTITY_INSERT [dbo].[Users] OFF
@@ -1639,6 +1745,9 @@ GO
 -- Records of Wishlist
 -- ----------------------------
 SET IDENTITY_INSERT [dbo].[Wishlist] ON
+GO
+
+INSERT INTO [dbo].[Wishlist] ([WishlistID], [UserID], [ProductID], [AddedDate]) VALUES (N'3', N'1', N'71', N'2025-11-01 22:13:09.943')
 GO
 
 SET IDENTITY_INSERT [dbo].[Wishlist] OFF
@@ -1741,7 +1850,7 @@ GO
 -- ----------------------------
 -- Auto increment value for Cart
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[Cart]', RESEED, 29)
+DBCC CHECKIDENT ('[dbo].[Cart]', RESEED, 40)
 GO
 
 
@@ -1840,7 +1949,7 @@ GO
 -- ----------------------------
 -- Auto increment value for InventoryTransactions
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[InventoryTransactions]', RESEED, 56)
+DBCC CHECKIDENT ('[dbo].[InventoryTransactions]', RESEED, 65)
 GO
 
 
@@ -1856,7 +1965,7 @@ GO
 -- ----------------------------
 -- Auto increment value for OrderItems
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[OrderItems]', RESEED, 48)
+DBCC CHECKIDENT ('[dbo].[OrderItems]', RESEED, 56)
 GO
 
 
@@ -1888,7 +1997,7 @@ GO
 -- ----------------------------
 -- Auto increment value for Orders
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[Orders]', RESEED, 14)
+DBCC CHECKIDENT ('[dbo].[Orders]', RESEED, 21)
 GO
 
 
@@ -1960,7 +2069,7 @@ GO
 -- ----------------------------
 -- Auto increment value for OrderStatusHistory
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[OrderStatusHistory]', RESEED, 102)
+DBCC CHECKIDENT ('[dbo].[OrderStatusHistory]', RESEED, 110)
 GO
 
 
@@ -2001,7 +2110,7 @@ GO
 -- ----------------------------
 -- Auto increment value for ProductImages
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[ProductImages]', RESEED, 90)
+DBCC CHECKIDENT ('[dbo].[ProductImages]', RESEED, 97)
 GO
 
 
@@ -2142,7 +2251,7 @@ GO
 -- ----------------------------
 -- Auto increment value for Users
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[Users]', RESEED, 2)
+DBCC CHECKIDENT ('[dbo].[Users]', RESEED, 3)
 GO
 
 
@@ -2188,7 +2297,7 @@ GO
 -- ----------------------------
 -- Auto increment value for Wishlist
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[Wishlist]', RESEED, 2)
+DBCC CHECKIDENT ('[dbo].[Wishlist]', RESEED, 3)
 GO
 
 
