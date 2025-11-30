@@ -113,6 +113,19 @@
                                         <td class="fw-bold">Loại thú cưng:</td>
                                         <td><span class="badge bg-info">@Model.PetType</span></td>
                                     </tr>
+                                    <tr>
+                                        <td class="fw-bold">Độ tuổi phù hợp:</td>
+                                        <td>
+                                            @if (Model.AgeInMonths.HasValue)
+                                            {
+                                                @Model.AgeInMonths.Value <span>tháng</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Chưa có thông tin</span>
+                                            }
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="col-md-6">

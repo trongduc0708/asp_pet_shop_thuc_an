@@ -45,6 +45,10 @@ namespace Pet_Shop.Models.Entities
         [Display(Name = "Kích thước")]
         public string? Dimensions { get; set; } // Kích thước
 
+        [Range(0, 600, ErrorMessage = "Độ tuổi phù hợp phải từ 0 đến 600 tháng")]
+        [Display(Name = "Độ tuổi phù hợp (tháng)")]
+        public int? AgeInMonths { get; set; }
+
         [Display(Name = "Hạn sử dụng")]
         public DateTime? ExpiryDate { get; set; } // Hạn sử dụng
 

@@ -100,7 +100,23 @@
 </section>
 
 <!-- AI Chatbot Recommendations (Only for logged in users with purchase history) -->
-@if (ViewBag.AIRecommendedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.AIRecommendedProducts).Any())
+@if (ViewBag.LocalMLNoData == true)
+{
+    <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>LocalRecommendationService no data</strong>
+                        <p class="mb-0 mt-2">Hệ thống gợi ý AI hiện không có dữ liệu. Vui lòng thử lại sau.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else if (ViewBag.AIRecommendedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.AIRecommendedProducts).Any())
 {
     <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
         <div class="container">
@@ -219,9 +235,21 @@
                 <p class="lead text-muted">Những sản phẩm được yêu thích nhất</p>
             </div>
         </div>
-        <div class="row">
-            @if (ViewBag.FeaturedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.FeaturedProducts).Any())
-            {
+        @if (ViewBag.FeaturedProductsNoData == true)
+        {
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>LocalRecommendationService no data</strong>
+                        <p class="mb-0 mt-2">Hệ thống gợi ý AI hiện không có dữ liệu. Vui lòng thử lại sau.</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ViewBag.FeaturedProducts != null && ((IEnumerable<Pet_Shop.Models.Entities.Product>)ViewBag.FeaturedProducts).Any())
+        {
+            <div class="row">
                 @foreach (var product in ViewBag.FeaturedProducts)
                 {
                     <div class="col-lg-3 col-md-6 mb-4">
@@ -274,63 +302,8 @@
                         </div>
                     </div>
                 }
-            }
-            else
-            {
-                <!-- Fallback products if database is not available -->
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card product-card">
-                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                             class="card-img-top" alt="Dog Food">
-                        <div class="card-body">
-                            <h5 class="card-title">Thức ăn chó Royal Canin</h5>
-                            <p class="card-text">Thức ăn cao cấp cho chó trưởng thành</p>
-                            <div class="price">299,000 VNĐ</div>
-                            <button class="btn btn-primary">Thêm vào giỏ</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card product-card">
-                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                             class="card-img-top" alt="Cat Food">
-                        <div class="card-body">
-                            <h5 class="card-title">Thức ăn mèo Whiskas</h5>
-                            <p class="card-text">Thức ăn ướt cho mèo</p>
-                            <div class="price">45,000 VNĐ</div>
-                            <button class="btn btn-primary">Thêm vào giỏ</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card product-card">
-                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                             class="card-img-top" alt="Dog Toy">
-                        <div class="card-body">
-                            <h5 class="card-title">Đồ chơi cho chó</h5>
-                            <p class="card-text">Bóng cao su bền bỉ</p>
-                            <div class="price">89,000 VNĐ</div>
-                            <button class="btn btn-primary">Thêm vào giỏ</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card product-card">
-                        <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
-                             class="card-img-top" alt="Cat Accessory">
-                        <div class="card-body">
-                            <h5 class="card-title">Khay cát cho mèo</h5>
-                            <p class="card-text">Khay cát cao cấp có nắp</p>
-                            <div class="price">199,000 VNĐ</div>
-                            <button class="btn btn-primary">Thêm vào giỏ</button>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </section>
 

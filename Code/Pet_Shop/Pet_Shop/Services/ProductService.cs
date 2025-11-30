@@ -211,6 +211,7 @@ namespace Pet_Shop.Services
                 existingProduct.PetType = product.PetType;
                 existingProduct.Weight = product.Weight;
                 existingProduct.Dimensions = product.Dimensions;
+                existingProduct.AgeInMonths = product.AgeInMonths;
                 existingProduct.ExpiryDate = product.ExpiryDate;
                 existingProduct.Description = product.Description;
                 existingProduct.ShortDescription = product.ShortDescription;

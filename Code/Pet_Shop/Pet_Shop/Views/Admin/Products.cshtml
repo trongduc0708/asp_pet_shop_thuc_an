@@ -49,6 +49,7 @@
                                     <th>Thương hiệu</th>
                                     <th>Giá</th>
                                     <th>Loại</th>
+                                    <th>Độ tuổi (tháng)</th>
                                     <th>Trạng thái</th>
                                     <th>Ngày tạo</th>
                                     <th>Thao tác</th>
@@ -114,6 +115,16 @@
                                                 <br>
                                                 <small class="text-muted">@product.PetType</small>
                                             </div>
+                                        </td>
+                                        <td>
+                                            @if (product.AgeInMonths.HasValue)
+                                            {
+                                                <span class="badge bg-light text-dark">@product.AgeInMonths.Value tháng</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Không rõ</span>
+                                            }
                                         </td>
                                         <td>
                                             <div>

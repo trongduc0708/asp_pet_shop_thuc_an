@@ -58,7 +58,7 @@ namespace Pet_Shop.Services
         /// <summary>
         /// Lấy recommendations cho user sử dụng Hybrid model
         /// </summary>
-        public async Task<List<Product>> GetRecommendedProductsAsync(int userId, int count = 10, int? currentProductId = null)
+        public async Task<List<Product>> GetRecommendedProductsAsync(int userId, int count = 10, int? currentProductId = null, int? numInteractions = null)
         {
             try
             {
@@ -83,12 +83,13 @@ namespace Pet_Shop.Services
                     }
                 }
 
-                // Tạo request body
+                // Tạo request body với num_interactions cho dynamic weighting
                 var requestBody = new
                 {
                     user_id = userId,
                     current_item_id = currentItemId,
-                    k = count
+                    k = count,
+                    num_interactions = numInteractions
                 };
 
                 var jsonContent = JsonSerializer.Serialize(requestBody);
